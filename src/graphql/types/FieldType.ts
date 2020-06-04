@@ -1,6 +1,6 @@
 import { GraphQLScalarType } from "graphql";
 import { Type } from "../defintion/types/Type";
-import { NotNullable } from "../defintion/modifiers/NotNullable";
+import { NotNullableType } from "../defintion/modifiers/NotNullable";
 
 export type FieldType =
   | typeof Boolean
@@ -9,4 +9,4 @@ export type FieldType =
   | GraphQLScalarType
   | Type
   | FieldType[]
-  | NotNullable;
+  | NotNullableType;

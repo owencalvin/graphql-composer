@@ -1,16 +1,20 @@
 import { Field } from "./Field";
-import { GraphQLInputField } from "graphql";
+import { GraphQLArgument } from "graphql";
 import { TypeParser } from "../../helpers/TypeParser";
 import { FieldType } from "../../types/FieldType";
 
-export class InputField extends Field<GraphQLInputField> {
+export class Arg extends Field<GraphQLArgument> {
   protected _defaultValue: string | number | boolean;
 
-  static create(name: string, type: FieldType) {
-    return new InputField(name, type);
+  protected constructor(name: string, type: FieldType) {
+    super(name, type);
   }
 
-  build(): GraphQLInputField {
+  static create(name: string, type: FieldType) {
+    return new Arg(name, type);
+  }
+
+  build(): GraphQLArgument {
     return {
       name: this._name,
       type: TypeParser.parse(this._type),

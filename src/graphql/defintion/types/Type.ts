@@ -1,12 +1,14 @@
 import { Field } from "../fields/Field";
 import { GraphQLElement } from "../../types/GraphQLElement";
 import { GraphQLNamedType } from "graphql";
+import { ObjectType } from "./ObjectType";
+import { InterfaceType } from "./InterfaceType";
+import { InputType } from "./InputType";
 
-export abstract class Type<
-  BuiltType = any
-> extends GraphQLElement<BuiltType> {
+export abstract class Type<BuiltType = any> extends GraphQLElement<BuiltType> {
   protected _fields: Field[] = [];
   protected _hidden = false;
+  protected _description?: string;
   protected _extension?: Type;
 
   get fields() {
@@ -32,17 +34,35 @@ export abstract class Type<
     return this;
   }
 
-  abstract build(): GraphQLNamedType;
-
-  protected preBuild() {
-    this._fields = [
-      ...this._fields,
-      ...(this._extension?._fields || []),
-    ];
+  setDescription(description: string) {
+    this._description = description;
     return this;
   }
 
-  protected constructor(name?: string) {
+  abstract build(): GraphQLNamedType;
+
+  abstract convert(
+    to: typeof InterfaceType | typeof InputType,
+  ): InputType | ObjectType | InterfaceType;
+
+  protected preBuild() {
+    this._fields = [...this._fields, ...(this._extension?._fields || [])];
+    return this;
+  }
+
+  constructor(name?: string) {
     super(name);
+  }
+
+  protected toConfigMap<ReturnType>(
+    arr: { name: string; build(): any }[],
+  ): ReturnType {
+    return arr.reduce<any>((prev, item) => {
+      const built = item.build();
+      prev[built.name] = {
+        ...built,
+      };
+      return prev;
+    }, {});
   }
 }

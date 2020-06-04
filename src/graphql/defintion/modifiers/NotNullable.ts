@@ -1,6 +1,10 @@
 import { FieldType } from "../../types/FieldType";
 
-export class NotNullable {
+export function NotNullable(type: FieldType) {
+  return new NotNullableType(type);
+}
+
+export class NotNullableType {
   private _type: FieldType;
 
   get type() {

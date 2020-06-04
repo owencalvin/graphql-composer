@@ -1,3 +1,3 @@
-export type ResolveFunction<ArgType> = (
-  args: ArgType,
-) => void;
+import { KeyValue } from "../../shared/KeyValue";
+
+export type ResolveFunction = (args: KeyValue, gql: any) => any;

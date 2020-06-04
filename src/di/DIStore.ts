@@ -1,10 +1,7 @@
 import { ClassType } from "../shared/ClassType";
 
 export class DIStore {
-  private _instances: Map<
-    any,
-    InstanceType<ClassType<any>>
-  > = new Map();
+  private _instances: Map<any, InstanceType<ClassType<any>>> = new Map();
 
   createInstance<Type>(
     classType: ClassType<Type>,
@@ -16,9 +13,7 @@ export class DIStore {
     return instance;
   }
 
-  getInstance<Type>(
-    idOrInstance: any | Type,
-  ): Type {
+  getInstance<Type>(idOrInstance: any | Type): Type {
     return this._instances.get(idOrInstance);
   }
 }

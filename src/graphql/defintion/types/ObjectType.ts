@@ -6,10 +6,11 @@ import {
   GraphQLFieldConfigArgumentMap,
 } from "graphql";
 import { InterfaceType } from "./InterfaceType";
+import { TypeConverter, ConversionType } from "../../helpers/TypeConverter";
 
 export class ObjectType extends Type<GraphQLObjectType> {
   protected _fields: ObjectField[] = [];
-  protected _implementation?: InterfaceType;
+  private _implementation?: InterfaceType;
 
   get fields() {
     return this._fields;
@@ -43,23 +44,19 @@ export class ObjectType extends Type<GraphQLObjectType> {
       {},
     );
 
-    return new GraphQLObjectType({
+    const built = new GraphQLObjectType({
       name: this._name,
       fields: () => {
         return builtFields;
       },
     });
+
+    this._built = built;
+
+    return built;
   }
 
-  private toConfigMap<ReturnType>(
-    arr: { name: string; build(): any }[],
-  ): ReturnType {
-    return arr.reduce<any>((prev, item) => {
-      const built = item.build();
-      prev[built.name] = {
-        ...built,
-      };
-      return prev;
-    }, {});
+  convert<Target extends ConversionType>(to: Target) {
+    return TypeConverter.convert<Target>(this, to);
   }
 }

@@ -11,6 +11,10 @@ export class GraphQLElement<BuiltType> {
     return this._name;
   }
 
+  get built() {
+    return this._built;
+  }
+
   protected constructor(name?: string) {
     this.setName(name);
     this._ref = Symbol();
@@ -21,6 +25,7 @@ export class GraphQLElement<BuiltType> {
     return this;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   static create(name?: string, ...args: any[]) {
     return new GraphQLElement(name);
   }
