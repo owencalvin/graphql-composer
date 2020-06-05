@@ -1,14 +1,13 @@
 import { GraphQLSchema, GraphQLObjectType, GraphQLNamedType } from "graphql";
 import { Wrapper } from "../../../wrapper/Wrapper";
 import { ComposedType } from "../types/composed/ComposedType";
+import { GraphQLElement } from "../../types/GraphQLElement";
 
-export class Schema {
-  protected _schema: GraphQLSchema;
+export class Schema extends GraphQLElement<GraphQLSchema> {
   protected _types: ComposedType[] = [];
 
-  addTypes(...types: (ComposedType | Wrapper)[]) {
+  setTypes(...types: (ComposedType | Wrapper)[]) {
     this._types = [
-      ...this._types,
       ...types.flatMap((item) => {
         if (item instanceof Wrapper) {
           return item.types;
@@ -16,6 +15,15 @@ export class Schema {
         return item;
       }),
     ];
+    return this;
+  }
+
+  addTypes(...types: (ComposedType | Wrapper)[]) {
+    return this.setTypes(...this._types, ...types);
+  }
+
+  removeType(type: ComposedType) {
+    this._types.splice(this._types.indexOf(type), 1);
     return this;
   }
 
@@ -30,20 +38,24 @@ export class Schema {
     const mutation = typesMap.get("Mutation") as GraphQLObjectType;
     const subscription = typesMap.get("Subscription") as GraphQLObjectType;
 
-    this._schema = new GraphQLSchema({
+    this._built = new GraphQLSchema({
       query,
       mutation,
       subscription,
       types: types.map((t) => t[1]),
+      description: this._description,
     });
 
-    return this._schema;
+    return this._built;
   }
 
-  protected constructor() {}
+  protected constructor() {
+    super();
+  }
 
-  static create() {
+  static create(...types: (ComposedType | Wrapper)[]) {
     const schema = new Schema();
+    schema.setTypes(...types);
     return schema;
   }
 }

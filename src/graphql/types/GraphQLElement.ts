@@ -40,8 +40,8 @@ export class GraphQLElement<BuiltType> {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  static create(name?: string, ...args: any[]) {
-    return new GraphQLElement(name);
+  static create(...args: any[]) {
+    throw new Error("create method not implemented");
   }
 
   build() {}

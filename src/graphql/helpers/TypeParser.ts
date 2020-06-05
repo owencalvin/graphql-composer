@@ -9,7 +9,7 @@ import {
 } from "graphql";
 import { FieldType } from "../types/FieldType";
 import { NotNullableType } from "../defintion/modifiers/NotNullable";
-import { Type } from "../defintion/types/Type";
+import { GQLType } from "../defintion/types/GQLType";
 
 export class TypeParser {
   static parse<ReturnType>(type: FieldType): ReturnType {
@@ -20,7 +20,7 @@ export class TypeParser {
       finalType = GraphQLList(finalType);
     }
 
-    if (type instanceof Type) {
+    if (type instanceof GQLType) {
       finalType = type.built;
     }
 

@@ -44,4 +44,10 @@ export class ClassDescriptor {
 
     return typeMap[typeof item];
   }
+
+  static instanceOf<T>(item: T, ...possibleIntances: Function[]) {
+    return possibleIntances.some((i) => {
+      return item instanceof i;
+    });
+  }
 }

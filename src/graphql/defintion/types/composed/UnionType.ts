@@ -1,12 +1,14 @@
 import { GraphQLElement } from "../../../types/GraphQLElement";
 import { GraphQLUnionType, GraphQLTypeResolver } from "graphql";
-import { Type } from "../Type";
+import { GQLType } from "../GQLType";
 import { ComposedType } from "./ComposedType";
 import { KeyValue } from "../../../../shared/KeyValue";
 import { TypeResolver } from "../../../helpers/TypeResolver";
+import { TypeResolvable } from "../../../types/TypeResolvable";
 
-export class UnionType extends ComposedType<GraphQLUnionType> {
-  private _types: Type[] = [];
+export class UnionType extends ComposedType<GraphQLUnionType>
+  implements TypeResolvable {
+  private _types: GQLType[] = [];
   private _typeResolver: GraphQLTypeResolver<any, any>;
 
   protected constructor(name: string) {
@@ -18,12 +20,14 @@ export class UnionType extends ComposedType<GraphQLUnionType> {
     return new UnionType(name);
   }
 
-  setTypeResolver(typeResolver: GraphQLTypeResolver<any, any>) {
+  setTypeResolver<TSource = any, TContext = any>(
+    typeResolver: GraphQLTypeResolver<TSource, TContext>,
+  ) {
     this._typeResolver = typeResolver;
     return this;
   }
 
-  addTypes(...types: Type[]) {
+  addTypes(...types: GQLType[]) {
     this._types = [...this._types, ...types];
     return this;
   }

@@ -1,16 +1,16 @@
-import { Type } from "./Type";
+import { GQLType } from "./GQLType";
 import { GraphQLInputObjectType } from "graphql";
 import { InputField } from "../fields/InputField";
 import { TypeConverter, ConversionType } from "../../helpers/TypeConverter";
 
-export class InputType extends Type<GraphQLInputObjectType> {
+export class InputType extends GQLType<GraphQLInputObjectType> {
   protected _fields: InputField[];
 
   get fields() {
     return this._fields;
   }
 
-  static create(name?: string) {
+  static create(name: string) {
     return new InputType(name);
   }
 

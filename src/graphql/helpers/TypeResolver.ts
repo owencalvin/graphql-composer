@@ -1,8 +1,8 @@
 import { KeyValue } from "../../shared/KeyValue";
-import { Type } from "../defintion/types/Type";
+import { GQLType } from "../defintion/types/GQLType";
 
 export class TypeResolver {
-  static resolve(obj: KeyValue, types: Type[]) {
+  static resolve(obj: KeyValue, types: GQLType[]) {
     const points: number[] = [];
     const keys = Object.keys(obj);
 

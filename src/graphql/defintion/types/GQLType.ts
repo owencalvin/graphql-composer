@@ -1,16 +1,16 @@
-import { Field } from "../fields/Field";
+import { GQLField } from "../fields/GQLField";
 import { ObjectType } from "./ObjectType";
 import { InterfaceType } from "./InterfaceType";
 import { InputType } from "./InputType";
 import { InputField } from "../fields/InputField";
-import { ObjectField } from "../fields/ObjectField";
+import { Field } from "../fields/Field";
 import { ComposedType } from "./composed/ComposedType";
 import { NotNullableType, NotNullable } from "../modifiers/NotNullable";
 
-export abstract class Type<BuiltType = any> extends ComposedType<BuiltType> {
-  protected _fields: Field[] = [];
+export abstract class GQLType<BuiltType = any> extends ComposedType<BuiltType> {
+  protected _fields: GQLField[] = [];
   protected _hidden = false;
-  protected _extension?: Type;
+  protected _extension?: GQLType;
 
   get fields() {
     return this._fields;
@@ -24,12 +24,12 @@ export abstract class Type<BuiltType = any> extends ComposedType<BuiltType> {
     super(name);
   }
 
-  addFields(...fields: Field[]) {
+  addFields(...fields: GQLField[]) {
     this._fields = [...this._fields, ...fields];
     return this;
   }
 
-  setExtension(extension: Type) {
+  setExtension(extension: GQLType) {
     this._extension = extension;
     return this;
   }
@@ -46,6 +46,7 @@ export abstract class Type<BuiltType = any> extends ComposedType<BuiltType> {
       }
       return {};
     });
+    return this;
   }
 
   required() {
@@ -55,6 +56,7 @@ export abstract class Type<BuiltType = any> extends ComposedType<BuiltType> {
       }
       return {};
     });
+    return this;
   }
 
   protected preBuild() {
@@ -74,9 +76,9 @@ export abstract class Type<BuiltType = any> extends ComposedType<BuiltType> {
     }, {});
   }
 
-  protected applyFieldsTransformation<
-    FieldType extends InputField | ObjectField
-  >(cb: (field: FieldType) => void) {
+  protected applyFieldsTransformation<FieldType extends InputField | Field>(
+    cb: (field: FieldType) => void,
+  ) {
     return this.fields.map((field) => {
       cb(field as FieldType);
     });
@@ -88,5 +90,5 @@ export abstract class Type<BuiltType = any> extends ComposedType<BuiltType> {
 
   abstract copy(): InputType | ObjectType | InterfaceType;
 
-  abstract transformFields(cb: (field: InputField | ObjectField) => void);
+  abstract transformFields(cb: (field: InputField | Field) => void);
 }

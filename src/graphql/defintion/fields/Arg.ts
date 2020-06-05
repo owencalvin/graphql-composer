@@ -1,4 +1,4 @@
-import { Field } from "./Field";
+import { GQLField } from "./GQLField";
 import { GraphQLArgument } from "graphql";
 import { TypeParser } from "../../helpers/TypeParser";
 import { FieldType } from "../../types/FieldType";
@@ -6,7 +6,7 @@ import { ClassType } from "../../../shared/ClassType";
 import { ClassDescriptor } from "../../helpers/ClassDescriptor";
 import { NotNullable } from "../modifiers/NotNullable";
 
-export class Arg extends Field<GraphQLArgument> {
+export class Arg extends GQLField<GraphQLArgument> {
   protected _defaultValue: string | number | boolean;
 
   protected constructor(name: string, type: FieldType) {

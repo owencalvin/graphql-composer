@@ -1,51 +1,89 @@
 import { Schema } from "../src/graphql/defintion/schema/Schema";
 import { ObjectType } from "../src/graphql/defintion/types/ObjectType";
-import { InputType } from "../src/graphql/defintion/types/InputType";
-import { EnumType } from "../src/graphql/defintion/types/composed/enum/EnumType";
-import { UnionType } from "../src/graphql/defintion/types/composed/UnionType";
-import { ObjectField } from "../src/graphql/defintion/fields/ObjectField";
+import { Field } from "../src/graphql/defintion/fields/Field";
 import { NotNullable } from "../src/graphql/defintion/modifiers/NotNullable";
-import { Arg } from "../src/graphql/defintion/fields/Arg";
-import { EnumValue } from "../src/graphql/defintion/types/composed/enum/EnumValue";
+import {
+  GraphQLObjectType,
+  GraphQLScalarType,
+  GraphQLNonNull,
+  GraphQLList,
+} from "graphql";
+import { InterfaceType } from "../src/graphql/defintion/types/InterfaceType";
 
-class A {
-  t: String[][] = [[""]];
-}
+const userInterface = InterfaceType.create("UserInterface").addFields(
+  Field.create("createdAt", Number),
+);
 
-describe("Create schema", () => {
-  it("Should create a simple schema", async () => {
-    const user = ObjectType.create("User").addFields(
-      ObjectField.create("Username", NotNullable([String])),
-      ObjectField.create("getName", String).setResolve<A>(
-        () => null,
-        Arg.create("test", String),
-        Arg.create("test2", String),
-        Arg.create(A),
-      ),
-    );
+const user = ObjectType.create("User").addFields(
+  Field.create("Username", NotNullable([String])),
+  Field.create("Email", Number),
+);
 
-    const chapter = ObjectType.create("Chapter").addFields(
-      ObjectField.create("User", user),
-    );
+const role = ObjectType.create("Role").addFields(Field.create("User", user));
 
-    const userInput = user.convert(InputType).setName("UserInput");
-
-    const testEnum = EnumType.create("TestEnum").addValues(
-      EnumValue.create("a", 1),
-      EnumValue.create("b", 2),
-    );
-
-    const testUnion = UnionType.create("TestUnion").addTypes(chapter, user);
-
-    const schema = Schema.create().addTypes(
-      user,
-      chapter,
-      userInput,
-      testEnum,
-      testUnion,
-    );
+describe("ObjectType", () => {
+  it("Should create a simple type", async () => {
+    const schema = Schema.create(user);
 
     const built = schema.build();
-    console.log(built);
+
+    const typeMap = built.getTypeMap();
+    const userType = typeMap.User as GraphQLObjectType;
+    const userFields = userType.getFields();
+
+    const usernameType = userFields.Username.type as GraphQLNonNull<
+      GraphQLList<GraphQLScalarType>
+    >;
+
+    expect(usernameType).toBeInstanceOf(GraphQLNonNull);
+    expect(usernameType.ofType).toBeInstanceOf(GraphQLList);
+    expect(usernameType.ofType.ofType.name === "String");
+    expect((userFields.Email.type as GraphQLScalarType).name === "String");
+  });
+
+  it("Should create a simple type with relation", async () => {
+    const schema = Schema.create(user, role);
+
+    const built = schema.build();
+
+    const typeMap = built.getTypeMap();
+    const roleType = typeMap.Role as GraphQLObjectType;
+    const roleFields = roleType.getFields();
+
+    const usernameType: any = roleFields.User;
+
+    expect(usernameType.name).toBe("User");
+  });
+
+  it("Should create a simple type with implementation", async () => {
+    const userCopy = user.copy().setImplementations(userInterface);
+    const schema = Schema.create(userInterface, userCopy);
+
+    const built = schema.build();
+
+    const typeMap = built.getTypeMap();
+    const roleType = typeMap.User as GraphQLObjectType;
+    const roleInterfaces = roleType.getInterfaces();
+
+    expect(roleInterfaces[0].name).toBe("UserInterface");
+  });
+
+  it("Should create a simple type with circular dependency", async () => {
+    const a = ObjectType.create("a");
+    const b = ObjectType.create("b");
+
+    a.addFields(Field.create("b", b));
+    b.addFields(Field.create("a", a));
+
+    const schema = Schema.create(a, b);
+
+    const built = schema.build();
+
+    const typeMap = built.getTypeMap();
+    const aType = typeMap.a as GraphQLObjectType;
+    const bType = typeMap.b as GraphQLObjectType;
+
+    expect((aType.getFields().b.type as GraphQLObjectType).name).toBe("b");
+    expect((bType.getFields().a.type as GraphQLObjectType).name).toBe("a");
   });
 });

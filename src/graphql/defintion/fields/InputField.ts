@@ -1,9 +1,9 @@
-import { Field } from "./Field";
+import { GQLField } from "./GQLField";
 import { GraphQLInputField } from "graphql";
 import { TypeParser } from "../../helpers/TypeParser";
 import { FieldType } from "../../types/FieldType";
 
-export class InputField extends Field<GraphQLInputField> {
+export class InputField extends GQLField<GraphQLInputField> {
   protected _defaultValue: string | number | boolean;
 
   static create(name: string, type: FieldType) {
