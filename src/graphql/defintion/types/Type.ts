@@ -1,14 +1,15 @@
 import { Field } from "../fields/Field";
-import { GraphQLElement } from "../../types/GraphQLElement";
-import { GraphQLNamedType } from "graphql";
 import { ObjectType } from "./ObjectType";
 import { InterfaceType } from "./InterfaceType";
 import { InputType } from "./InputType";
+import { InputField } from "../fields/InputField";
+import { ObjectField } from "../fields/ObjectField";
+import { ComposedType } from "./composed/ComposedType";
+import { NotNullableType, NotNullable } from "../modifiers/NotNullable";
 
-export abstract class Type<BuiltType = any> extends GraphQLElement<BuiltType> {
+export abstract class Type<BuiltType = any> extends ComposedType<BuiltType> {
   protected _fields: Field[] = [];
   protected _hidden = false;
-  protected _description?: string;
   protected _extension?: Type;
 
   get fields() {
@@ -17,6 +18,10 @@ export abstract class Type<BuiltType = any> extends GraphQLElement<BuiltType> {
 
   get hidden() {
     return this._hidden;
+  }
+
+  constructor(name?: string) {
+    super(name);
   }
 
   addFields(...fields: Field[]) {
@@ -34,24 +39,27 @@ export abstract class Type<BuiltType = any> extends GraphQLElement<BuiltType> {
     return this;
   }
 
-  setDescription(description: string) {
-    this._description = description;
-    return this;
+  partial() {
+    this.transformFields((field) => {
+      if (field.type instanceof NotNullableType) {
+        field.setType(field.type.type);
+      }
+      return {};
+    });
   }
 
-  abstract build(): GraphQLNamedType;
-
-  abstract convert(
-    to: typeof InterfaceType | typeof InputType,
-  ): InputType | ObjectType | InterfaceType;
+  required() {
+    this.transformFields((field) => {
+      if (!(field.type instanceof NotNullableType)) {
+        field.setType(NotNullable(field.type));
+      }
+      return {};
+    });
+  }
 
   protected preBuild() {
     this._fields = [...this._fields, ...(this._extension?._fields || [])];
     return this;
-  }
-
-  constructor(name?: string) {
-    super(name);
   }
 
   protected toConfigMap<ReturnType>(
@@ -65,4 +73,20 @@ export abstract class Type<BuiltType = any> extends GraphQLElement<BuiltType> {
       return prev;
     }, {});
   }
+
+  protected applyFieldsTransformation<
+    FieldType extends InputField | ObjectField
+  >(cb: (field: FieldType) => void) {
+    return this.fields.map((field) => {
+      cb(field as FieldType);
+    });
+  }
+
+  abstract convert(
+    to: typeof InterfaceType | typeof InputType,
+  ): InputType | ObjectType | InterfaceType;
+
+  abstract copy(): InputType | ObjectType | InterfaceType;
+
+  abstract transformFields(cb: (field: InputField | ObjectField) => void);
 }

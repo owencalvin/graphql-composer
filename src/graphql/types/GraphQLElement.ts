@@ -2,6 +2,11 @@ export class GraphQLElement<BuiltType> {
   protected _name: string;
   protected _ref: symbol;
   protected _built: BuiltType;
+  protected _description?: string;
+
+  get description() {
+    return this._description;
+  }
 
   get ref() {
     return this._ref;
@@ -20,8 +25,17 @@ export class GraphQLElement<BuiltType> {
     this._ref = Symbol();
   }
 
+  static built<BuiltType = any>(elements: GraphQLElement<BuiltType>[]) {
+    return elements.map((e) => e.built);
+  }
+
   setName(name: string) {
     this._name = name;
+    return this;
+  }
+
+  setDescription(description: string) {
+    this._description = description;
     return this;
   }
 
@@ -29,4 +43,6 @@ export class GraphQLElement<BuiltType> {
   static create(name?: string, ...args: any[]) {
     return new GraphQLElement(name);
   }
+
+  build() {}
 }

@@ -36,4 +36,17 @@ export class InputType extends Type<GraphQLInputObjectType> {
   convert<Target extends ConversionType>(to: Target) {
     return TypeConverter.convert<Target>(this, to);
   }
+
+  copy() {
+    return InputType.create(this.name)
+      .setDescription(this._description)
+      .setHidden(this._hidden)
+      .setExtension(this._extension)
+      .addFields(...this._fields);
+  }
+
+  transformFields(cb: (field: InputField) => void) {
+    this.applyFieldsTransformation(cb);
+    return this;
+  }
 }

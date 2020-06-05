@@ -18,6 +18,7 @@ export class ObjectType extends Type<GraphQLObjectType> {
 
   setImplementation(implementation: InterfaceType) {
     this._implementation = implementation;
+    return this;
   }
 
   static create(name?: string) {
@@ -58,5 +59,19 @@ export class ObjectType extends Type<GraphQLObjectType> {
 
   convert<Target extends ConversionType>(to: Target) {
     return TypeConverter.convert<Target>(this, to);
+  }
+
+  copy() {
+    return ObjectType.create(this.name)
+      .setDescription(this._description)
+      .setHidden(this._hidden)
+      .setImplementation(this._implementation)
+      .setExtension(this._extension)
+      .addFields(...this._fields);
+  }
+
+  transformFields(cb: (field: ObjectField) => void) {
+    this.applyFieldsTransformation(cb);
+    return this;
   }
 }

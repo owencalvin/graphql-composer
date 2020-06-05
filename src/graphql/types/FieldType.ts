@@ -1,12 +1,12 @@
 import { GraphQLScalarType } from "graphql";
-import { Type } from "../defintion/types/Type";
 import { NotNullableType } from "../defintion/modifiers/NotNullable";
+import { ComposedType } from "../defintion/types/composed/ComposedType";
 
 export type FieldType =
   | typeof Boolean
   | typeof Number
   | typeof String
   | GraphQLScalarType
-  | Type
+  | ComposedType
   | FieldType[]
   | NotNullableType;

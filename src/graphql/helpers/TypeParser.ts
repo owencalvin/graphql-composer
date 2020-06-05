@@ -15,10 +15,6 @@ export class TypeParser {
   static parse<ReturnType>(type: FieldType): ReturnType {
     let finalType: GraphQLOutputType | GraphQLInputType;
 
-    if (type instanceof NotNullableType) {
-      finalType = GraphQLNonNull(this.parse(type.type));
-    }
-
     if (Array.isArray(type)) {
       finalType = this.parse(type[0]);
       finalType = GraphQLList(finalType);
@@ -38,6 +34,10 @@ export class TypeParser {
       case Boolean:
         finalType = GraphQLBoolean;
         break;
+    }
+
+    if (type instanceof NotNullableType) {
+      finalType = GraphQLNonNull(this.parse(type.type));
     }
 
     return finalType as any;

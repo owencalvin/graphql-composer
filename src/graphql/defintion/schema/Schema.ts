@@ -1,12 +1,12 @@
-import { Type } from "../types/Type";
 import { GraphQLSchema, GraphQLObjectType, GraphQLNamedType } from "graphql";
 import { Wrapper } from "../../../wrapper/Wrapper";
+import { ComposedType } from "../types/composed/ComposedType";
 
 export class Schema {
   protected _schema: GraphQLSchema;
-  protected _types: Type[] = [];
+  protected _types: ComposedType[] = [];
 
-  addTypes(...types: (Type | Wrapper)[]) {
+  addTypes(...types: (ComposedType | Wrapper)[]) {
     this._types = [
       ...this._types,
       ...types.flatMap((item) => {

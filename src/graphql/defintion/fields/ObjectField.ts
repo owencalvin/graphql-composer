@@ -13,6 +13,7 @@ import { Arg } from "./Arg";
 export class ObjectField extends Field<GraphQLField<any, any, any>> {
   private _args: Arg[] = [];
   private _resolve: ResolveFunction;
+  private _middlewares: ResolveFunction[] = [];
 
   get args() {
     return this._args;
@@ -26,14 +27,24 @@ export class ObjectField extends Field<GraphQLField<any, any, any>> {
     return new ObjectField(name, type);
   }
 
-  setResolve(resolve: ResolveFunction, ...args: Arg[]) {
-    this._args = args;
+  addMiddlewares(...middlewares: ResolveFunction[]) {
+    this._middlewares = [...this._middlewares, ...middlewares];
+    return this;
+  }
+
+  setResolve<ArgsType>(
+    resolve: ResolveFunction<ArgsType>,
+    ...args: (Arg | Arg[])[]
+  ) {
+    this._args = args.flatMap((a) => a);
     this._resolve = resolve;
     return this;
   }
 
   build(): GraphQLField<any, any, any> {
     const args = this._args.map((arg) => arg.build());
+
+    this.addMiddleware(this.resolve);
 
     const field: GraphQLField<any, any, any> = {
       name: this._name,
@@ -51,16 +62,37 @@ export class ObjectField extends Field<GraphQLField<any, any, any>> {
     return { ...this._built };
   }
 
-  resolveField(
+  async resolveField(
     source: Source,
     args: any,
     context: any,
     infos: GraphQLResolveInfo,
   ) {
-    this._resolve(args, {
-      source,
-      context,
-      infos,
-    });
+    const next = async (
+      args: any,
+      gql: any,
+      index: number,
+      paramsToNext: any,
+    ) => {
+      const nextFn = () => next(args, gql, index + 1, paramsToNext);
+      const guardToExecute = this._middlewares[index];
+      const res = await guardToExecute(args, gql, nextFn, paramsToNext);
+
+      if (res) {
+        return res;
+      }
+      return paramsToNext;
+    };
+
+    return await next(
+      args,
+      {
+        source,
+        context,
+        infos,
+      },
+      0,
+      {},
+    );
   }
 }
