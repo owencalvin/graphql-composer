@@ -86,4 +86,27 @@ describe("ObjectType", () => {
     expect((aType.getFields().b.type as GraphQLObjectType).name).toBe("b");
     expect((bType.getFields().a.type as GraphQLObjectType).name).toBe("a");
   });
+
+  it("Should create a copy", async () => {
+    const userCopy = user.copy().setName("UserCopy").removeFields("Username");
+
+    const schema = Schema.create(userCopy, user);
+
+    const built = schema.build();
+
+    const typeMap = built.getTypeMap();
+    const userCopyType = typeMap.UserCopy as GraphQLObjectType;
+    const userType = typeMap.User as GraphQLObjectType;
+
+    const userCopyFields = userCopyType.getFields();
+    const userFields = userType.getFields();
+
+    expect(Object.keys(userCopyFields)).toHaveLength(1);
+    expect(Object.keys(userFields)).toHaveLength(2);
+
+    expect(userCopyFields.Email.name).toBe("Email");
+
+    expect(userFields.Username.name).toBe("Username");
+    expect(userFields.Email.name).toBe("Email");
+  });
 });

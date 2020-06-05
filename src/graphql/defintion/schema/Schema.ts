@@ -2,6 +2,7 @@ import { GraphQLSchema, GraphQLObjectType, GraphQLNamedType } from "graphql";
 import { Wrapper } from "../../../wrapper/Wrapper";
 import { ComposedType } from "../types/composed/ComposedType";
 import { GraphQLElement } from "../../types/GraphQLElement";
+import { Removable, ArrayHelper } from "../../helpers/ArrayHelper";
 
 export class Schema extends GraphQLElement<GraphQLSchema> {
   protected _types: ComposedType[] = [];
@@ -22,9 +23,8 @@ export class Schema extends GraphQLElement<GraphQLSchema> {
     return this.setTypes(...this._types, ...types);
   }
 
-  removeType(type: ComposedType) {
-    this._types.splice(this._types.indexOf(type), 1);
-    return this;
+  removeTypes(...types: Removable<ComposedType>) {
+    return this.setTypes(...ArrayHelper.remove(types, this._types));
   }
 
   build() {

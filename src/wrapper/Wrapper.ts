@@ -1,6 +1,5 @@
 import { ObjectType } from "../graphql/defintion/types/ObjectType";
 import { InterfaceType } from "../graphql/defintion/types/InterfaceType";
-import { ResolveFunction } from "../graphql/types/ResolveFunction";
 import { Field } from "../graphql/defintion/fields/Field";
 import { ComposedType } from "../graphql/defintion/types/composed/ComposedType";
 import { InputField } from "../graphql/defintion/fields/InputField";
@@ -9,6 +8,7 @@ import { InstanceOf } from "../shared/InstanceOf";
 import { ClassDescriptor } from "../graphql/helpers/ClassDescriptor";
 import { GQLField } from "../graphql/defintion/fields/GQLField";
 import { GQLType } from "../graphql/defintion/types/GQLType";
+import { Middleware } from "../graphql/defintion/middlewares/Middleware";
 
 export type TranformableTypes =
   | typeof ObjectType
@@ -37,7 +37,7 @@ export class Wrapper {
     return this;
   }
 
-  addMiddlewares(...middlewares: ResolveFunction[]) {
+  addMiddlewares(...middlewares: Middleware[]) {
     this.transformFields(Field, (f) => {
       f.addMiddlewares(...middlewares);
     });

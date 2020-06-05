@@ -9,11 +9,13 @@ import { ResolveFunction } from "../../types/ResolveFunction";
 import { FieldType } from "../../types/FieldType";
 import { TypeParser } from "../../helpers/TypeParser";
 import { Arg } from "./Arg";
+import { ArrayHelper, Removable } from "../../helpers/ArrayHelper";
+import { Middleware } from "../middlewares/Middleware";
 
 export class Field extends GQLField<GraphQLField<any, any, any>> {
   private _args: Arg[] = [];
   private _resolve: ResolveFunction;
-  private _middlewares: ResolveFunction[] = [];
+  private _middlewares: Middleware[] = [];
 
   get args() {
     return this._args;
@@ -27,16 +29,39 @@ export class Field extends GQLField<GraphQLField<any, any, any>> {
     return new Field(name, type);
   }
 
-  addMiddlewares(...middlewares: ResolveFunction[]) {
-    this._middlewares = [...this._middlewares, ...middlewares];
+  setMiddlewares(...middlewares: Middleware[]) {
+    this._middlewares = middlewares;
     return this;
+  }
+
+  addMiddlewares(...middlewares: Middleware[]) {
+    return this.setMiddlewares(...this._middlewares, ...middlewares);
+  }
+
+  removeMiddlewares(...middlewares: Removable<Middleware>) {
+    return this.setMiddlewares(
+      ...ArrayHelper.remove(middlewares, this._middlewares),
+    );
+  }
+
+  setArgs(...args: (Arg | Arg[])[]) {
+    this._args = args.flatMap((a) => a);
+    return this;
+  }
+
+  addArgs(...args: (Arg | Arg[])[]) {
+    return this.setArgs(...this.args, ...args);
+  }
+
+  removeArgs(...args: Removable<Arg | Arg[]>) {
+    return this.setArgs(...ArrayHelper.remove(args, this._args));
   }
 
   setResolve<ArgsType>(
     resolve: ResolveFunction<ArgsType>,
     ...args: (Arg | Arg[])[]
   ) {
-    this._args = args.flatMap((a) => a);
+    this.setArgs(...args);
     this._resolve = resolve;
     return this;
   }
@@ -44,7 +69,7 @@ export class Field extends GQLField<GraphQLField<any, any, any>> {
   build(): GraphQLField<any, any, any> {
     const args = this._args.map((arg) => arg.build());
 
-    this.addMiddlewares(this.resolve);
+    this.addMiddlewares(Middleware.create(this.resolve, "__main"));
 
     const field: GraphQLField<any, any, any> = {
       name: this._name,
@@ -75,7 +100,7 @@ export class Field extends GQLField<GraphQLField<any, any, any>> {
       paramsToNext: any,
     ) => {
       const nextFn = () => next(args, gql, index + 1, paramsToNext);
-      const guardToExecute = this._middlewares[index];
+      const guardToExecute = this._middlewares[index].function;
       const res = await guardToExecute(args, gql, nextFn, paramsToNext);
 
       if (res) {

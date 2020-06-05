@@ -6,6 +6,7 @@ import { InputField } from "../fields/InputField";
 import { Field } from "../fields/Field";
 import { ComposedType } from "./composed/ComposedType";
 import { NotNullableType, NotNullable } from "../modifiers/NotNullable";
+import { ArrayHelper, Removable } from "../../helpers/ArrayHelper";
 
 export abstract class GQLType<BuiltType = any> extends ComposedType<BuiltType> {
   protected _fields: GQLField[] = [];
@@ -24,9 +25,17 @@ export abstract class GQLType<BuiltType = any> extends ComposedType<BuiltType> {
     super(name);
   }
 
-  addFields(...fields: GQLField[]) {
-    this._fields = [...this._fields, ...fields];
+  setFields(...fields: GQLField[]) {
+    this._fields = fields;
     return this;
+  }
+
+  addFields(...fields: GQLField[]) {
+    return this.setFields(...this._fields, ...fields);
+  }
+
+  removeFields(...fields: Removable<GQLField>) {
+    return this.setFields(...ArrayHelper.remove(fields, this._fields));
   }
 
   setExtension(extension: GQLType) {

@@ -1,6 +1,7 @@
 import { GraphQLEnumType, GraphQLEnumValueConfigMap } from "graphql";
 import { EnumValue } from "./EnumValue";
 import { ComposedType } from "../ComposedType";
+import { Removable, ArrayHelper } from "../../../../helpers/ArrayHelper";
 
 export class EnumType extends ComposedType<GraphQLEnumType> {
   private _values: EnumValue[] = [];
@@ -9,9 +10,17 @@ export class EnumType extends ComposedType<GraphQLEnumType> {
     return new EnumType(name);
   }
 
-  addValues(...values: EnumValue[]) {
-    this._values = [...this._values, ...values];
+  setValues(...values: EnumValue[]) {
+    this._values = values;
     return this;
+  }
+
+  addValues(...values: EnumValue[]) {
+    return this.setValues(...this._values, ...values);
+  }
+
+  removeValues(...values: Removable<EnumValue>) {
+    return this.setValues(...ArrayHelper.remove(values, this._values));
   }
 
   copy() {

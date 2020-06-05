@@ -1,14 +1,15 @@
 import { GraphQLElement } from "../../../types/GraphQLElement";
 import { GraphQLUnionType, GraphQLTypeResolver } from "graphql";
-import { GQLType } from "../GQLType";
 import { ComposedType } from "./ComposedType";
 import { KeyValue } from "../../../../shared/KeyValue";
 import { TypeResolver } from "../../../helpers/TypeResolver";
 import { TypeResolvable } from "../../../types/TypeResolvable";
+import { ObjectType } from "../ObjectType";
+import { Removable, ArrayHelper } from "../../../helpers/ArrayHelper";
 
 export class UnionType extends ComposedType<GraphQLUnionType>
   implements TypeResolvable {
-  private _types: GQLType[] = [];
+  private _types: ObjectType[] = [];
   private _typeResolver: GraphQLTypeResolver<any, any>;
 
   protected constructor(name: string) {
@@ -27,9 +28,17 @@ export class UnionType extends ComposedType<GraphQLUnionType>
     return this;
   }
 
-  addTypes(...types: GQLType[]) {
-    this._types = [...this._types, ...types];
+  setTypes(...types: ObjectType[]) {
+    this._types = types;
     return this;
+  }
+
+  addTypes(...types: ObjectType[]) {
+    return this.setTypes(...this._types, ...types);
+  }
+
+  removeTypes(...types: Removable<ObjectType>) {
+    return this.setTypes(...ArrayHelper.remove(types, this._types));
   }
 
   copy() {
