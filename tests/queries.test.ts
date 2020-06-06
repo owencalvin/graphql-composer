@@ -7,7 +7,6 @@ import { Arg } from "../src/graphql/defintion/fields/Arg";
 import {
   GraphQLObjectType,
   GraphQLScalarType,
-  GraphQLInputType,
   GraphQLInputObjectType,
 } from "graphql";
 import { InputType } from "../src/graphql/defintion/types/InputType";
