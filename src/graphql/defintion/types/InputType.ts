@@ -14,8 +14,9 @@ export class InputType extends GQLType<GraphQLInputObjectType> {
     return new InputType(name);
   }
 
-  build(): GraphQLInputObjectType {
+  build() {
     this.preBuild();
+
     const input: GraphQLInputObjectType = {
       name: this._name,
       description: this._description,
@@ -29,6 +30,8 @@ export class InputType extends GQLType<GraphQLInputObjectType> {
       toJSON: undefined,
       inspect: undefined,
     };
+
+    this._built = input;
 
     return input;
   }

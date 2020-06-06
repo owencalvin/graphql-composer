@@ -15,6 +15,7 @@ import { Args } from "./Args";
 import { ClassType } from "../../../shared/ClassType";
 import { Resolver } from "../../types/Resolver";
 import { KeyValue } from "../../../shared/KeyValue";
+import { InputFieldType } from "../../types/InputFieldType";
 
 export class Field extends GQLField<GraphQLField<any, any, any>> {
   private _args: (Arg | Args)[] = [];
@@ -59,6 +60,20 @@ export class Field extends GQLField<GraphQLField<any, any, any>> {
 
   setArgs(...args: (Arg | Args)[]) {
     this._args = args.filter((a) => a);
+    return this;
+  }
+
+  addArg<NameType = string>(arg: Arg<NameType>);
+  addArg<NameType = string>(name: NameType, type: InputFieldType);
+  addArg<NameType = string>(
+    nameOrArg: NameType | Arg<NameType>,
+    type?: InputFieldType,
+  ) {
+    if (typeof nameOrArg === "string") {
+      this.args.push(Arg.create(nameOrArg as string, type));
+    } else {
+      this.args.push(nameOrArg as Arg);
+    }
     return this;
   }
 

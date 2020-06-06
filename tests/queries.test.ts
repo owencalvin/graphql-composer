@@ -3,31 +3,35 @@ import { ObjectType } from "../src/graphql/defintion/types/ObjectType";
 import { Field } from "../src/graphql/defintion/fields/Field";
 import { Args } from "../src/graphql/defintion/fields/Args";
 import { Resolver } from "../src/graphql/types/Resolver";
-import { Next } from "../src/graphql/types/Next";
-import { KeyValue } from "../src/shared/KeyValue";
 import { Arg } from "../src/graphql/defintion/fields/Arg";
-import { GraphQLObjectType, GraphQLScalarType } from "graphql";
+import {
+  GraphQLObjectType,
+  GraphQLScalarType,
+  GraphQLInputType,
+  GraphQLInputObjectType,
+} from "graphql";
+import { InputType } from "../src/graphql/defintion/types/InputType";
+import { InputField } from "../src/graphql/defintion/fields/InputField";
 
 class A implements Resolver<A> {
   a: string;
   b: number;
 
-  resolve(args: A, gql: any, next: Next, nextArgs: KeyValue) {}
+  resolve() {}
 
   getArgs() {
     return Args.create(A).addArg("a", String).addArg("b", Number);
   }
 }
 
-describe("Queries", () => {
-  it("Should create a resolver with a class based resolver", async () => {
-    const user = ObjectType.create("User").addFields(
-      Field.create("Email", Number).setResolver(A),
-      Field.create("Username", Number).setResolver(A, Arg.create("z", String)),
-      Field.create("Role", Number).setResolve((a, gql, next, params) => {},
-      Arg.create("x", Date)),
-    );
+const user = ObjectType.create("User").addFields(
+  Field.create("Email", Number).setResolver(A),
+  Field.create("Username", Number).setResolver(A, Arg.create("z", String)),
+  Field.create("Role", Number).setResolve(() => {}, Arg.create("x", Date)),
+);
 
+describe("Queries", () => {
+  it("Should create a resolver with a mixed resolver definition", async () => {
     const schema = Schema.create(user);
     const built = schema.build();
     const typeMap = built.getTypeMap();
@@ -64,6 +68,38 @@ describe("Queries", () => {
     const xField = roleArgs[0];
     expect(xField.name).toBe("x");
     expect((xField.type as GraphQLScalarType).name).toBe("DateTime");
+    //#endregion
+  });
+
+  it("Should create arguments with input types", async () => {
+    const infosInput = InputType.create("Infos").addFields(
+      InputField.create("meta", String),
+    );
+    user.addFields(Field.create("Infos", String).addArg("a", infosInput));
+
+    const schema = Schema.create(user, infosInput);
+    const built = schema.build();
+    const typeMap = built.getTypeMap();
+
+    const userType = typeMap.User as GraphQLObjectType;
+    const infosType = typeMap.Infos as GraphQLObjectType;
+    const userFields = userType.getFields();
+    const infosFields = infosType.getFields();
+
+    //#region Infos type
+    const metaField = infosFields.meta;
+
+    expect(metaField.name).toBe("meta");
+    expect((metaField.type as GraphQLScalarType).name).toBe("String");
+    //#endregion
+
+    //#region Infos field
+    const infosArgs = userFields.Infos.args;
+    expect(infosArgs).toHaveLength(1);
+
+    const aArg = infosArgs[0];
+    expect(aArg.name).toBe("a");
+    expect((aArg.type as GraphQLInputObjectType).name).toBe("Infos");
     //#endregion
   });
 });
