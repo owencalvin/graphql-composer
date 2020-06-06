@@ -11,14 +11,27 @@ import { TypeParser } from "../../helpers/TypeParser";
 import { Arg } from "./Arg";
 import { ArrayHelper, Removable } from "../../helpers/ArrayHelper";
 import { Middleware } from "../middlewares/Middleware";
+import { Args } from "./Args";
+import { ClassType } from "../../../shared/ClassType";
+import { Resolver } from "../../types/Resolver";
+import { KeyValue } from "../../../shared/KeyValue";
 
 export class Field extends GQLField<GraphQLField<any, any, any>> {
-  private _args: Arg[] = [];
+  private _args: (Arg | Args)[] = [];
   private _resolve: ResolveFunction;
   private _middlewares: Middleware[] = [];
 
   get args() {
     return this._args;
+  }
+
+  get flatArgs() {
+    return this.args.flatMap((a) => {
+      if (a instanceof Args) {
+        return a.args;
+      }
+      return a;
+    });
   }
 
   get resolve() {
@@ -44,22 +57,36 @@ export class Field extends GQLField<GraphQLField<any, any, any>> {
     );
   }
 
-  setArgs(...args: (Arg | Arg[])[]) {
-    this._args = args.flatMap((a) => a);
+  setArgs(...args: (Arg | Args)[]) {
+    this._args = args.filter((a) => a);
     return this;
   }
 
-  addArgs(...args: (Arg | Arg[])[]) {
+  addArgs(...args: (Arg | Args)[]) {
     return this.setArgs(...this.args, ...args);
   }
 
-  removeArgs(...args: Removable<Arg | Arg[]>) {
+  removeArgs(...args: Removable<Arg>) {
     return this.setArgs(...ArrayHelper.remove(args, this._args));
   }
 
-  setResolve<ArgsType>(
+  setResolver<ResolverType extends Resolver<any>>(
+    resolver: ClassType<ResolverType>,
+    ...args: (Arg<keyof ResolverType> | Args<ClassType<ResolverType>>)[]
+  ) {
+    const instance = new resolver();
+    this._resolve = instance.resolve.bind(instance);
+    if (args.length > 0) {
+      this.setArgs(...args);
+    } else {
+      this.setArgs(instance.getArgs());
+    }
+    return this;
+  }
+
+  setResolve<ArgsType = KeyValue>(
     resolve: ResolveFunction<ArgsType>,
-    ...args: (Arg | Arg[])[]
+    ...args: (Arg | Args)[]
   ) {
     this.setArgs(...args);
     this._resolve = resolve;
@@ -67,7 +94,7 @@ export class Field extends GQLField<GraphQLField<any, any, any>> {
   }
 
   build(): GraphQLField<any, any, any> {
-    const args = this._args.map((arg) => arg.build());
+    const args = this._args.flatMap((arg) => arg.build());
 
     this.addMiddlewares(Middleware.create(this.resolve, "__main"));
 

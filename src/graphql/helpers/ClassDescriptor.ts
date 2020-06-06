@@ -1,4 +1,5 @@
 import { ClassType } from "../../shared/ClassType";
+import { ClassToInterface } from "../../shared/ClassToInterface";
 
 export type PossibleType =
   | string
@@ -16,15 +17,32 @@ export interface Description {
 }
 
 export class ClassDescriptor {
-  static describe<T extends ClassType<any>>(classType: T) {
-    const instance = new classType();
-    const properties = Object.keys(instance);
-    return properties.map<Description>((property) => {
-      return {
-        property,
-        type: ClassDescriptor.convertTypeOfToType(instance[property]),
-      };
-    });
+  static describe<T extends ClassType<any>, DescriptionValue>(
+    classType: T,
+    description: ClassToInterface<T, DescriptionValue>,
+  );
+  static describe<T extends ClassType<any>>(classType: T);
+  static describe<T extends ClassType<any>, DescriptionValue>(
+    classType: T,
+    description?: ClassToInterface<T, DescriptionValue>,
+  ) {
+    if (!description) {
+      const instance = new classType();
+      const properties = Object.keys(instance);
+      return properties.map<Description>((property) => {
+        return {
+          property,
+          type: ClassDescriptor.convertTypeOfToType(instance[property]),
+        };
+      });
+    } else {
+      return Object.keys(description).map<Description>((key) => {
+        return {
+          property: key,
+          type: description[key],
+        };
+      });
+    }
   }
 
   static convertTypeOfToType(item: any): PossibleType {

@@ -10,6 +10,7 @@ import {
 import { FieldType } from "../types/FieldType";
 import { NotNullableType } from "../defintion/modifiers/NotNullable";
 import { GQLType } from "../defintion/types/GQLType";
+import { DateTime } from "../scalars/DateTime";
 
 export class TypeParser {
   static parse<ReturnType>(type: FieldType): ReturnType {
@@ -33,6 +34,8 @@ export class TypeParser {
         break;
       case Boolean:
         finalType = GraphQLBoolean;
+      case Date:
+        finalType = DateTime;
         break;
     }
 

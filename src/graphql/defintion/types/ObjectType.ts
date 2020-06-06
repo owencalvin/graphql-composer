@@ -54,7 +54,7 @@ export class ObjectType extends GQLType<GraphQLObjectType> {
           (prev, field) => {
             const built = field.build();
             const argMap = this.toConfigMap<GraphQLFieldConfigArgumentMap>(
-              field.args,
+              field.flatArgs,
             );
             delete built.isDeprecated;
             prev[built.name] = {

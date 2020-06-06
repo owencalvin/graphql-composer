@@ -6,6 +6,7 @@ export type FieldType =
   | typeof Boolean
   | typeof Number
   | typeof String
+  | typeof Date
   | GraphQLScalarType
   | ComposedType
   | FieldType[]
