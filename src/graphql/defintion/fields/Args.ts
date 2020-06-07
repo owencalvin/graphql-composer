@@ -4,8 +4,9 @@ import { Removable, ArrayHelper } from "../../helpers/ArrayHelper";
 import { InputFieldType } from "../../types/InputFieldType";
 import { StringKeyOf } from "../../types/StringKeyOf";
 import { InstanceOf } from "../../../shared/InstanceOf";
+import { InputType } from "../types/InputType";
 
-export class Args<T extends ClassType<any> = any> {
+export class Args<T extends ClassType = any> {
   private _args: Arg<StringKeyOf<InstanceOf<T>>>[] = [];
   private _classType?: T;
 
@@ -13,12 +14,25 @@ export class Args<T extends ClassType<any> = any> {
     return this._classType;
   }
 
-  protected constructor(classType?: T) {
-    this._classType = classType;
+  protected constructor(classTypeOrInputType?: T | InputType) {
+    if (classTypeOrInputType instanceof InputType) {
+      this.addArgs(
+        ...classTypeOrInputType.fields.map((f) => {
+          return Arg.create(f.name, f.type);
+        }),
+      );
+    } else {
+      this._classType = classTypeOrInputType;
+    }
   }
 
-  static create<T extends ClassType<any>>(classType?: T) {
-    return new Args<T>(classType);
+  static create<T extends ClassType = any>(inputType: InputType): Args<T>;
+  static create<T extends ClassType = any>(classType: T): Args<T>;
+  static create<T extends ClassType = any>(): Args<T>;
+  static create<T extends ClassType = any>(
+    classTypeOrInputType?: T | InputType,
+  ) {
+    return new Args<ClassType<T>>(classTypeOrInputType);
   }
 
   get args() {

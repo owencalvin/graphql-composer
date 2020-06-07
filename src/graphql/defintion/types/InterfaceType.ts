@@ -14,7 +14,7 @@ export class InterfaceType<T extends ClassType = any>
   implements TypeResolvable {
   protected _typeResolver: GraphQLTypeResolver<any, any>;
 
-  constructor(name: string) {
+  protected constructor(name: string) {
     super(name);
     this.setTypeResolver(this.defaultTypeResolver);
   }

@@ -9,6 +9,11 @@ import { InstanceOf } from "../../../shared/InstanceOf";
 export class InputField<NameType = string> extends GQLField<GraphQLInputField> {
   protected _name: NameType & string;
   protected _defaultValue: string | number | boolean;
+  protected _type: InputFieldType;
+
+  get type() {
+    return this._type;
+  }
 
   get name() {
     return this._name;

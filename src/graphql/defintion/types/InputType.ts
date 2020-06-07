@@ -10,6 +10,8 @@ import { ClassType } from "../../../shared/ClassType";
 import { InputFieldType } from "../../types/InputFieldType";
 import { InstanceOf } from "../../../shared/InstanceOf";
 import { StringKeyOf } from "../../types/StringKeyOf";
+import { Args } from "../fields/Args";
+import { Arg } from "../fields/Arg";
 
 export class InputType<T extends ClassType = any> extends GQLType<
   GraphQLInputObjectType,
@@ -120,7 +122,8 @@ export class InputType<T extends ClassType = any> extends GQLType<
 
   convert(to: typeof ObjectType): ObjectType<T>;
   convert(to: typeof InterfaceType): InterfaceType<T>;
-  convert<Target extends typeof GQLType>(to: Target) {
+  convert(to: typeof Args): Args<T>;
+  convert<Target extends typeof GQLType | typeof Args>(to: Target) {
     return to.create(this);
   }
 

@@ -17,7 +17,7 @@ export class ObjectType<T extends ClassType = any> extends GQLObjectType<
     return this._interfaces;
   }
 
-  constructor(name: string) {
+  protected constructor(name: string) {
     super(name);
   }
 
