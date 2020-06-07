@@ -99,8 +99,11 @@ export class InterfaceType<T extends ClassType = any>
     return InterfaceType.create<T>(this);
   }
 
-  convert<Target extends ConversionType>(to: Target): InstanceOf<Target> {
-    return (to.create as any)(this);
+  convert<Target extends typeof InterfaceType>(to: Target): InterfaceType<T>;
+  convert<Target extends typeof ObjectType>(to: Target): ObjectType<T>;
+  convert<Target extends typeof InputType>(to: Target): InputType<T>;
+  convert<Target extends typeof GQLType>(to: Target): InstanceOf<GQLType> {
+    return to.create(this);
   }
 
   transformFields(cb: (field: Field) => void) {

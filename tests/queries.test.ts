@@ -10,7 +10,7 @@ import { Schema } from "../src/graphql/defintion/schema/Schema";
 import { Field } from "../src/graphql/defintion/fields/Field";
 import { Args } from "../src/graphql/defintion/fields/Args";
 import { Arg } from "../src/graphql/defintion/fields/Arg";
-import { Resolver } from "../src/graphql/types/Resolver";
+import { InterfaceType } from "../src/graphql/defintion/types/InterfaceType";
 
 class User {
   Username: string;

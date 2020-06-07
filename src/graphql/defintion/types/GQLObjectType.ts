@@ -49,7 +49,7 @@ export abstract class GQLObjectType<
     target: typeof ObjectType | typeof InterfaceType,
   ) {
     if (type instanceof InputType) {
-      this.extends(type.convert(target));
+      this.extends(type.convert<any>(target));
     } else if (type instanceof GQLObjectType) {
       this._extends = type;
     }
