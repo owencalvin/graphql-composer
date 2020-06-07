@@ -15,7 +15,6 @@ export class InputType<T extends ClassType = any> extends GQLType<
   GraphQLInputObjectType,
   T
 > {
-  protected _extends?: InputType;
   protected _fields: InputField<StringKeyOf<InstanceOf<T>>>[];
 
   get fields() {
@@ -42,7 +41,7 @@ export class InputType<T extends ClassType = any> extends GQLType<
         .setDescription(nameOrType.description);
 
       if (nameOrType instanceof InputType) {
-        obj.setFields(...nameOrType.fields).extends(nameOrType._extends);
+        obj.setFields(...nameOrType.fields);
       } else {
         const objType = nameOrType as GQLObjectType;
         obj.setFields(...objType.fields.map((f) => InputField.create(f)));
@@ -55,8 +54,6 @@ export class InputType<T extends ClassType = any> extends GQLType<
   }
 
   build() {
-    this.preBuild();
-
     const input = new GraphQLInputObjectType({
       name: this._name,
       description: this._description,
@@ -73,20 +70,6 @@ export class InputType<T extends ClassType = any> extends GQLType<
     this._built = input;
 
     return input;
-  }
-
-  extends(type: GQLType) {
-    if (type instanceof InputType) {
-      this._extends = type;
-    } else if (type instanceof GQLObjectType) {
-      this.extends(type.convert(InputType));
-    }
-
-    return this;
-  }
-
-  getExtends<ExtendsType extends ClassType>() {
-    return this.extension as InputType<ClassType<ExtendsType>>;
   }
 
   setFields(...fields: InputField<StringKeyOf<InstanceOf<T>>>[]): InputType<T> {

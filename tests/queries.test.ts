@@ -19,7 +19,7 @@ class User {
     .addField("Username", String);
 }
 
-class A {
+class A extends User {
   a: string;
   b: number;
   user: User;

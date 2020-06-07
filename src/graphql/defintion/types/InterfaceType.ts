@@ -1,7 +1,6 @@
 import { GQLType } from "./GQLType";
 import { GraphQLInterfaceType, GraphQLTypeResolver } from "graphql";
 import { Field } from "../fields/Field";
-import { ConversionType } from "../../types/ConversionType";
 import { TypeResolvable } from "../../types/TypeResolvable";
 import { KeyValue } from "../../../shared/KeyValue";
 import { TypeResolver } from "../../helpers/TypeResolver";
@@ -9,17 +8,11 @@ import { GQLObjectType } from "./GQLObjectType";
 import { ObjectType } from "./ObjectType";
 import { InputType } from "./InputType";
 import { ClassType } from "../../../shared/ClassType";
-import { InstanceOf } from "../../../shared/InstanceOf";
 
 export class InterfaceType<T extends ClassType = any>
   extends GQLObjectType<GraphQLInterfaceType, T>
   implements TypeResolvable {
-  protected _extends?: InterfaceType;
   protected _typeResolver: GraphQLTypeResolver<any, any>;
-
-  get extension() {
-    return this._extends;
-  }
 
   constructor(name: string) {
     super(name);
@@ -46,7 +39,7 @@ export class InterfaceType<T extends ClassType = any>
       if (nameOrType instanceof InputType) {
         obj.setFields(...nameOrType.fields.map((f) => Field.create(f)));
       } else if (nameOrType instanceof GQLObjectType) {
-        obj.setFields(...nameOrType.fields).extends(obj);
+        obj.setFields(...nameOrType.fields);
       }
 
       return obj;
@@ -56,8 +49,6 @@ export class InterfaceType<T extends ClassType = any>
   }
 
   build(): GraphQLInterfaceType {
-    this.preBuild();
-
     const built = new GraphQLInterfaceType({
       name: this.name,
       description: this.description,
@@ -69,15 +60,6 @@ export class InterfaceType<T extends ClassType = any>
     this._built = built;
 
     return this._built;
-  }
-
-  extends(type: GQLType) {
-    super.setExtension(type, InterfaceType);
-    return this;
-  }
-
-  getExtends<ExtendsType extends ClassType>() {
-    return this.extension as InterfaceType<ClassType<ExtendsType>>;
   }
 
   setTypeResolver<TSource = any, TContext = any>(

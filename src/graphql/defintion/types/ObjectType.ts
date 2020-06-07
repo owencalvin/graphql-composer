@@ -4,8 +4,6 @@ import { InterfaceType } from "./InterfaceType";
 import { GQLObjectType } from "./GQLObjectType";
 import { InputType } from "./InputType";
 import { GQLType } from "./GQLType";
-import { ConversionType } from "../../types/ConversionType";
-import { InstanceOf } from "../../../shared/InstanceOf";
 import { Removable, ArrayHelper } from "../../helpers/ArrayHelper";
 import { ClassType } from "../../../shared/ClassType";
 
@@ -13,15 +11,10 @@ export class ObjectType<T extends ClassType = any> extends GQLObjectType<
   GraphQLObjectType,
   T
 > {
-  protected _extends?: ObjectType;
   private _interfaces: InterfaceType[] = [];
 
   get interfaces() {
     return this._interfaces;
-  }
-
-  get extension() {
-    return this._extends;
   }
 
   constructor(name: string) {
@@ -49,7 +42,7 @@ export class ObjectType<T extends ClassType = any> extends GQLObjectType<
         obj.setFields(...nameOrType.fields.map((f) => Field.create(f)));
       } else {
         const objType = nameOrType as GQLObjectType;
-        obj.setFields(...objType.fields).extends(obj);
+        obj.setFields(...objType.fields);
         if (objType instanceof ObjectType) {
           obj.setInterfaces(...objType.interfaces);
         }
@@ -61,17 +54,7 @@ export class ObjectType<T extends ClassType = any> extends GQLObjectType<
     }
   }
 
-  protected preBuild() {
-    super.preBuild();
-    this._fields = [
-      ...this.fields,
-      ...(this._interfaces?.flatMap((i) => i.fields) || []),
-    ];
-    return this;
-  }
-
   build(): GraphQLObjectType {
-    this.preBuild();
     this._fields = [
       ...this._fields,
       ...this._interfaces.flatMap((i) => i.fields),
@@ -87,15 +70,6 @@ export class ObjectType<T extends ClassType = any> extends GQLObjectType<
     this._built = built;
 
     return built;
-  }
-
-  extends(type: GQLType) {
-    super.setExtension(type, ObjectType);
-    return this;
-  }
-
-  getExtends<ExtendsType>() {
-    return this.extension as ObjectType<ClassType<ExtendsType>>;
   }
 
   setInterfaces(...implementations: InterfaceType[]) {

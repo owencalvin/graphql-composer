@@ -15,8 +15,6 @@ export abstract class GQLType<
   BuiltType = any,
   T extends ClassType<any> = any
 > extends ComposedType<BuiltType> {
-  protected abstract _extends?: GQLType;
-
   protected _fields: GQLField[] = [];
   protected _hidden = false;
   protected _classType?: T;
@@ -27,10 +25,6 @@ export abstract class GQLType<
 
   get hidden() {
     return this._hidden;
-  }
-
-  get extension() {
-    return this._extends;
   }
 
   get classType() {
@@ -51,17 +45,8 @@ export abstract class GQLType<
 
   abstract suffix();
 
-  abstract extends(extension: GQLType);
-
-  abstract getExtends<ExtendsType>(): GQLType;
-
   static create(...args: any[]): GQLType {
     throw new Error("Method not overridden");
-  }
-
-  protected preBuild() {
-    this._fields = [...this._fields, ...(this._extends?._fields || [])];
-    return this;
   }
 
   protected toConfigMap<ReturnType>(
