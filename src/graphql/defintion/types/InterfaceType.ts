@@ -95,14 +95,13 @@ export class InterfaceType<T extends ClassType = any>
     return this.setName(this.name + suffix);
   }
 
-  copy() {
-    return InterfaceType.create<T>(this);
+  copy(): InterfaceType<T> {
+    return InterfaceType.create(this) as InterfaceType<T>;
   }
 
-  convert<Target extends typeof InterfaceType>(to: Target): InterfaceType<T>;
-  convert<Target extends typeof ObjectType>(to: Target): ObjectType<T>;
-  convert<Target extends typeof InputType>(to: Target): InputType<T>;
-  convert<Target extends typeof GQLType>(to: Target): InstanceOf<GQLType> {
+  convert(to: typeof InputType): InputType<T>;
+  convert(to: typeof ObjectType): ObjectType<T>;
+  convert<Target extends typeof GQLType>(to: Target) {
     return to.create(this);
   }
 

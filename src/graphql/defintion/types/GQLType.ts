@@ -53,6 +53,12 @@ export abstract class GQLType<
 
   abstract extends(extension: GQLType);
 
+  abstract getExtends<ExtendsType>(): GQLType;
+
+  static create(...args: any[]): GQLType {
+    throw new Error("Method not overridden");
+  }
+
   protected preBuild() {
     this._fields = [...this._fields, ...(this._extends?._fields || [])];
     return this;
@@ -77,8 +83,6 @@ export abstract class GQLType<
       cb(field as FieldType);
     });
   }
-
-  abstract getExtends<ExtendsType>(): GQLType;
 
   setFields(...fields: GQLField[]): GQLType {
     this._fields = fields;
