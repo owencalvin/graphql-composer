@@ -64,7 +64,10 @@ export class Field<NameType = string> extends GQLField<
     if (typeof nameOrField === "string") {
       return new Field(nameOrField, type);
     } else if (nameOrField instanceof GQLField) {
-      const field = Field.create(nameOrField.name, nameOrField.type)
+      const field = Field.create(
+        nameOrField.name,
+        nameOrField.type as FieldType,
+      )
         .setDescription(nameOrField.description)
         .setDeprecationReason(nameOrField.deprecationReason);
       if (nameOrField instanceof Field) {

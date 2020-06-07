@@ -1,9 +1,15 @@
 import { GraphQLElement } from "../../../../types/GraphQLElement";
 import { GraphQLEnumValue } from "graphql";
+import { StringKeyOf } from "../../../../types/StringKeyOf";
 
-export class EnumValue extends GraphQLElement<any> {
+export class EnumValue<NameType = string> extends GraphQLElement<any> {
+  protected _name: NameType & string;
   private _value: any;
   private _deprecationReason: string;
+
+  get name(): NameType & string {
+    return this._name;
+  }
 
   get value() {
     return this._value;
@@ -13,7 +19,10 @@ export class EnumValue extends GraphQLElement<any> {
     this._value = value;
   }
 
-  static create(name: string, value: any) {
+  static create<NameType = any>(
+    name: StringKeyOf<NameType>,
+    value: any,
+  ): EnumValue<StringKeyOf<NameType>> {
     return new EnumValue(name, value);
   }
 

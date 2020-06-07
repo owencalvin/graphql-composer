@@ -11,9 +11,10 @@ import { FieldType } from "../types/FieldType";
 import { NotNullableType } from "../defintion/modifiers/NotNullable";
 import { GQLType } from "../defintion/types/GQLType";
 import { DateTime } from "../scalars/DateTime";
+import { InputFieldType } from "../types/InputFieldType";
 
 export class TypeParser {
-  static parse<ReturnType>(type: FieldType): ReturnType {
+  static parse<ReturnType>(type: FieldType | InputFieldType): ReturnType {
     let finalType: GraphQLOutputType | GraphQLInputType;
 
     if (Array.isArray(type)) {

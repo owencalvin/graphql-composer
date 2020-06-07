@@ -2,25 +2,44 @@ import { GraphQLEnumType, GraphQLEnumValueConfigMap } from "graphql";
 import { EnumValue } from "./EnumValue";
 import { ComposedType } from "../ComposedType";
 import { Removable, ArrayHelper } from "../../../../helpers/ArrayHelper";
+import { StringKeyOf } from "../../../../types/StringKeyOf";
 
-export class EnumType extends ComposedType<GraphQLEnumType> {
-  private _values: EnumValue[] = [];
+export class EnumType<TEnumType extends Object = any> extends ComposedType<
+  GraphQLEnumType
+> {
+  private _values: EnumValue<StringKeyOf<TEnumType>>[] = [];
+  private _enumType?: TEnumType;
 
-  static create(name: string) {
-    return new EnumType(name);
+  get enumType() {
+    return this._enumType;
   }
 
-  setValues(...values: EnumValue[]) {
+  protected constructor(name: string, enumType?: TEnumType) {
+    super(name);
+
+    this._enumType = enumType;
+    Object.keys(enumType).map((key) => {
+      this.addValues(EnumValue.create(key, enumType[key]) as any);
+    });
+  }
+
+  static create(name: string): EnumType;
+  static create<T extends Object>(name: string, enumType: T): EnumType<T>;
+  static create<T extends Object>(name: string, enumType?: T) {
+    return new EnumType(name, enumType);
+  }
+
+  setValues(...values: EnumValue<StringKeyOf<TEnumType>>[]) {
     this._values = values;
     return this;
   }
 
-  addValues(...values: EnumValue[]) {
+  addValues(...values: EnumValue<StringKeyOf<TEnumType>>[]) {
     return this.setValues(...this._values, ...values);
   }
 
   removeValues(...values: Removable<EnumValue>) {
-    return this.setValues(...ArrayHelper.remove(values, this._values));
+    return this.setValues(...(ArrayHelper.remove(values, this._values) as any));
   }
 
   copy() {

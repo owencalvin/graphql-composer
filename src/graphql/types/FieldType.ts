@@ -1,6 +1,8 @@
 import { GraphQLScalarType } from "graphql";
 import { NotNullableType } from "../defintion/modifiers/NotNullable";
-import { ComposedType } from "../defintion/types/composed/ComposedType";
+import { GQLObjectType } from "../defintion/types/GQLObjectType";
+import { EnumType } from "../defintion/types/composed/enum/EnumType";
+import { UnionType } from "../defintion/types/composed/UnionType";
 
 export type FieldType =
   | typeof Boolean
@@ -8,6 +10,8 @@ export type FieldType =
   | typeof String
   | typeof Date
   | GraphQLScalarType
-  | ComposedType
+  | GQLObjectType
+  | EnumType
+  | UnionType
   | FieldType[]
   | NotNullableType;
