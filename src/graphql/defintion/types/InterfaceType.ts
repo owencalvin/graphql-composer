@@ -14,11 +14,11 @@ import { InstanceOf } from "../../../shared/InstanceOf";
 export class InterfaceType<T extends ClassType = any>
   extends GQLObjectType<GraphQLInterfaceType, T>
   implements TypeResolvable {
+  protected _extends?: InterfaceType;
   protected _typeResolver: GraphQLTypeResolver<any, any>;
-  protected _fields: Field[];
 
-  get fields() {
-    return this._fields;
+  get extension() {
+    return this._extends;
   }
 
   constructor(name: string) {
@@ -39,15 +39,14 @@ export class InterfaceType<T extends ClassType = any>
     if (typeof nameOrType === "string") {
       return new InterfaceType(nameOrType);
     } else if (nameOrType instanceof GQLType) {
-      const obj = InterfaceType.create<T>(nameOrType.name)
+      const obj = InterfaceType.create(nameOrType.name)
         .setHidden(nameOrType.hidden)
         .setDescription(nameOrType.description);
 
       if (nameOrType instanceof InputType) {
         obj.setFields(...nameOrType.fields.map((f) => Field.create(f)));
-      } else {
-        const objType = nameOrType as GQLObjectType;
-        obj.setFields(...objType.fields).setExtension(obj);
+      } else if (nameOrType instanceof GQLObjectType) {
+        obj.setFields(...nameOrType.fields).extends(obj);
       }
 
       return obj;
@@ -70,6 +69,15 @@ export class InterfaceType<T extends ClassType = any>
     this._built = built;
 
     return this._built;
+  }
+
+  extends(type: GQLType) {
+    super.setExtension(type, InterfaceType);
+    return this;
+  }
+
+  getExtends<ExtendsType extends ClassType>() {
+    return this.extension as InterfaceType<ClassType<ExtendsType>>;
   }
 
   setTypeResolver<TSource = any, TContext = any>(

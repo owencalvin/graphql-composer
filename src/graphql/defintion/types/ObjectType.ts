@@ -13,15 +13,15 @@ export class ObjectType<T extends ClassType = any> extends GQLObjectType<
   GraphQLObjectType,
   T
 > {
-  protected _fields: Field[] = [];
+  protected _extends?: ObjectType;
   private _interfaces: InterfaceType[] = [];
-
-  get fields() {
-    return this._fields;
-  }
 
   get interfaces() {
     return this._interfaces;
+  }
+
+  get extension() {
+    return this._extends;
   }
 
   constructor(name: string) {
@@ -41,7 +41,7 @@ export class ObjectType<T extends ClassType = any> extends GQLObjectType<
     if (typeof nameOrType === "string") {
       return new ObjectType(nameOrType);
     } else if (nameOrType instanceof GQLType) {
-      const obj = ObjectType.create<T>(nameOrType.name)
+      const obj = ObjectType.create(nameOrType.name)
         .setHidden(nameOrType.hidden)
         .setDescription(nameOrType.description);
 
@@ -49,7 +49,7 @@ export class ObjectType<T extends ClassType = any> extends GQLObjectType<
         obj.setFields(...nameOrType.fields.map((f) => Field.create(f)));
       } else {
         const objType = nameOrType as GQLObjectType;
-        obj.setFields(...objType.fields).setExtension(obj);
+        obj.setFields(...objType.fields).extends(obj);
         if (objType instanceof ObjectType) {
           obj.setInterfaces(...objType.interfaces);
         }
@@ -59,6 +59,15 @@ export class ObjectType<T extends ClassType = any> extends GQLObjectType<
     } else {
       return ObjectType.create<T>(nameOrType.name);
     }
+  }
+
+  protected preBuild() {
+    super.preBuild();
+    this._fields = [
+      ...this.fields,
+      ...(this._interfaces?.flatMap((i) => i.fields) || []),
+    ];
+    return this;
   }
 
   build(): GraphQLObjectType {
@@ -78,6 +87,15 @@ export class ObjectType<T extends ClassType = any> extends GQLObjectType<
     this._built = built;
 
     return built;
+  }
+
+  extends(type: GQLType) {
+    super.setExtension(type, ObjectType);
+    return this;
+  }
+
+  getExtends<ExtendsType>() {
+    return this.extension as ObjectType<ClassType<ExtendsType>>;
   }
 
   setInterfaces(...implementations: InterfaceType[]) {

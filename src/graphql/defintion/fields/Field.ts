@@ -13,20 +13,24 @@ import { ArrayHelper, Removable } from "../../helpers/ArrayHelper";
 import { Middleware } from "../middlewares/Middleware";
 import { Args } from "./Args";
 import { ClassType } from "../../../shared/ClassType";
-import { Resolver } from "../../types/Resolver";
-import { KeyValue } from "../../../shared/KeyValue";
 import { InputFieldType } from "../../types/InputFieldType";
 import { InputField } from "./InputField";
+import { StringKeyOf } from "../../types/StringKeyOf";
 
 export class Field<NameType = string> extends GQLField<
   GraphQLField<any, any, any>
 > {
+  protected _name: NameType & string;
   private _args: (Arg | Args)[] = [];
   private _resolve: ResolveFunction;
   private _middlewares: Middleware[] = [];
 
   get args() {
     return this._args;
+  }
+
+  get name() {
+    return this._name;
   }
 
   get flatArgs() {
@@ -42,22 +46,22 @@ export class Field<NameType = string> extends GQLField<
     return this._resolve;
   }
 
-  protected constructor(name: keyof NameType, type: FieldType) {
-    super(name as string, type);
+  protected constructor(name: string, type: FieldType) {
+    super(name, type);
   }
 
   static create(field: Field): Field;
   static create(field: InputField): Field;
-  static create<NameType = string>(
-    name: keyof NameType,
+  static create<NameType = any>(
+    name: StringKeyOf<NameType>,
     type: FieldType,
   ): Field;
-  static create<NameType = string>(
-    nameOrField: keyof NameType | GQLField,
+  static create<NameType = any>(
+    nameOrField: StringKeyOf<NameType> | GQLField,
     type?: FieldType,
   ) {
     if (typeof nameOrField === "string") {
-      return new Field(nameOrField as string, type);
+      return new Field(nameOrField, type);
     } else if (nameOrField instanceof GQLField) {
       const field = Field.create(nameOrField.name, nameOrField.type)
         .setDescription(nameOrField.description)
@@ -65,7 +69,7 @@ export class Field<NameType = string> extends GQLField<
       if (nameOrField instanceof Field) {
         field
           .setMiddlewares(...nameOrField._middlewares)
-          .setResolve(nameOrField._resolve, ...nameOrField.args);
+          .setResolver(nameOrField._resolve, ...nameOrField.args);
       }
       return field;
     }
@@ -91,19 +95,16 @@ export class Field<NameType = string> extends GQLField<
     return this;
   }
 
-  addArg<NameType = string>(arg: Arg<NameType>): Field<NameType>;
-  addArg<NameType = string>(
-    name: NameType,
-    type: InputFieldType,
-  ): Field<NameType>;
-  addArg<NameType = string>(
-    nameOrArg: NameType | Arg<NameType>,
+  addArg<NameType = any>(arg: Arg<StringKeyOf<NameType>>);
+  addArg<NameType = any>(name: StringKeyOf<NameType>, type: InputFieldType);
+  addArg<NameType = any>(
+    nameOrArg: StringKeyOf<NameType> | Arg<StringKeyOf<NameType>>,
     type?: InputFieldType,
-  ): Field<NameType> {
+  ) {
     if (typeof nameOrArg === "string") {
-      this.args.push(Arg.create(nameOrArg as string, type));
-    } else {
-      this.args.push(nameOrArg as Arg);
+      this.args.push(Arg.create(nameOrArg, type));
+    } else if (nameOrArg instanceof Arg) {
+      this.args.push(nameOrArg);
     }
     return this;
   }
@@ -116,24 +117,9 @@ export class Field<NameType = string> extends GQLField<
     return this.setArgs(...ArrayHelper.remove(args, this._args));
   }
 
-  // TODO: Merge with setResolve
-  setResolver<ResolverType extends Resolver<any>>(
-    resolver: ClassType<ResolverType>,
-    ...args: (Arg<keyof ResolverType> | Args<ClassType<ResolverType>>)[]
-  ) {
-    const instance = new resolver();
-    this._resolve = instance.resolve.bind(instance);
-    if (args.length > 0) {
-      this.setArgs(...args);
-    } else {
-      this.setArgs(instance.getArgs());
-    }
-    return this;
-  }
-
-  setResolve<ArgsType = KeyValue>(
-    resolve: ResolveFunction<ArgsType>,
-    ...args: (Arg | Args)[]
+  setResolver<ArgType>(
+    resolve: ResolveFunction,
+    ...args: (Arg<StringKeyOf<ArgType>> | Args<ClassType<ArgType>>)[]
   ) {
     this.setArgs(...args);
     this._resolve = resolve;

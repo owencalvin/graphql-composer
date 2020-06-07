@@ -20,25 +20,26 @@ class User {
     .addField("Username", String);
 }
 
-class A implements Resolver<A> {
+class A {
   a: string;
   b: number;
   user: User;
 
-  resolve() {}
+  static resolve() {}
 
-  getArgs() {
-    return Args.create(A)
-      .addArg("a", String)
-      .addArg("b", Number)
-      .addArg("user", User.inputType);
-  }
+  static args = Args.create(A)
+    .addArg("a", String)
+    .addArg("b", Number)
+    .addArg("user", User.inputType);
 }
 
 const user = ObjectType.create("User").addFields(
-  Field.create("Email", Number).setResolver(A),
-  Field.create("Username", Number).setResolver(A, Arg.create("z", String)),
-  Field.create("Role", Number).setResolve(() => {}, Arg.create("x", Date)),
+  Field.create("Email", Number).setResolver(A.resolve, A.args),
+  Field.create("Username", Number).setResolver(
+    A.resolve,
+    Arg.create("z", String),
+  ),
+  Field.create("Role", Number).setResolver(() => {}, Arg.create("x", Date)),
 );
 
 describe("Queries", () => {

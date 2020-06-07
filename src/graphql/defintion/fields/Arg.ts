@@ -3,18 +3,24 @@ import { GraphQLArgument } from "graphql";
 import { TypeParser } from "../../helpers/TypeParser";
 import { InstanceOf } from "../../../shared/InstanceOf";
 import { InputFieldType } from "../../types/InputFieldType";
+import { StringKeyOf } from "../../types/StringKeyOf";
 
 export class Arg<NameType = string> extends GQLField<GraphQLArgument> {
+  protected _name: NameType & string;
   protected _defaultValue: string | number | boolean;
 
-  protected constructor(name: NameType, type: InputFieldType) {
-    super((name as any) as string, type);
+  get name() {
+    return this._name;
   }
 
-  static create<NameType = string>(
-    name: keyof NameType,
+  protected constructor(name: string, type: InputFieldType) {
+    super(name, type);
+  }
+
+  static create<NameType = any>(
+    name: StringKeyOf<NameType>,
     type: InputFieldType,
-  ): Arg<keyof InstanceOf<NameType>> {
+  ): Arg<StringKeyOf<NameType>> {
     return new Arg(name, type);
   }
 

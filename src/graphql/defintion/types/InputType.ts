@@ -9,12 +9,14 @@ import { Removable, ArrayHelper } from "../../helpers/ArrayHelper";
 import { ClassType } from "../../../shared/ClassType";
 import { InputFieldType } from "../../types/InputFieldType";
 import { InstanceOf } from "../../../shared/InstanceOf";
+import { StringKeyOf } from "../../types/StringKeyOf";
 
 export class InputType<T extends ClassType = any> extends GQLType<
   GraphQLInputObjectType,
   T
 > {
-  protected _fields: InputField<keyof InstanceType<T>>[];
+  protected _extends?: InputType;
+  protected _fields: InputField<StringKeyOf<T>>[];
 
   get fields() {
     return this._fields;
@@ -35,12 +37,12 @@ export class InputType<T extends ClassType = any> extends GQLType<
     if (typeof nameOrType === "string") {
       return new InputType(nameOrType);
     } else if (nameOrType instanceof GQLType) {
-      const obj = InputType.create<T>(nameOrType.name)
+      const obj = InputType.create(nameOrType.name)
         .setHidden(nameOrType.hidden)
         .setDescription(nameOrType.description);
 
       if (nameOrType instanceof InputType) {
-        obj.setFields(...nameOrType.fields).setExtension(nameOrType._extension);
+        obj.setFields(...nameOrType.fields).extends(nameOrType._extends);
       } else {
         const objType = nameOrType as GQLObjectType;
         obj.setFields(...objType.fields.map((f) => InputField.create(f)));
@@ -73,15 +75,29 @@ export class InputType<T extends ClassType = any> extends GQLType<
     return input;
   }
 
-  setFields(...fields: InputField<keyof InstanceType<T>>[]): InputType<T> {
+  extends(type: GQLType) {
+    if (type instanceof InputType) {
+      this._extends = type;
+    } else if (type instanceof GQLObjectType) {
+      this.extends(type.convert(InputType));
+    }
+
+    return this;
+  }
+
+  getExtends<ExtendsType extends ClassType>() {
+    return this.extension as InputType<ClassType<ExtendsType>>;
+  }
+
+  setFields(...fields: InputField<StringKeyOf<T>>[]): InputType<T> {
     this._fields = fields;
     return this;
   }
 
-  addField(field: InputField): InputType<T>;
-  addField(name: keyof InstanceType<T>, type: InputFieldType): InputType<T>;
+  addField(field: InputField<StringKeyOf<T>>): InputType<T>;
+  addField(name: StringKeyOf<T>, type: InputFieldType): InputType<T>;
   addField(
-    nameOrField: keyof InstanceType<T> | InputField,
+    nameOrField: StringKeyOf<T> | InputField,
     type?: InputFieldType,
   ): InputType<T> {
     let input: InputField;
@@ -94,13 +110,11 @@ export class InputType<T extends ClassType = any> extends GQLType<
     return this.setFields(...this._fields, input);
   }
 
-  addFields(...fields: InputField<keyof InstanceType<T>>[]): InputType<T> {
+  addFields(...fields: InputField<StringKeyOf<T>>[]): InputType<T> {
     return this.setFields(...this._fields, ...fields);
   }
 
-  removeFields(
-    ...fields: Removable<InputField<keyof InstanceType<T>>>
-  ): InputType<T> {
+  removeFields(...fields: Removable<InputField<StringKeyOf<T>>>): InputType<T> {
     return this.setFields(...ArrayHelper.remove(fields, this._fields));
   }
 

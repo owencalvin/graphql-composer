@@ -15,9 +15,10 @@ export abstract class GQLType<
   BuiltType = any,
   T extends ClassType<any> = any
 > extends ComposedType<BuiltType> {
+  protected abstract _extends?: GQLType;
+
   protected _fields: GQLField[] = [];
   protected _hidden = false;
-  protected _extension?: GQLType;
   protected _classType?: T;
 
   get fields() {
@@ -26,6 +27,14 @@ export abstract class GQLType<
 
   get hidden() {
     return this._hidden;
+  }
+
+  get extension() {
+    return this._extends;
+  }
+
+  get classType() {
+    return this._classType;
   }
 
   constructor(name?: string) {
@@ -42,8 +51,10 @@ export abstract class GQLType<
 
   abstract suffix();
 
+  abstract extends(extension: GQLType);
+
   protected preBuild() {
-    this._fields = [...this._fields, ...(this._extension?._fields || [])];
+    this._fields = [...this._fields, ...(this._extends?._fields || [])];
     return this;
   }
 
@@ -67,6 +78,8 @@ export abstract class GQLType<
     });
   }
 
+  abstract getExtends<ExtendsType>(): GQLType;
+
   setFields(...fields: GQLField[]): GQLType {
     this._fields = fields;
     return this;
@@ -78,11 +91,6 @@ export abstract class GQLType<
 
   removeFields(...fields: Removable<GQLField>) {
     return this.setFields(...ArrayHelper.remove(fields, this._fields));
-  }
-
-  setExtension(extension: GQLType) {
-    this._extension = extension;
-    return this;
   }
 
   setHidden(hidden: boolean) {

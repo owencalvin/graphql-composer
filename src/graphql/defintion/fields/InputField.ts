@@ -3,22 +3,28 @@ import { GraphQLInputField } from "graphql";
 import { TypeParser } from "../../helpers/TypeParser";
 import { InputFieldType } from "../../types/InputFieldType";
 import { Field } from "./Field";
+import { StringKeyOf } from "../../types/StringKeyOf";
 
 export class InputField<NameType = string> extends GQLField<GraphQLInputField> {
+  protected _name: NameType & string;
   protected _defaultValue: string | number | boolean;
 
-  protected constructor(name: keyof NameType, type: InputFieldType) {
+  get name() {
+    return this._name;
+  }
+
+  protected constructor(name: string, type: InputFieldType) {
     super(name as string, type);
   }
 
   static create(field: Field): InputField;
   static create(field: InputField): InputField;
-  static create<NameType = string>(
-    name: keyof NameType,
+  static create<NameType = any>(
+    name: StringKeyOf<NameType>,
     type: InputFieldType,
   ): InputField;
-  static create<NameType = string>(
-    nameOrField: keyof NameType | GQLField,
+  static create<NameType = any>(
+    nameOrField: StringKeyOf<NameType> | GQLField,
     type?: InputFieldType,
   ) {
     if (typeof nameOrField === "string") {

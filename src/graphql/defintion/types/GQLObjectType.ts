@@ -4,12 +4,17 @@ import { GQLType } from "./GQLType";
 import { GraphQLFieldConfigMap, GraphQLFieldConfigArgumentMap } from "graphql";
 import { ClassType } from "../../../shared/ClassType";
 import { FieldType } from "../../types/FieldType";
+import { InputType } from "./InputType";
+import { InterfaceType } from "./InterfaceType";
+import { ObjectType } from "./ObjectType";
+import { StringKeyOf } from "../../types/StringKeyOf";
 
 export abstract class GQLObjectType<
   BuiltType = any,
   T extends ClassType<any> = any
 > extends GQLType<BuiltType, T> {
-  protected _fields: Field[] = [];
+  protected _extends?: GQLObjectType;
+  protected _fields: Field<StringKeyOf<T>>[] = [];
 
   get fields() {
     return this._fields;
@@ -19,21 +24,36 @@ export abstract class GQLObjectType<
     super(name);
   }
 
-  setFields(...fields: Field<keyof InstanceType<T>>[]) {
+  setFields(...fields: Field<StringKeyOf<T>>[]) {
     this._fields = fields;
     return this;
   }
 
-  addField(name: keyof InstanceType<T>, type: FieldType) {
-    return this.setFields(...this._fields, Field.create(name, type));
+  addField(name: StringKeyOf<T>, type: FieldType) {
+    return this.setFields(
+      ...this._fields,
+      Field.create<StringKeyOf<T>>(name, type),
+    );
   }
 
-  addFields(...fields: Field<keyof InstanceType<T>>[]) {
+  addFields(...fields: Field<StringKeyOf<T>>[]) {
     return this.setFields(...this._fields, ...fields);
   }
 
-  removeFields(...fields: Removable<Field<keyof InstanceType<T>>>) {
+  removeFields(...fields: Removable<Field<StringKeyOf<T>>>) {
     return this.setFields(...ArrayHelper.remove(fields, this._fields));
+  }
+
+  protected setExtension(
+    type: GQLType,
+    target: typeof ObjectType | typeof InterfaceType,
+  ) {
+    if (type instanceof InputType) {
+      this.extends(type.convert(target));
+    } else if (type instanceof GQLObjectType) {
+      this._extends = type;
+    }
+    return this;
   }
 
   protected getFields() {
