@@ -1,28 +1,49 @@
 import { ClassType } from "../shared/ClassType";
 
-export class DIStore {
-  private static _instance: DIStore;
+export class DIStore<TKeyType = any, TInstanceType = any> {
+  private static _global: DIStore;
 
-  static get instance() {
-    if (!this._instance) {
-      this._instance = new DIStore();
+  static get global() {
+    if (!this._global) {
+      this._global = new DIStore();
     }
-    return this._instance;
+    return this._global;
   }
 
-  private _instances: Map<any, InstanceType<ClassType<any>>> = new Map();
+  private _instances: Map<
+    TKeyType,
+    InstanceType<ClassType<TInstanceType>>
+  > = new Map();
 
-  createInstance<Type>(
+  createInstance<Type extends TInstanceType>(
     classType: ClassType<Type>,
     id?: any,
-  ): InstanceType<ClassType<Type>> {
+  ): Type {
     const instance = new classType();
-    this._instances.set(id || instance, instance);
-
-    return instance;
+    return this.addInstance(instance, id);
   }
 
-  getInstance<Type>(idOrInstance: any | Type): Type {
-    return this._instances.get(idOrInstance);
+  addInstance<Type extends TInstanceType>(
+    instance: InstanceType<ClassType<Type>>,
+    id?: any,
+    force = false,
+  ): Type {
+    const key = id || instance;
+    const found = this._instances.get(key);
+    let newInstance: Type = found as any;
+
+    if (!found || force) {
+      this._instances.set(key, instance);
+      newInstance = instance;
+    }
+
+    return newInstance;
+  }
+
+  getInstance<Type extends TInstanceType>(
+    idOrInstance: any | Type,
+  ): TInstanceType {
+    const found = this._instances.get(idOrInstance);
+    return found;
   }
 }

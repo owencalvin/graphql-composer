@@ -21,6 +21,11 @@ export abstract class GQLField<BuiltType = any> extends GraphQLElement<
     return this._deprecationReason;
   }
 
+  constructor(name: string, type: FieldType) {
+    super(name);
+    this.setType(type);
+  }
+
   abstract build(): GraphQLField<any, any, any> | GraphQLInputField;
 
   setType(type: FieldType) {
@@ -36,10 +41,5 @@ export abstract class GQLField<BuiltType = any> extends GraphQLElement<
   setDeprecationReason(deprecationReason: string) {
     this._deprecationReason = deprecationReason;
     return this;
-  }
-
-  constructor(name: string, type: FieldType) {
-    super(name);
-    this.setType(type);
   }
 }

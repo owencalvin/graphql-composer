@@ -7,11 +7,17 @@ import { Field } from "../fields/Field";
 import { ComposedType } from "./composed/ComposedType";
 import { NotNullableType, NotNullable } from "../modifiers/NotNullable";
 import { ArrayHelper, Removable } from "../../helpers/ArrayHelper";
+import { ConversionType } from "../../types/ConversionType";
+import { ClassType } from "../../../shared/ClassType";
 
-export abstract class GQLType<BuiltType = any> extends ComposedType<BuiltType> {
+export abstract class GQLType<
+  BuiltType = any,
+  T extends ClassType<any> = any
+> extends ComposedType<BuiltType> {
   protected _fields: GQLField[] = [];
   protected _hidden = false;
   protected _extension?: GQLType;
+  protected _classType?: T;
 
   get fields() {
     return this._fields;
@@ -23,6 +29,39 @@ export abstract class GQLType<BuiltType = any> extends ComposedType<BuiltType> {
 
   constructor(name?: string) {
     super(name);
+  }
+
+  abstract convert<Target extends ConversionType>(to: Target): Target;
+
+  abstract copy(): InputType | ObjectType | InterfaceType;
+
+  abstract transformFields(cb: (field: InputField | Field) => void);
+
+  abstract suffix();
+
+  protected preBuild() {
+    this._fields = [...this._fields, ...(this._extension?._fields || [])];
+    return this;
+  }
+
+  protected toConfigMap<ReturnType>(
+    arr: { name: string; build(): any }[],
+  ): ReturnType {
+    return arr.reduce<any>((prev, item) => {
+      const built = item.build();
+      prev[built.name] = {
+        ...built,
+      };
+      return prev;
+    }, {});
+  }
+
+  protected applyFieldsTransformation<FieldType extends InputField | Field>(
+    cb: (field: InputField | Field) => void,
+  ) {
+    return this.fields.map((field) => {
+      cb(field as FieldType);
+    });
   }
 
   setFields(...fields: GQLField[]) {
@@ -67,37 +106,4 @@ export abstract class GQLType<BuiltType = any> extends ComposedType<BuiltType> {
     });
     return this;
   }
-
-  protected preBuild() {
-    this._fields = [...this._fields, ...(this._extension?._fields || [])];
-    return this;
-  }
-
-  protected toConfigMap<ReturnType>(
-    arr: { name: string; build(): any }[],
-  ): ReturnType {
-    return arr.reduce<any>((prev, item) => {
-      const built = item.build();
-      prev[built.name] = {
-        ...built,
-      };
-      return prev;
-    }, {});
-  }
-
-  protected applyFieldsTransformation<FieldType extends InputField | Field>(
-    cb: (field: FieldType) => void,
-  ) {
-    return this.fields.map((field) => {
-      cb(field as FieldType);
-    });
-  }
-
-  abstract convert(
-    to: typeof InterfaceType | typeof InputType,
-  ): InputType | ObjectType | InterfaceType;
-
-  abstract copy(): InputType | ObjectType | InterfaceType;
-
-  abstract transformFields(cb: (field: InputField | Field) => void);
 }

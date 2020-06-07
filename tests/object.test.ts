@@ -1,14 +1,26 @@
-import { Schema } from "../src/graphql/defintion/schema/Schema";
-import { ObjectType } from "../src/graphql/defintion/types/ObjectType";
-import { Field } from "../src/graphql/defintion/fields/Field";
-import { NotNullable } from "../src/graphql/defintion/modifiers/NotNullable";
 import {
   GraphQLObjectType,
   GraphQLScalarType,
   GraphQLNonNull,
   GraphQLList,
+  GraphQLInputObjectType,
+  GraphQLInterfaceType,
 } from "graphql";
+import { NotNullable } from "../src/graphql/defintion/modifiers/NotNullable";
 import { InterfaceType } from "../src/graphql/defintion/types/InterfaceType";
+import { ObjectType } from "../src/graphql/defintion/types/ObjectType";
+import { InputType } from "../src/graphql/defintion/types/InputType";
+import { Schema } from "../src/graphql/defintion/schema/Schema";
+import { Field } from "../src/graphql/defintion/fields/Field";
+import { Type } from "../src/graphql/types/Type";
+
+class UserClassBased extends Type {
+  Username: string;
+
+  getObjectType() {
+    return ObjectType.create(UserClassBased).addField("Username", String);
+  }
+}
 
 const userInterface = InterfaceType.create("UserInterface").addFields(
   Field.create("createdAt", Number),
@@ -22,6 +34,20 @@ const user = ObjectType.create("User").addFields(
 const role = ObjectType.create("Role").addFields(Field.create("User", user));
 
 describe("ObjectType", () => {
+  it("Should create a simple object type class based", async () => {
+    const schema = Schema.create(UserClassBased);
+
+    const built = schema.build();
+
+    const typeMap = built.getTypeMap();
+    const userType = typeMap.UserClassBased as GraphQLInputObjectType;
+    const userFields = userType.getFields();
+
+    const usernameType = userFields.Username.type as GraphQLScalarType;
+
+    expect(usernameType.name).toBe("String");
+  });
+
   it("Should create a simple type", async () => {
     const schema = Schema.create(user);
 
@@ -37,8 +63,8 @@ describe("ObjectType", () => {
 
     expect(usernameType).toBeInstanceOf(GraphQLNonNull);
     expect(usernameType.ofType).toBeInstanceOf(GraphQLList);
-    expect(usernameType.ofType.ofType.name === "String");
-    expect((userFields.Email.type as GraphQLScalarType).name === "String");
+    expect(usernameType.ofType.ofType.name).toBe("String");
+    expect((userFields.Email.type as GraphQLScalarType).name).toBe("Float");
   });
 
   it("Should create a simple type with relation", async () => {
@@ -56,7 +82,7 @@ describe("ObjectType", () => {
   });
 
   it("Should create a simple type with implementation", async () => {
-    const userCopy = user.copy().setImplementations(userInterface);
+    const userCopy = user.copy().setInterfaces(userInterface);
     const schema = Schema.create(userInterface, userCopy);
 
     const built = schema.build();
@@ -105,6 +131,47 @@ describe("ObjectType", () => {
     expect(Object.keys(userFields)).toHaveLength(2);
 
     expect(userCopyFields.Email.name).toBe("Email");
+
+    expect(userFields.Username.name).toBe("Username");
+    expect(userFields.Email.name).toBe("Email");
+  });
+
+  it("Should create converted type and remove a field", async () => {
+    const userInput = user
+      .convert(InputType)
+      .setName("UserInput")
+      .removeFields("Username");
+
+    const userInterface = user
+      .convert(InterfaceType)
+      .setName("UserInterface")
+      .removeFields("Email");
+
+    const schema = Schema.create(userInterface, userInput, user);
+
+    const built = schema.build();
+
+    const typeMap = built.getTypeMap();
+
+    expect(typeMap.UserInterface).toBeInstanceOf(GraphQLInterfaceType);
+    expect(typeMap.UserInput).toBeInstanceOf(GraphQLInputObjectType);
+    expect(typeMap.User).toBeInstanceOf(GraphQLObjectType);
+
+    const userInterfaceType = typeMap.UserInterface as GraphQLInterfaceType;
+    const userInputType = typeMap.UserInput as GraphQLInputObjectType;
+    const userType = typeMap.User as GraphQLObjectType;
+
+    const userInterfaceFields = userInterfaceType.getFields();
+    const userInputFields = userInputType.getFields();
+    const userFields = userType.getFields();
+
+    expect(Object.keys(userInterfaceFields)).toHaveLength(1);
+    expect(Object.keys(userInputFields)).toHaveLength(1);
+    expect(Object.keys(userFields)).toHaveLength(2);
+
+    expect(userInterfaceFields.Username.name).toBe("Username");
+
+    expect(userInputFields.Email.name).toBe("Email");
 
     expect(userFields.Username.name).toBe("Username");
     expect(userFields.Email.name).toBe("Email");

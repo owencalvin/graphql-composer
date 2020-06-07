@@ -16,8 +16,11 @@ import { ClassType } from "../../../shared/ClassType";
 import { Resolver } from "../../types/Resolver";
 import { KeyValue } from "../../../shared/KeyValue";
 import { InputFieldType } from "../../types/InputFieldType";
+import { InputField } from "./InputField";
 
-export class Field extends GQLField<GraphQLField<any, any, any>> {
+export class Field<NameType = string> extends GQLField<
+  GraphQLField<any, any, any>
+> {
   private _args: (Arg | Args)[] = [];
   private _resolve: ResolveFunction;
   private _middlewares: Middleware[] = [];
@@ -39,8 +42,33 @@ export class Field extends GQLField<GraphQLField<any, any, any>> {
     return this._resolve;
   }
 
-  static create(name: string, type: FieldType) {
-    return new Field(name, type);
+  protected constructor(name: keyof NameType, type: FieldType) {
+    super(name as string, type);
+  }
+
+  static create(field: Field): Field;
+  static create(field: InputField): Field;
+  static create<NameType = string>(
+    name: keyof NameType,
+    type: FieldType,
+  ): Field;
+  static create<NameType = string>(
+    nameOrField: keyof NameType | GQLField,
+    type?: FieldType,
+  ) {
+    if (typeof nameOrField === "string") {
+      return new Field(nameOrField as string, type);
+    } else if (nameOrField instanceof GQLField) {
+      const field = Field.create(nameOrField.name, nameOrField.type)
+        .setDescription(nameOrField.description)
+        .setDeprecationReason(nameOrField.deprecationReason);
+      if (nameOrField instanceof Field) {
+        field
+          .setMiddlewares(...nameOrField._middlewares)
+          .setResolve(nameOrField._resolve, ...nameOrField.args);
+      }
+      return field;
+    }
   }
 
   setMiddlewares(...middlewares: Middleware[]) {
@@ -63,12 +91,15 @@ export class Field extends GQLField<GraphQLField<any, any, any>> {
     return this;
   }
 
-  addArg<NameType = string>(arg: Arg<NameType>);
-  addArg<NameType = string>(name: NameType, type: InputFieldType);
+  addArg<NameType = string>(arg: Arg<NameType>): Field<NameType>;
+  addArg<NameType = string>(
+    name: NameType,
+    type: InputFieldType,
+  ): Field<NameType>;
   addArg<NameType = string>(
     nameOrArg: NameType | Arg<NameType>,
     type?: InputFieldType,
-  ) {
+  ): Field<NameType> {
     if (typeof nameOrArg === "string") {
       this.args.push(Arg.create(nameOrArg as string, type));
     } else {
@@ -85,6 +116,7 @@ export class Field extends GQLField<GraphQLField<any, any, any>> {
     return this.setArgs(...ArrayHelper.remove(args, this._args));
   }
 
+  // TODO: Merge with setResolve
   setResolver<ResolverType extends Resolver<any>>(
     resolver: ClassType<ResolverType>,
     ...args: (Arg<keyof ResolverType> | Args<ClassType<ResolverType>>)[]

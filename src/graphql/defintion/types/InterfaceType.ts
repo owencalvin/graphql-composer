@@ -1,13 +1,22 @@
 import { GQLType } from "./GQLType";
 import { GraphQLInterfaceType, GraphQLTypeResolver } from "graphql";
 import { Field } from "../fields/Field";
-import { TypeConverter, ConversionType } from "../../helpers/TypeConverter";
+import { ConversionType } from "../../types/ConversionType";
 import { TypeResolvable } from "../../types/TypeResolvable";
 import { KeyValue } from "../../../shared/KeyValue";
 import { TypeResolver } from "../../helpers/TypeResolver";
+import { GQLObjectType } from "./GQLObjectType";
+import { ObjectType } from "./ObjectType";
+import { InputType } from "./InputType";
+import { ClassType } from "../../../shared/ClassType";
+import { Type } from "../../types/Type";
+import { DIStore } from "../../../di/DIStore";
 
-export class InterfaceType extends GQLType<GraphQLInterfaceType>
+export class InterfaceType<T extends ClassType<any> = any>
+  extends GQLObjectType<GraphQLInterfaceType, T>
   implements TypeResolvable {
+  protected static _types: DIStore<string, InterfaceType> = new DIStore();
+
   protected _typeResolver: GraphQLTypeResolver<any, any>;
   protected _fields: Field[];
 
@@ -20,8 +29,53 @@ export class InterfaceType extends GQLType<GraphQLInterfaceType>
     this.setTypeResolver(this.defaultTypeResolver);
   }
 
-  static create(name: string) {
-    return new InterfaceType(name);
+  static create(name: string): InterfaceType;
+  static create(fromType: InputType): InterfaceType;
+  static create(objectType: ObjectType): InterfaceType;
+  static create(interfaceType: InterfaceType): InterfaceType;
+  static create<T extends Type>(
+    classType: ClassType<T>,
+  ): InterfaceType<ClassType<T>>;
+  static create<T extends Type>(
+    nameOrType: string | GQLType | ClassType<T>,
+  ): InterfaceType {
+    if (typeof nameOrType === "string") {
+      return new InterfaceType(nameOrType);
+    } else if (nameOrType instanceof GQLType) {
+      const obj = InterfaceType.create(nameOrType.name)
+        .setHidden(nameOrType.hidden)
+        .setDescription(nameOrType.description);
+      if (nameOrType instanceof InputType) {
+        obj.setFields(...nameOrType.fields.map((f) => Field.create(f)));
+      } else {
+        const objType = nameOrType as GQLObjectType;
+        obj.setFields(...objType.fields).setExtension(obj);
+      }
+      return obj;
+    } else {
+      const classType = nameOrType as ClassType<T>;
+      const obj = InterfaceType.create(classType.name);
+      const instance = InterfaceType._types.addInstance(obj, classType.name);
+      obj._classType = classType;
+
+      return instance;
+    }
+  }
+
+  build(): GraphQLInterfaceType {
+    this.preBuild();
+
+    const built = new GraphQLInterfaceType({
+      name: this.name,
+      description: this.description,
+      resolveType: this._typeResolver,
+      fields: () => this.getFields(),
+      extensions: [],
+    });
+
+    this._built = built;
+
+    return this._built;
   }
 
   setTypeResolver<TSource = any, TContext = any>(
@@ -31,39 +85,20 @@ export class InterfaceType extends GQLType<GraphQLInterfaceType>
     return this;
   }
 
-  build(): GraphQLInterfaceType {
-    this.preBuild();
-
-    const interf: GraphQLInterfaceType = {
-      name: this.name,
-      description: this.description,
-      resolveType: this._typeResolver,
-      getFields: () => {
-        return this.toConfigMap(this.fields);
-      },
-      getInterfaces: () => [this.built],
-      toConfig: undefined,
-      toJSON: undefined,
-      inspect: undefined,
-      extensionASTNodes: [],
-      extensions: [],
-    };
-
-    this._built = interf;
-
-    return this._built;
-  }
-
-  convert<Target extends ConversionType>(to: Target) {
-    return TypeConverter.convert<Target>(this, to);
+  /**
+   * Add a suffix to the name of your type ("Interface" by default)
+   * @param suffix The suffix to add to the name
+   */
+  suffix(suffix = "Interface") {
+    return this.setName(this.name + suffix);
   }
 
   copy() {
-    return InterfaceType.create(this.name)
-      .setDescription(this._description)
-      .setHidden(this._hidden)
-      .setExtension(this._extension)
-      .addFields(...this._fields);
+    return InterfaceType.create(this);
+  }
+
+  convert<Target extends ConversionType>(to: Target) {
+    return to.create(this) as any;
   }
 
   transformFields(cb: (field: Field) => void) {

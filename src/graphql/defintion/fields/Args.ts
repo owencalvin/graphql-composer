@@ -2,9 +2,12 @@ import { Arg } from "./Arg";
 import { ClassType } from "../../../shared/ClassType";
 import { Removable, ArrayHelper } from "../../helpers/ArrayHelper";
 import { InputFieldType } from "../../types/InputFieldType";
+import { Type } from "../../types/Type";
+import { InputType } from "../types/InputType";
+import { ClassDescriptor } from "../../helpers/ClassDescriptor";
 
 export class Args<T extends ClassType<any> = any> {
-  private _args: Arg<"M">[] = [];
+  private _args: Arg[] = [];
   private _classType?: T;
 
   protected constructor(classType?: T) {
@@ -28,14 +31,23 @@ export class Args<T extends ClassType<any> = any> {
     return this.setArgs(...this.args, ...args);
   }
 
-  addArg(arg: Arg<keyof InstanceType<T>>);
-  addArg(name: keyof InstanceType<T>, type: InputFieldType);
+  addArg(arg: Arg<keyof InstanceType<T>>): Args<T>;
+  addArg(
+    name: keyof InstanceType<T>,
+    type: InputFieldType | ClassType,
+  ): Args<T>;
   addArg(
     nameOrArg: Arg<keyof InstanceType<T>> | keyof InstanceType<T>,
-    type?: InputFieldType,
-  ) {
+    type?: InputFieldType | ClassType,
+  ): Args<T> {
     if (typeof nameOrArg === "string") {
-      this.args.push(Arg.create(nameOrArg, type));
+      if (ClassDescriptor.doExtends(type as ClassType, Type)) {
+        this.args.push(
+          Arg.create(nameOrArg, InputType.create(type as ClassType)),
+        );
+      } else {
+        this.args.push(Arg.create(nameOrArg, type as InputFieldType));
+      }
     } else {
       this.args.push(nameOrArg as Arg);
     }

@@ -68,4 +68,15 @@ export class ClassDescriptor {
       return item instanceof i;
     });
   }
+
+  static doExtends<TClassType extends ClassType>(
+    classType: TClassType,
+    extension: Function,
+  ) {
+    try {
+      const instance = new classType();
+      return instance instanceof extension;
+    } catch (err) {}
+    return false;
+  }
 }

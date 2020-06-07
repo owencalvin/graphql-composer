@@ -2,16 +2,36 @@ import { GQLField } from "./GQLField";
 import { GraphQLInputField } from "graphql";
 import { TypeParser } from "../../helpers/TypeParser";
 import { InputFieldType } from "../../types/InputFieldType";
+import { Field } from "./Field";
 
-export class InputField extends GQLField<GraphQLInputField> {
+export class InputField<NameType = string> extends GQLField<GraphQLInputField> {
   protected _defaultValue: string | number | boolean;
 
-  protected constructor(name: string, type: InputFieldType) {
-    super(name, type);
+  protected constructor(name: keyof NameType, type: InputFieldType) {
+    super(name as string, type);
   }
 
-  static create(name: string, type: InputFieldType) {
-    return new InputField(name, type);
+  static create(field: Field): InputField;
+  static create(field: InputField): InputField;
+  static create<NameType = string>(
+    name: keyof NameType,
+    type: InputFieldType,
+  ): InputField;
+  static create<NameType = string>(
+    nameOrField: keyof NameType | GQLField,
+    type?: InputFieldType,
+  ) {
+    if (typeof nameOrField === "string") {
+      return new InputField(nameOrField as string, type);
+    } else if (nameOrField instanceof GQLField) {
+      const field = InputField.create(
+        nameOrField.name,
+        nameOrField.type as InputFieldType,
+      )
+        .setDescription(nameOrField.description)
+        .setDeprecationReason(nameOrField.deprecationReason);
+      return field;
+    }
   }
 
   build() {

@@ -1,25 +1,38 @@
-import { Schema } from "../src/graphql/defintion/schema/Schema";
-import { ObjectType } from "../src/graphql/defintion/types/ObjectType";
-import { Field } from "../src/graphql/defintion/fields/Field";
-import { Args } from "../src/graphql/defintion/fields/Args";
-import { Resolver } from "../src/graphql/types/Resolver";
-import { Arg } from "../src/graphql/defintion/fields/Arg";
 import {
   GraphQLObjectType,
   GraphQLScalarType,
   GraphQLInputObjectType,
 } from "graphql";
-import { InputType } from "../src/graphql/defintion/types/InputType";
 import { InputField } from "../src/graphql/defintion/fields/InputField";
+import { ObjectType } from "../src/graphql/defintion/types/ObjectType";
+import { InputType } from "../src/graphql/defintion/types/InputType";
+import { Schema } from "../src/graphql/defintion/schema/Schema";
+import { Field } from "../src/graphql/defintion/fields/Field";
+import { Args } from "../src/graphql/defintion/fields/Args";
+import { Arg } from "../src/graphql/defintion/fields/Arg";
+import { Resolver } from "../src/graphql/types/Resolver";
+import { Type } from "../src/graphql/types/Type";
+
+class User extends Type {
+  Username: string;
+
+  getInputType() {
+    return InputType.create(User).suffix().addField("Username", String);
+  }
+}
 
 class A implements Resolver<A> {
   a: string;
   b: number;
+  user: User;
 
   resolve() {}
 
   getArgs() {
-    return Args.create(A).addArg("a", String).addArg("b", Number);
+    return Args.create(A)
+      .addArg("a", String)
+      .addArg("b", Number)
+      .addArg("user", User);
   }
 }
 
@@ -31,7 +44,7 @@ const user = ObjectType.create("User").addFields(
 
 describe("Queries", () => {
   it("Should create a resolver with a mixed resolver definition", async () => {
-    const schema = Schema.create(user);
+    const schema = Schema.create(user, User);
     const built = schema.build();
     const typeMap = built.getTypeMap();
 
@@ -40,7 +53,7 @@ describe("Queries", () => {
 
     //#region Email field
     const emailArgs = userFields.Email.args;
-    expect(emailArgs).toHaveLength(2);
+    expect(emailArgs).toHaveLength(3);
 
     const aField = emailArgs[0];
     expect(aField.name).toBe("a");
@@ -49,6 +62,10 @@ describe("Queries", () => {
     const bField = emailArgs[1];
     expect(bField.name).toBe("b");
     expect((bField.type as GraphQLScalarType).name).toBe("Float");
+
+    const userField = emailArgs[2];
+    expect(userField.name).toBe("user");
+    expect((userField.type as GraphQLInputObjectType).name).toBe("UserInput");
     //#endregion
 
     //#region Username field
