@@ -11,14 +11,13 @@ import { Field } from "../src/graphql/defintion/fields/Field";
 import { Args } from "../src/graphql/defintion/fields/Args";
 import { Arg } from "../src/graphql/defintion/fields/Arg";
 import { Resolver } from "../src/graphql/types/Resolver";
-import { Type } from "../src/graphql/types/Type";
 
-class User extends Type {
+class User {
   Username: string;
 
-  getInputType() {
-    return InputType.create(User).suffix().addField("Username", String);
-  }
+  static inputType = InputType.create(User)
+    .suffix()
+    .addField("Username", String);
 }
 
 class A implements Resolver<A> {
@@ -32,7 +31,7 @@ class A implements Resolver<A> {
     return Args.create(A)
       .addArg("a", String)
       .addArg("b", Number)
-      .addArg("user", User);
+      .addArg("user", User.inputType);
   }
 }
 
@@ -44,7 +43,7 @@ const user = ObjectType.create("User").addFields(
 
 describe("Queries", () => {
   it("Should create a resolver with a mixed resolver definition", async () => {
-    const schema = Schema.create(user, User);
+    const schema = Schema.create(user, User.inputType);
     const built = schema.build();
     const typeMap = built.getTypeMap();
 

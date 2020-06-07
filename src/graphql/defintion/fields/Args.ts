@@ -2,9 +2,6 @@ import { Arg } from "./Arg";
 import { ClassType } from "../../../shared/ClassType";
 import { Removable, ArrayHelper } from "../../helpers/ArrayHelper";
 import { InputFieldType } from "../../types/InputFieldType";
-import { Type } from "../../types/Type";
-import { InputType } from "../types/InputType";
-import { ClassDescriptor } from "../../helpers/ClassDescriptor";
 
 export class Args<T extends ClassType<any> = any> {
   private _args: Arg[] = [];
@@ -41,13 +38,7 @@ export class Args<T extends ClassType<any> = any> {
     type?: InputFieldType | ClassType,
   ): Args<T> {
     if (typeof nameOrArg === "string") {
-      if (ClassDescriptor.doExtends(type as ClassType, Type)) {
-        this.args.push(
-          Arg.create(nameOrArg, InputType.create(type as ClassType)),
-        );
-      } else {
-        this.args.push(Arg.create(nameOrArg, type as InputFieldType));
-      }
+      this.args.push(Arg.create(nameOrArg, type as InputFieldType));
     } else {
       this.args.push(nameOrArg as Arg);
     }

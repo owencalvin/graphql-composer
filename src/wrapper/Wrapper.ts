@@ -9,9 +9,7 @@ import { ClassDescriptor } from "../graphql/helpers/ClassDescriptor";
 import { GQLField } from "../graphql/defintion/fields/GQLField";
 import { GQLType } from "../graphql/defintion/types/GQLType";
 import { Middleware } from "../graphql/defintion/middlewares/Middleware";
-import { Type } from "../graphql/types/Type";
 import { Removable, ArrayHelper } from "../graphql/helpers/ArrayHelper";
-import { ClassType } from "../shared/ClassType";
 
 export type TranformableTypes =
   | typeof ObjectType
@@ -20,33 +18,32 @@ export type TranformableTypes =
   | typeof GQLType;
 
 export class Wrapper {
-  protected _types: (ComposedType | typeof Type)[] = [];
+  protected _types: ComposedType[] = [];
 
   get types() {
     return this._types;
   }
 
-  protected constructor(...types: (ComposedType | typeof Type)[]) {
+  protected constructor(...types: ComposedType[]) {
     this.setTypes(...types);
   }
 
-  static create(...types: (ComposedType | typeof Type)[]) {
+  static create(...types: ComposedType[]) {
     const wrapper = new Wrapper(...types);
     return wrapper;
   }
 
-  setTypes(...types: (ComposedType | typeof Type)[]) {
+  setTypes(...types: ComposedType[]) {
     this._types = types;
     return this;
   }
 
-  addTypes(...types: (ComposedType | typeof Type)[]) {
+  addTypes(...types: ComposedType[]) {
     return this.setTypes(...this._types, ...types);
   }
 
   removeTypes(...types: Removable<ComposedType>) {
-    this._types = ArrayHelper.remove(types, this._types);
-    return this;
+    return this.setTypes(...ArrayHelper.remove(types, this._types));
   }
 
   addMiddlewares(...middlewares: Middleware[]) {

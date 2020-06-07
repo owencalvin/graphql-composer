@@ -7,16 +7,12 @@ import { GQLType } from "./GQLType";
 import { ConversionType } from "../../types/ConversionType";
 import { InstanceOf } from "../../../shared/InstanceOf";
 import { Removable, ArrayHelper } from "../../helpers/ArrayHelper";
-import { Type } from "../../types/Type";
 import { ClassType } from "../../../shared/ClassType";
-import { DIStore } from "../../../di/DIStore";
 
-export class ObjectType<T extends ClassType<any> = any> extends GQLObjectType<
+export class ObjectType<T extends ClassType = any> extends GQLObjectType<
   GraphQLObjectType,
   T
 > {
-  protected static _types: DIStore<string, ObjectType> = new DIStore();
-
   protected _fields: Field[] = [];
   private _interfaces: InterfaceType[] = [];
 
@@ -28,20 +24,24 @@ export class ObjectType<T extends ClassType<any> = any> extends GQLObjectType<
     return this._interfaces;
   }
 
-  static create(name: string): ObjectType;
-  static create(fromType: InputType): ObjectType;
-  static create(objectType: ObjectType): ObjectType;
-  static create(interfaceType: InterfaceType): ObjectType;
-  static create<T extends Type>(
-    classType: ClassType<T>,
+  constructor(name: string) {
+    super(name);
+  }
+
+  static create<T = any>(name: string): ObjectType<ClassType<T>>;
+  static create<T = any>(inputType: InputType): ObjectType<ClassType<T>>;
+  static create<T = any>(objectType: ObjectType): ObjectType<ClassType<T>>;
+  static create<T = any>(
+    interfaceType: InterfaceType,
   ): ObjectType<ClassType<T>>;
-  static create<T extends Type>(
+  static create<T = any>(classType: ClassType<T>): ObjectType<ClassType<T>>;
+  static create<T = any>(
     nameOrType: string | GQLType | ClassType<T>,
   ): ObjectType<ClassType<T>> {
     if (typeof nameOrType === "string") {
       return new ObjectType(nameOrType);
     } else if (nameOrType instanceof GQLType) {
-      const obj = ObjectType.create(nameOrType.name)
+      const obj = ObjectType.create<T>(nameOrType.name)
         .setHidden(nameOrType.hidden)
         .setDescription(nameOrType.description);
 
@@ -57,12 +57,7 @@ export class ObjectType<T extends ClassType<any> = any> extends GQLObjectType<
 
       return obj;
     } else {
-      const classType = nameOrType as ClassType<T>;
-      const obj = ObjectType.create(classType.name);
-      const instance = ObjectType._types.addInstance(obj, classType.name);
-      obj._classType = classType;
-
-      return instance;
+      return ObjectType.create<T>(nameOrType.name);
     }
   }
 
@@ -112,7 +107,7 @@ export class ObjectType<T extends ClassType<any> = any> extends GQLObjectType<
   }
 
   convert<Target extends ConversionType>(to: Target): InstanceOf<Target> {
-    return to.create(this) as any;
+    return (to.create as any)(this);
   }
 
   transformFields(cb: (field: Field) => void) {

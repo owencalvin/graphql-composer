@@ -3,22 +3,16 @@ import { Wrapper } from "../../../wrapper/Wrapper";
 import { ComposedType } from "../types/composed/ComposedType";
 import { GraphQLElement } from "../../types/GraphQLElement";
 import { Removable, ArrayHelper } from "../../helpers/ArrayHelper";
-import { Type } from "../../types/Type";
-import { ClassType } from "../../../shared/ClassType";
 
 export class Schema extends GraphQLElement<GraphQLSchema> {
   protected _types: ComposedType[] = [];
 
-  setTypes(...types: (ComposedType | Wrapper | typeof Type)[]) {
+  setTypes(...types: (ComposedType | Wrapper)[]) {
     this._types = [
       ...types
         .flatMap((item) => {
           if (item instanceof Wrapper) {
-            return item.types.map(this.parseClassToTypes);
-          } else {
-            try {
-              return this.parseClassToTypes(item);
-            } catch (err) {}
+            return item.types;
           }
           return item as ComposedType;
         })
@@ -27,7 +21,7 @@ export class Schema extends GraphQLElement<GraphQLSchema> {
     return this;
   }
 
-  addTypes(...types: (ComposedType | Wrapper | typeof Type)[]) {
+  addTypes(...types: (ComposedType | Wrapper)[]) {
     return this.setTypes(...this._types, ...types);
   }
 
@@ -61,25 +55,9 @@ export class Schema extends GraphQLElement<GraphQLSchema> {
     super();
   }
 
-  static create(...types: (ComposedType | Wrapper | typeof Type)[]) {
+  static create(...types: (ComposedType | Wrapper)[]) {
     const schema = new Schema();
     schema.setTypes(...types);
     return schema;
-  }
-
-  protected parseClassToTypes(item: any) {
-    try {
-      const instance = new (item as ClassType)();
-      if (instance instanceof Type) {
-        return [
-          instance.getInputType(),
-          instance.getInterfaceType(),
-          instance.getObjectType(),
-        ];
-      }
-    } catch (err) {
-      throw err;
-    }
-    return item;
   }
 }

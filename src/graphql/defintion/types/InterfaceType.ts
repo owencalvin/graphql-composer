@@ -9,14 +9,11 @@ import { GQLObjectType } from "./GQLObjectType";
 import { ObjectType } from "./ObjectType";
 import { InputType } from "./InputType";
 import { ClassType } from "../../../shared/ClassType";
-import { Type } from "../../types/Type";
-import { DIStore } from "../../../di/DIStore";
+import { InstanceOf } from "../../../shared/InstanceOf";
 
-export class InterfaceType<T extends ClassType<any> = any>
+export class InterfaceType<T extends ClassType = any>
   extends GQLObjectType<GraphQLInterfaceType, T>
   implements TypeResolvable {
-  protected static _types: DIStore<string, InterfaceType> = new DIStore();
-
   protected _typeResolver: GraphQLTypeResolver<any, any>;
   protected _fields: Field[];
 
@@ -24,41 +21,38 @@ export class InterfaceType<T extends ClassType<any> = any>
     return this._fields;
   }
 
-  protected constructor(name: string) {
+  constructor(name: string) {
     super(name);
     this.setTypeResolver(this.defaultTypeResolver);
   }
 
-  static create(name: string): InterfaceType;
-  static create(fromType: InputType): InterfaceType;
-  static create(objectType: ObjectType): InterfaceType;
-  static create(interfaceType: InterfaceType): InterfaceType;
-  static create<T extends Type>(
-    classType: ClassType<T>,
+  static create<T = any>(name: string): InterfaceType<ClassType<T>>;
+  static create<T = any>(inputType: InputType): InterfaceType<ClassType<T>>;
+  static create<T = any>(objectType: ObjectType): InterfaceType<ClassType<T>>;
+  static create<T = any>(
+    interfaceType: InterfaceType,
   ): InterfaceType<ClassType<T>>;
-  static create<T extends Type>(
+  static create<T = any>(classType: ClassType<T>): InterfaceType<ClassType<T>>;
+  static create<T = any>(
     nameOrType: string | GQLType | ClassType<T>,
-  ): InterfaceType {
+  ): InterfaceType<ClassType<T>> {
     if (typeof nameOrType === "string") {
       return new InterfaceType(nameOrType);
     } else if (nameOrType instanceof GQLType) {
-      const obj = InterfaceType.create(nameOrType.name)
+      const obj = InterfaceType.create<T>(nameOrType.name)
         .setHidden(nameOrType.hidden)
         .setDescription(nameOrType.description);
+
       if (nameOrType instanceof InputType) {
         obj.setFields(...nameOrType.fields.map((f) => Field.create(f)));
       } else {
         const objType = nameOrType as GQLObjectType;
         obj.setFields(...objType.fields).setExtension(obj);
       }
+
       return obj;
     } else {
-      const classType = nameOrType as ClassType<T>;
-      const obj = InterfaceType.create(classType.name);
-      const instance = InterfaceType._types.addInstance(obj, classType.name);
-      obj._classType = classType;
-
-      return instance;
+      return InterfaceType.create<T>(nameOrType.name);
     }
   }
 
@@ -94,11 +88,11 @@ export class InterfaceType<T extends ClassType<any> = any>
   }
 
   copy() {
-    return InterfaceType.create(this);
+    return InterfaceType.create<T>(this);
   }
 
-  convert<Target extends ConversionType>(to: Target) {
-    return to.create(this) as any;
+  convert<Target extends ConversionType>(to: Target): InstanceOf<Target> {
+    return (to.create as any)(this);
   }
 
   transformFields(cb: (field: Field) => void) {

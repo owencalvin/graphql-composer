@@ -9,6 +9,7 @@ import { NotNullableType, NotNullable } from "../modifiers/NotNullable";
 import { ArrayHelper, Removable } from "../../helpers/ArrayHelper";
 import { ConversionType } from "../../types/ConversionType";
 import { ClassType } from "../../../shared/ClassType";
+import { InstanceOf } from "../../../shared/InstanceOf";
 
 export abstract class GQLType<
   BuiltType = any,
@@ -31,7 +32,9 @@ export abstract class GQLType<
     super(name);
   }
 
-  abstract convert<Target extends ConversionType>(to: Target): Target;
+  abstract convert<Target extends ConversionType>(
+    to: Target,
+  ): InstanceOf<Target>;
 
   abstract copy(): InputType | ObjectType | InterfaceType;
 
@@ -64,7 +67,7 @@ export abstract class GQLType<
     });
   }
 
-  setFields(...fields: GQLField[]) {
+  setFields(...fields: GQLField[]): GQLType {
     this._fields = fields;
     return this;
   }

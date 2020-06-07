@@ -29,6 +29,11 @@ export class GraphQLElement<BuiltType> {
     return elements.map((e) => e.built);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static create(...args: any[]) {
+    throw new Error("create method not implemented");
+  }
+
   setName(name: string) {
     this._name = name;
     return this;
@@ -37,11 +42,6 @@ export class GraphQLElement<BuiltType> {
   setDescription(description: string) {
     this._description = description;
     return this;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  static create(...args: any[]) {
-    throw new Error("create method not implemented");
   }
 
   build() {}

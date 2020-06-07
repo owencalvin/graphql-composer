@@ -15,15 +15,6 @@ import { ObjectType } from "../src/graphql/defintion/types/ObjectType";
 import { InputType } from "../src/graphql/defintion/types/InputType";
 import { Schema } from "../src/graphql/defintion/schema/Schema";
 import { Field } from "../src/graphql/defintion/fields/Field";
-import { Type } from "../src/graphql/types/Type";
-
-class UserClassBased extends Type {
-  Username: string;
-
-  getInputType() {
-    return InputType.create(UserClassBased).addField("Username", String);
-  }
-}
 
 const userInterface = InterfaceType.create("UserInterface").addFields(
   Field.create("createdAt", Number),
@@ -39,20 +30,6 @@ const role = InputType.create("Role").addFields(
 );
 
 describe("InputType", () => {
-  it("Should create a simple input type class based", async () => {
-    const schema = Schema.create(UserClassBased);
-
-    const built = schema.build();
-
-    const typeMap = built.getTypeMap();
-    const userType = typeMap.UserClassBased as GraphQLInputObjectType;
-    const userFields = userType.getFields();
-
-    const usernameType = userFields.Username.type as GraphQLScalarType;
-
-    expect(usernameType.name).toBe("String");
-  });
-
   it("Should create a simple input type", async () => {
     const schema = Schema.create(user);
 
