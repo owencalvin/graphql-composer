@@ -117,8 +117,8 @@ export class Field<NameType = string> extends GQLField<
     return this.setArgs(...ArrayHelper.remove(args, this._args));
   }
 
-  setResolver<ArgType>(
-    resolve: ResolveFunction,
+  setResolver<ArgType = any>(
+    resolve: ResolveFunction<ArgType>,
     ...args: (Arg<StringKeyOf<ArgType>> | Args<ClassType<ArgType>>)[]
   ) {
     this.setArgs(...args);
