@@ -4,6 +4,7 @@ import { TypeParser } from "../../helpers/TypeParser";
 import { InputFieldType } from "../../types/InputFieldType";
 import { Field } from "./Field";
 import { StringKeyOf } from "../../types/StringKeyOf";
+import { InstanceOf } from "../../../shared/InstanceOf";
 
 export class InputField<NameType = string> extends GQLField<GraphQLInputField> {
   protected _name: NameType & string;
@@ -20,11 +21,11 @@ export class InputField<NameType = string> extends GQLField<GraphQLInputField> {
   static create(field: Field): InputField;
   static create(field: InputField): InputField;
   static create<NameType = any>(
-    name: StringKeyOf<NameType>,
+    name: StringKeyOf<InstanceOf<NameType>>,
     type: InputFieldType,
   ): InputField;
   static create<NameType = any>(
-    nameOrField: StringKeyOf<NameType> | GQLField,
+    nameOrField: StringKeyOf<InstanceOf<NameType>> | GQLField,
     type?: InputFieldType,
   ) {
     if (typeof nameOrField === "string") {

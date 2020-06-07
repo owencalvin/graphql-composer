@@ -16,6 +16,7 @@ import { ClassType } from "../../../shared/ClassType";
 import { InputFieldType } from "../../types/InputFieldType";
 import { InputField } from "./InputField";
 import { StringKeyOf } from "../../types/StringKeyOf";
+import { InstanceOf } from "../../../shared/InstanceOf";
 
 export class Field<NameType = string> extends GQLField<
   GraphQLField<any, any, any>
@@ -53,11 +54,11 @@ export class Field<NameType = string> extends GQLField<
   static create(field: Field): Field;
   static create(field: InputField): Field;
   static create<NameType = any>(
-    name: StringKeyOf<NameType>,
+    name: StringKeyOf<InstanceOf<NameType>>,
     type: FieldType,
   ): Field;
   static create<NameType = any>(
-    nameOrField: StringKeyOf<NameType> | GQLField,
+    nameOrField: StringKeyOf<InstanceOf<NameType>> | GQLField,
     type?: FieldType,
   ) {
     if (typeof nameOrField === "string") {
@@ -95,10 +96,15 @@ export class Field<NameType = string> extends GQLField<
     return this;
   }
 
-  addArg<NameType = any>(arg: Arg<StringKeyOf<NameType>>);
-  addArg<NameType = any>(name: StringKeyOf<NameType>, type: InputFieldType);
+  addArg<NameType = any>(arg: Arg<StringKeyOf<InstanceOf<NameType>>>);
   addArg<NameType = any>(
-    nameOrArg: StringKeyOf<NameType> | Arg<StringKeyOf<NameType>>,
+    name: StringKeyOf<InstanceOf<NameType>>,
+    type: InputFieldType,
+  );
+  addArg<NameType = any>(
+    nameOrArg:
+      | StringKeyOf<InstanceOf<NameType>>
+      | Arg<StringKeyOf<InstanceOf<NameType>>>,
     type?: InputFieldType,
   ) {
     if (typeof nameOrArg === "string") {
@@ -119,7 +125,7 @@ export class Field<NameType = string> extends GQLField<
 
   setResolver<ArgType = any>(
     resolve: ResolveFunction<ArgType>,
-    ...args: (Arg<StringKeyOf<ArgType>> | Args<ClassType<ArgType>>)[]
+    ...args: (Arg<keyof ArgType & string> | Args<ClassType<ArgType>>)[]
   ) {
     this.setArgs(...args);
     this._resolve = resolve;

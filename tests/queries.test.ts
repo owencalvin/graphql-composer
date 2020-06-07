@@ -10,7 +10,6 @@ import { Schema } from "../src/graphql/defintion/schema/Schema";
 import { Field } from "../src/graphql/defintion/fields/Field";
 import { Args } from "../src/graphql/defintion/fields/Args";
 import { Arg } from "../src/graphql/defintion/fields/Arg";
-import { InterfaceType } from "../src/graphql/defintion/types/InterfaceType";
 
 class User {
   Username: string;
@@ -33,9 +32,13 @@ class A {
     .addArg("user", User.inputType);
 }
 
+interface Z {
+  z: string;
+}
+
 const user = ObjectType.create("User").addFields(
   Field.create("Email", Number).setResolver(A.resolve, A.args),
-  Field.create("Username", Number).setResolver(
+  Field.create("Username", Number).setResolver<Z>(
     A.resolve,
     Arg.create("z", String),
   ),

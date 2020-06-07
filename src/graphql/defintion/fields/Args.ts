@@ -3,10 +3,15 @@ import { ClassType } from "../../../shared/ClassType";
 import { Removable, ArrayHelper } from "../../helpers/ArrayHelper";
 import { InputFieldType } from "../../types/InputFieldType";
 import { StringKeyOf } from "../../types/StringKeyOf";
+import { InstanceOf } from "../../../shared/InstanceOf";
 
 export class Args<T extends ClassType<any> = any> {
-  private _args: Arg<StringKeyOf<T>>[] = [];
+  private _args: Arg<StringKeyOf<InstanceOf<T>>>[] = [];
   private _classType?: T;
+
+  get classType() {
+    return this._classType;
+  }
 
   protected constructor(classType?: T) {
     this._classType = classType;
@@ -20,19 +25,22 @@ export class Args<T extends ClassType<any> = any> {
     return this._args;
   }
 
-  setArgs(...args: Arg<StringKeyOf<T>>[]) {
+  setArgs(...args: Arg<StringKeyOf<InstanceOf<T>>>[]) {
     this._args = args.filter((a) => a);
     return this;
   }
 
-  addArgs(...args: Arg<StringKeyOf<T>>[]) {
+  addArgs(...args: Arg<StringKeyOf<InstanceOf<T>>>[]) {
     return this.setArgs(...this.args, ...args);
   }
 
-  addArg(arg: Arg<StringKeyOf<T>>): Args<T>;
-  addArg(name: StringKeyOf<T>, type: InputFieldType | ClassType): Args<T>;
+  addArg(arg: Arg<StringKeyOf<InstanceOf<T>>>): Args<T>;
   addArg(
-    nameOrArg: Arg<StringKeyOf<T>> | StringKeyOf<T>,
+    name: StringKeyOf<InstanceOf<T>>,
+    type: InputFieldType | ClassType,
+  ): Args<T>;
+  addArg(
+    nameOrArg: Arg<StringKeyOf<InstanceOf<T>>> | StringKeyOf<InstanceOf<T>>,
     type?: InputFieldType | ClassType,
   ): Args<T> {
     if (typeof nameOrArg === "string") {

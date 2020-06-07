@@ -8,13 +8,14 @@ import { InputType } from "./InputType";
 import { InterfaceType } from "./InterfaceType";
 import { ObjectType } from "./ObjectType";
 import { StringKeyOf } from "../../types/StringKeyOf";
+import { InstanceOf } from "../../../shared/InstanceOf";
 
 export abstract class GQLObjectType<
   BuiltType = any,
   T extends ClassType<any> = any
 > extends GQLType<BuiltType, T> {
   protected _extends?: GQLObjectType;
-  protected _fields: Field<StringKeyOf<T>>[] = [];
+  protected _fields: Field<StringKeyOf<InstanceOf<T>>>[] = [];
 
   get fields() {
     return this._fields;
@@ -24,23 +25,23 @@ export abstract class GQLObjectType<
     super(name);
   }
 
-  setFields(...fields: Field<StringKeyOf<T>>[]) {
+  setFields(...fields: Field<StringKeyOf<InstanceOf<T>>>[]) {
     this._fields = fields;
     return this;
   }
 
-  addField(name: StringKeyOf<T>, type: FieldType) {
+  addField(name: StringKeyOf<InstanceOf<T>>, type: FieldType) {
     return this.setFields(
       ...this._fields,
-      Field.create<StringKeyOf<T>>(name, type),
+      Field.create<StringKeyOf<InstanceOf<T>>>(name, type),
     );
   }
 
-  addFields(...fields: Field<StringKeyOf<T>>[]) {
+  addFields(...fields: Field<StringKeyOf<InstanceOf<T>>>[]) {
     return this.setFields(...this._fields, ...fields);
   }
 
-  removeFields(...fields: Removable<Field<StringKeyOf<T>>>) {
+  removeFields(...fields: Removable<Field<StringKeyOf<InstanceOf<T>>>>) {
     return this.setFields(...ArrayHelper.remove(fields, this._fields));
   }
 

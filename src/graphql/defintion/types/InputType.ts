@@ -16,7 +16,7 @@ export class InputType<T extends ClassType = any> extends GQLType<
   T
 > {
   protected _extends?: InputType;
-  protected _fields: InputField<StringKeyOf<T>>[];
+  protected _fields: InputField<StringKeyOf<InstanceOf<T>>>[];
 
   get fields() {
     return this._fields;
@@ -89,15 +89,18 @@ export class InputType<T extends ClassType = any> extends GQLType<
     return this.extension as InputType<ClassType<ExtendsType>>;
   }
 
-  setFields(...fields: InputField<StringKeyOf<T>>[]): InputType<T> {
+  setFields(...fields: InputField<StringKeyOf<InstanceOf<T>>>[]): InputType<T> {
     this._fields = fields;
     return this;
   }
 
-  addField(field: InputField<StringKeyOf<T>>): InputType<T>;
-  addField(name: StringKeyOf<T>, type: InputFieldType): InputType<T>;
+  addField(field: InputField<StringKeyOf<InstanceOf<T>>>): InputType<T>;
   addField(
-    nameOrField: StringKeyOf<T> | InputField,
+    name: StringKeyOf<InstanceOf<T>>,
+    type: InputFieldType,
+  ): InputType<T>;
+  addField(
+    nameOrField: StringKeyOf<InstanceOf<T>> | InputField,
     type?: InputFieldType,
   ): InputType<T> {
     let input: InputField;
@@ -110,11 +113,13 @@ export class InputType<T extends ClassType = any> extends GQLType<
     return this.setFields(...this._fields, input);
   }
 
-  addFields(...fields: InputField<StringKeyOf<T>>[]): InputType<T> {
+  addFields(...fields: InputField<StringKeyOf<InstanceOf<T>>>[]): InputType<T> {
     return this.setFields(...this._fields, ...fields);
   }
 
-  removeFields(...fields: Removable<InputField<StringKeyOf<T>>>): InputType<T> {
+  removeFields(
+    ...fields: Removable<InputField<StringKeyOf<InstanceOf<T>>>>
+  ): InputType<T> {
     return this.setFields(...ArrayHelper.remove(fields, this._fields));
   }
 
