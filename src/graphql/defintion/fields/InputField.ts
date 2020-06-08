@@ -5,6 +5,7 @@ import { InputFieldType } from "../../types/InputFieldType";
 import { Field } from "./Field";
 import { StringKeyOf } from "../../types/StringKeyOf";
 import { InstanceOf } from "../../../shared/InstanceOf";
+import { Arg } from "./Arg";
 
 export class InputField<NameType = string> extends GQLField<GraphQLInputField> {
   protected _name: NameType & string;
@@ -23,12 +24,16 @@ export class InputField<NameType = string> extends GQLField<GraphQLInputField> {
     super(name as string, type);
   }
 
-  static create(field: Field): InputField;
-  static create(field: InputField): InputField;
   static create<NameType = any>(
-    name: StringKeyOf<InstanceOf<NameType>>,
+    field: Field<any>,
+  ): InputField<StringKeyOf<NameType>>;
+  static create<NameType = any>(
+    field: InputField<any>,
+  ): InputField<StringKeyOf<NameType>>;
+  static create<NameType = any>(
+    name: StringKeyOf<NameType>,
     type: InputFieldType,
-  ): InputField;
+  ): InputField<StringKeyOf<NameType>>;
   static create<NameType = any>(
     nameOrField: StringKeyOf<InstanceOf<NameType>> | GQLField,
     type?: InputFieldType,
@@ -59,5 +64,15 @@ export class InputField<NameType = string> extends GQLField<GraphQLInputField> {
     this._built = input;
 
     return this.built;
+  }
+
+  copy(): InputField<NameType> {
+    return InputField.create(this) as any;
+  }
+
+  convert(to: typeof Arg): Arg<NameType>;
+  convert(to: typeof Field): Field<NameType>;
+  convert(to: typeof Field | typeof Arg) {
+    return (to.create as any)(this.name, this.type as any) as any;
   }
 }

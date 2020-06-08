@@ -10,8 +10,7 @@ import { ClassType } from "../../../shared/ClassType";
 import { InputFieldType } from "../../types/InputFieldType";
 import { InstanceOf } from "../../../shared/InstanceOf";
 import { StringKeyOf } from "../../types/StringKeyOf";
-import { Args } from "../fields/Args";
-import { Arg } from "../fields/Arg";
+import { Args } from "./Args";
 
 export class InputType<T extends ClassType = any> extends GQLType<
   GraphQLInputObjectType,
@@ -23,7 +22,7 @@ export class InputType<T extends ClassType = any> extends GQLType<
     return this._fields;
   }
 
-  constructor(name: string) {
+  protected constructor(name: string) {
     super(name);
   }
 
@@ -100,6 +99,10 @@ export class InputType<T extends ClassType = any> extends GQLType<
 
   addFields(...fields: InputField<StringKeyOf<InstanceOf<T>>>[]): InputType<T> {
     return this.setFields(...this._fields, ...fields);
+  }
+
+  getField(name: StringKeyOf<InstanceOf<T>>) {
+    return ArrayHelper.find({ name }, this._fields).ref;
   }
 
   removeFields(

@@ -41,6 +41,10 @@ export abstract class GQLObjectType<
     return this.setFields(...ArrayHelper.remove(fields, this._fields));
   }
 
+  getField(name: StringKeyOf<InstanceOf<T>>) {
+    return ArrayHelper.find({ name }, this._fields).ref;
+  }
+
   protected getFields() {
     return this.fields.reduce<GraphQLFieldConfigMap<any, any>>(
       (prev, field) => {

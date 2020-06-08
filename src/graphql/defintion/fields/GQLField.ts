@@ -2,6 +2,9 @@ import { FieldType } from "../../types/FieldType";
 import { GraphQLElement } from "../../types/GraphQLElement";
 import { GraphQLField, GraphQLInputField } from "graphql";
 import { InputFieldType } from "../../types/InputFieldType";
+import { Field } from "./Field";
+import { InputField } from "./InputField";
+import { Arg } from "./Arg";
 
 export abstract class GQLField<BuiltType = any> extends GraphQLElement<
   BuiltType

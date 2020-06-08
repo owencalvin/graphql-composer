@@ -8,7 +8,7 @@ import { ObjectType } from "../src/graphql/defintion/types/ObjectType";
 import { InputType } from "../src/graphql/defintion/types/InputType";
 import { Schema } from "../src/graphql/defintion/schema/Schema";
 import { Field } from "../src/graphql/defintion/fields/Field";
-import { Args } from "../src/graphql/defintion/fields/Args";
+import { Args } from "../src/graphql/defintion/types/Args";
 import { Arg } from "../src/graphql/defintion/fields/Arg";
 
 class User {
@@ -32,7 +32,7 @@ class A extends User {
     .addArg("user", User.inputType);
 }
 
-interface Z {
+class Z {
   z: string;
 }
 
@@ -40,9 +40,10 @@ const user = ObjectType.create("User").addFields(
   Field.create("Email", Number).setResolver(A.resolve, A.args),
   Field.create("Username", Number).setResolver<Z>(
     A.resolve,
-    Arg.create("z", String),
+    Args.create(Z).addArg("z", String),
   ),
-  Field.create("Role", Number).setResolver(() => {}, Arg.create("x", Date)),
+  Field.create("Role", Number).setResolver(() => {},
+  Args.create().addArg("x", Date)),
 );
 
 describe("Queries", () => {
@@ -94,7 +95,11 @@ describe("Queries", () => {
     const infosInput = InputType.create("Infos").addFields(
       InputField.create("meta", String),
     );
-    user.addFields(Field.create("Infos", String).addArg("a", infosInput));
+    user.addFields(
+      Field.create("Infos", String).addArgs(
+        Args.create().addArg("a", infosInput),
+      ),
+    );
 
     const schema = Schema.create(user, infosInput);
     const built = schema.build();

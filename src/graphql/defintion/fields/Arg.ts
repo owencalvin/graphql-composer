@@ -1,7 +1,6 @@
 import { GQLField } from "./GQLField";
 import { GraphQLArgument } from "graphql";
 import { TypeParser } from "../../helpers/TypeParser";
-import { InstanceOf } from "../../../shared/InstanceOf";
 import { InputFieldType } from "../../types/InputFieldType";
 import { StringKeyOf } from "../../types/StringKeyOf";
 

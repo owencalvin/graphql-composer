@@ -1,10 +1,11 @@
-import { Arg } from "./Arg";
+import { Arg } from "../fields/Arg";
 import { ClassType } from "../../../shared/ClassType";
 import { Removable, ArrayHelper } from "../../helpers/ArrayHelper";
 import { InputFieldType } from "../../types/InputFieldType";
 import { StringKeyOf } from "../../types/StringKeyOf";
 import { InstanceOf } from "../../../shared/InstanceOf";
-import { InputType } from "../types/InputType";
+import { InputType } from "./InputType";
+import { GQLType } from "./GQLType";
 
 export class Args<T extends ClassType = any> {
   private _args: Arg<StringKeyOf<InstanceOf<T>>>[] = [];
@@ -26,13 +27,13 @@ export class Args<T extends ClassType = any> {
     }
   }
 
-  static create<T extends ClassType = any>(inputType: InputType): Args<T>;
-  static create<T extends ClassType = any>(classType: T): Args<T>;
-  static create<T extends ClassType = any>(): Args<T>;
+  static create<T = any>(inputType: InputType): Args<ClassType<T>>;
   static create<T extends ClassType = any>(
-    classTypeOrInputType?: T | InputType,
-  ) {
-    return new Args<ClassType<T>>(classTypeOrInputType);
+    classType: T,
+  ): Args<ClassType<InstanceOf<T>>>;
+  static create<T = any>(): Args<ClassType<T>>;
+  static create<T = any>(classTypeOrInputType?: T | InputType) {
+    return new Args<any>(classTypeOrInputType);
   }
 
   get args() {
@@ -49,13 +50,10 @@ export class Args<T extends ClassType = any> {
   }
 
   addArg(arg: Arg<StringKeyOf<InstanceOf<T>>>): Args<T>;
-  addArg(
-    name: StringKeyOf<InstanceOf<T>>,
-    type: InputFieldType | ClassType,
-  ): Args<T>;
+  addArg(name: StringKeyOf<InstanceOf<T>>, type: InputFieldType): Args<T>;
   addArg(
     nameOrArg: Arg<StringKeyOf<InstanceOf<T>>> | StringKeyOf<InstanceOf<T>>,
-    type?: InputFieldType | ClassType,
+    type?: InputFieldType,
   ): Args<T> {
     if (typeof nameOrArg === "string") {
       this.args.push(Arg.create(nameOrArg, type as InputFieldType));
@@ -67,6 +65,10 @@ export class Args<T extends ClassType = any> {
 
   removeArgs(...args: Removable<Arg>) {
     return this.setArgs(...ArrayHelper.remove(args, this._args));
+  }
+
+  getArg(name: StringKeyOf<InstanceOf<T>>) {
+    return ArrayHelper.find({ name }, this._args).ref;
   }
 
   build() {

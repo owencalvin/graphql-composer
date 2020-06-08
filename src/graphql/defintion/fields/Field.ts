@@ -11,7 +11,7 @@ import { TypeParser } from "../../helpers/TypeParser";
 import { Arg } from "./Arg";
 import { ArrayHelper, Removable } from "../../helpers/ArrayHelper";
 import { Middleware } from "../middlewares/Middleware";
-import { Args } from "./Args";
+import { Args } from "../types/Args";
 import { ClassType } from "../../../shared/ClassType";
 import { InputFieldType } from "../../types/InputFieldType";
 import { InputField } from "./InputField";
@@ -22,25 +22,20 @@ export class Field<NameType = string> extends GQLField<
   GraphQLField<any, any, any>
 > {
   protected _name: NameType & string;
-  private _args: (Arg | Args)[] = [];
+  private _args: Args[] = [];
   private _resolve: ResolveFunction;
   private _middlewares: Middleware[] = [];
-
-  get args() {
-    return this._args;
-  }
 
   get name() {
     return this._name;
   }
 
+  get args() {
+    return this._args;
+  }
+
   get flatArgs() {
-    return this.args.flatMap((a) => {
-      if (a instanceof Args) {
-        return a.args;
-      }
-      return a;
-    });
+    return this._args.flatMap((a) => a.args);
   }
 
   get resolve() {
@@ -51,12 +46,16 @@ export class Field<NameType = string> extends GQLField<
     super(name, type);
   }
 
-  static create(field: Field): Field;
-  static create(field: InputField): Field;
+  static create<NameType = any>(
+    field: Field<any>,
+  ): Field<StringKeyOf<NameType>>;
+  static create<NameType = any>(
+    field: InputField<any>,
+  ): Field<StringKeyOf<NameType>>;
   static create<NameType = any>(
     name: StringKeyOf<InstanceOf<NameType>>,
     type: FieldType,
-  ): Field;
+  ): Field<StringKeyOf<NameType>>;
   static create<NameType = any>(
     nameOrField: StringKeyOf<InstanceOf<NameType>> | GQLField,
     type?: FieldType,
@@ -94,41 +93,22 @@ export class Field<NameType = string> extends GQLField<
     );
   }
 
-  setArgs(...args: (Arg | Args)[]) {
-    this._args = args.filter((a) => a);
+  setArgs(...args: Args[]) {
+    this._args = args;
     return this;
   }
 
-  addArg<NameType = any>(arg: Arg<StringKeyOf<InstanceOf<NameType>>>);
-  addArg<NameType = any>(
-    name: StringKeyOf<InstanceOf<NameType>>,
-    type: InputFieldType,
-  );
-  addArg<NameType = any>(
-    nameOrArg:
-      | StringKeyOf<InstanceOf<NameType>>
-      | Arg<StringKeyOf<InstanceOf<NameType>>>,
-    type?: InputFieldType,
-  ) {
-    if (typeof nameOrArg === "string") {
-      this.args.push(Arg.create(nameOrArg, type));
-    } else if (nameOrArg instanceof Arg) {
-      this.args.push(nameOrArg);
-    }
-    return this;
-  }
-
-  addArgs(...args: (Arg | Args)[]) {
+  addArgs(...args: Args[]) {
     return this.setArgs(...this.args, ...args);
   }
 
-  removeArgs(...args: Removable<Arg>) {
-    return this.setArgs(...ArrayHelper.remove(args, this._args));
+  removeArgs(...args: Args[]) {
+    return this.setArgs(...ArrayHelper.remove<any>(args, this._args));
   }
 
   setResolver<ArgType = any>(
     resolve: ResolveFunction<ArgType>,
-    ...args: (Arg<keyof ArgType & string> | Args<ClassType<ArgType>>)[]
+    ...args: Args<ClassType<ArgType>>[]
   ) {
     this.setArgs(...args);
     this._resolve = resolve;
@@ -188,5 +168,14 @@ export class Field<NameType = string> extends GQLField<
       0,
       {},
     );
+  }
+
+  copy(): Field<NameType> {
+    return Field.create(this) as any;
+  }
+
+  convert(to: typeof InputField): InputField<NameType>;
+  convert(to: typeof InputField) {
+    return to.create(this.name, this.type as any) as any;
   }
 }
