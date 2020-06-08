@@ -12,13 +12,22 @@ export class UnionType extends ComposedType<GraphQLUnionType>
   private _types: ObjectType[] = [];
   private _typeResolver: GraphQLTypeResolver<any, any>;
 
-  protected constructor(name: string) {
-    super(name);
-    this._typeResolver = this.defaultTypeResolver;
+  get types() {
+    return this._types;
   }
 
-  static create(name: string) {
-    return new UnionType(name);
+  get typeResolver() {
+    return this._typeResolver;
+  }
+
+  protected constructor(name: string, ...types: ObjectType[]) {
+    super(name);
+    this._typeResolver = this.defaultTypeResolver;
+    this.setTypes(...types);
+  }
+
+  static create(name: string, ...types: ObjectType[]) {
+    return new UnionType(name, ...types);
   }
 
   setTypeResolver<TSource = any, TContext = any>(
@@ -46,7 +55,7 @@ export class UnionType extends ComposedType<GraphQLUnionType>
   }
 
   build(): GraphQLUnionType {
-    return new GraphQLUnionType({
+    this._built = new GraphQLUnionType({
       name: this.name,
       resolveType: this._typeResolver,
       description: this._description,
@@ -55,6 +64,8 @@ export class UnionType extends ComposedType<GraphQLUnionType>
       },
       extensions: [],
     });
+
+    return this.built;
   }
 
   defaultTypeResolver(obj: KeyValue) {

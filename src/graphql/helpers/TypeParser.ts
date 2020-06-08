@@ -9,9 +9,9 @@ import {
 } from "graphql";
 import { FieldType } from "../types/FieldType";
 import { NotNullableType } from "../defintion/modifiers/NotNullable";
-import { GQLType } from "../defintion/types/GQLType";
 import { DateTime } from "../scalars/DateTime";
 import { InputFieldType } from "../types/InputFieldType";
+import { ComposedType } from "../defintion/types/composed/ComposedType";
 
 export class TypeParser {
   static parse<ReturnType>(type: FieldType | InputFieldType): ReturnType {
@@ -22,7 +22,7 @@ export class TypeParser {
       finalType = GraphQLList(finalType);
     }
 
-    if (type instanceof GQLType) {
+    if (type instanceof ComposedType) {
       finalType = type.built;
     }
 

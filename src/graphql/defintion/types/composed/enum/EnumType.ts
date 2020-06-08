@@ -14,13 +14,19 @@ export class EnumType<TEnumType extends Object = any> extends ComposedType<
     return this._enumType;
   }
 
+  get values(): readonly EnumValue<StringKeyOf<TEnumType>>[] {
+    return this._values;
+  }
+
   protected constructor(name: string, enumType?: TEnumType) {
     super(name);
 
-    this._enumType = enumType;
-    Object.keys(enumType).map((key) => {
-      this.addValues(EnumValue.create(key, enumType[key]) as any);
-    });
+    if (enumType) {
+      this._enumType = enumType;
+      Object.keys(enumType).map((key) => {
+        this.addValues(EnumValue.create(key, enumType[key]) as any);
+      });
+    }
   }
 
   static create(name: string): EnumType;
@@ -36,6 +42,10 @@ export class EnumType<TEnumType extends Object = any> extends ComposedType<
 
   addValues(...values: EnumValue<StringKeyOf<TEnumType>>[]) {
     return this.setValues(...this._values, ...values);
+  }
+
+  addValue(name: StringKeyOf<TEnumType>, value: any) {
+    return this.addValues(EnumValue.create(name, value));
   }
 
   removeValues(...values: Removable<EnumValue>) {

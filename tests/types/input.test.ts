@@ -8,13 +8,13 @@ import {
   GraphQLInputObjectType,
   GraphQLInterfaceType,
 } from "graphql";
-import { InterfaceType } from "../src/graphql/defintion/types/InterfaceType";
-import { NotNullable } from "../src/graphql/defintion/modifiers/NotNullable";
-import { InputField } from "../src/graphql/defintion/fields/InputField";
-import { ObjectType } from "../src/graphql/defintion/types/ObjectType";
-import { InputType } from "../src/graphql/defintion/types/InputType";
-import { Schema } from "../src/graphql/defintion/schema/Schema";
-import { Field } from "../src/graphql/defintion/fields/Field";
+import { InterfaceType } from "../../src/graphql/defintion/types/InterfaceType";
+import { NotNullable } from "../../src/graphql/defintion/modifiers/NotNullable";
+import { InputField } from "../../src/graphql/defintion/fields/InputField";
+import { ObjectType } from "../../src/graphql/defintion/types/ObjectType";
+import { InputType } from "../../src/graphql/defintion/types/InputType";
+import { Schema } from "../../src/graphql/defintion/schema/Schema";
+import { Field } from "../../src/graphql/defintion/fields/Field";
 
 const userInterface = InterfaceType.create("UserInterface").addFields(
   Field.create("createdAt", Number),

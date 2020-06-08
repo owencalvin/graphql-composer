@@ -3,13 +3,13 @@ import {
   GraphQLScalarType,
   GraphQLInputObjectType,
 } from "graphql";
-import { InputField } from "../src/graphql/defintion/fields/InputField";
-import { ObjectType } from "../src/graphql/defintion/types/ObjectType";
-import { InputType } from "../src/graphql/defintion/types/InputType";
-import { Schema } from "../src/graphql/defintion/schema/Schema";
-import { Field } from "../src/graphql/defintion/fields/Field";
-import { Args } from "../src/graphql/defintion/types/Args";
-import { Arg } from "../src/graphql/defintion/fields/Arg";
+import { InputField } from "../../src/graphql/defintion/fields/InputField";
+import { ObjectType } from "../../src/graphql/defintion/types/ObjectType";
+import { InputType } from "../../src/graphql/defintion/types/InputType";
+import { Schema } from "../../src/graphql/defintion/schema/Schema";
+import { Field } from "../../src/graphql/defintion/fields/Field";
+import { Args } from "../../src/graphql/defintion/types/Args";
+import { Arg } from "../../src/graphql/defintion/fields/Arg";
 
 class User {
   Username: string;
@@ -98,6 +98,7 @@ describe("Queries", () => {
     user.addFields(
       Field.create("Infos", String).addArgs(
         Args.create().addArg("a", infosInput),
+        Args.create().addArg(Arg.create("b", String)),
       ),
     );
 
@@ -119,11 +120,15 @@ describe("Queries", () => {
 
     //#region Infos field
     const infosArgs = userFields.Infos.args;
-    expect(infosArgs).toHaveLength(1);
+    expect(infosArgs).toHaveLength(2);
 
     const aArg = infosArgs[0];
     expect(aArg.name).toBe("a");
     expect((aArg.type as GraphQLInputObjectType).name).toBe("Infos");
+
+    const bArg = infosArgs[1];
+    expect(bArg.name).toBe("b");
+    expect((bArg.type as GraphQLScalarType).name).toBe("String");
     //#endregion
   });
 });
