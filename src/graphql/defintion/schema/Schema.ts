@@ -3,7 +3,6 @@ import { Wrapper } from "../../../wrapper/Wrapper";
 import { ComposedType } from "../types/composed/ComposedType";
 import { GraphQLElement } from "../../types/GraphQLElement";
 import { Removable, ArrayHelper } from "../../helpers/ArrayHelper";
-import { UnionType } from "../types/composed/UnionType";
 
 export class Schema extends GraphQLElement<GraphQLSchema> {
   protected _types: ComposedType[] = [];

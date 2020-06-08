@@ -1,4 +1,6 @@
-export class GraphQLElement<BuiltType> {
+import { Meta } from "./Meta";
+
+export class GraphQLElement<BuiltType> extends Meta {
   protected _name: string;
   protected _ref: symbol;
   protected _built: BuiltType;
@@ -21,6 +23,7 @@ export class GraphQLElement<BuiltType> {
   }
 
   protected constructor(name?: string) {
+    super();
     this.setName(name);
     this._ref = Symbol();
   }

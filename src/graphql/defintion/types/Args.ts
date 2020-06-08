@@ -5,9 +5,9 @@ import { InputFieldType } from "../../types/InputFieldType";
 import { StringKeyOf } from "../../types/StringKeyOf";
 import { InstanceOf } from "../../../shared/InstanceOf";
 import { InputType } from "./InputType";
-import { GQLType } from "./GQLType";
+import { Meta } from "../../types/Meta";
 
-export class Args<T extends ClassType = any> {
+export class Args<T extends ClassType = any> extends Meta {
   private _args: Arg<StringKeyOf<InstanceOf<T>>>[] = [];
   private _classType?: T;
 
@@ -16,6 +16,8 @@ export class Args<T extends ClassType = any> {
   }
 
   protected constructor(classTypeOrInputType?: T | InputType) {
+    super();
+
     if (classTypeOrInputType instanceof InputType) {
       this.addArgs(
         ...classTypeOrInputType.fields.map((f) => {
@@ -31,9 +33,22 @@ export class Args<T extends ClassType = any> {
   static create<T extends ClassType = any>(
     classType: T,
   ): Args<ClassType<InstanceOf<T>>>;
+  static create<T = any>(
+    name: StringKeyOf<T>,
+    type: InputFieldType,
+  ): Args<ClassType<T>>;
   static create<T = any>(): Args<ClassType<T>>;
-  static create<T = any>(classTypeOrInputType?: T | InputType) {
-    return new Args<any>(classTypeOrInputType);
+  static create<T = any>(
+    classTypeOrInputTypeOrName?: T | InputType | StringKeyOf<InstanceOf<T>>,
+    type?: InputFieldType,
+  ) {
+    if (type) {
+      const args = new Args();
+      return args.addArg(
+        Arg.create(classTypeOrInputTypeOrName as string, type),
+      );
+    }
+    return new Args<any>(classTypeOrInputTypeOrName);
   }
 
   get args() {
