@@ -3,13 +3,13 @@ import {
   GraphQLScalarType,
   GraphQLInputObjectType,
 } from "graphql";
-import { InputField } from "../../src/graphql/defintion/fields/InputField";
-import { ObjectType } from "../../src/graphql/defintion/types/ObjectType";
-import { InputType } from "../../src/graphql/defintion/types/InputType";
-import { Schema } from "../../src/graphql/defintion/schema/Schema";
-import { Field } from "../../src/graphql/defintion/fields/Field";
-import { Args } from "../../src/graphql/defintion/types/Args";
-import { Arg } from "../../src/graphql/defintion/fields/Arg";
+import { InputField } from "../../src/defintion/fields/InputField";
+import { ObjectType } from "../../src/defintion/types/ObjectType";
+import { InputType } from "../../src/defintion/types/InputType";
+import { Schema } from "../../src/defintion/schema/Schema";
+import { Field } from "../../src/defintion/fields/Field";
+import { Args } from "../../src/defintion/types/Args";
+import { Arg } from "../../src/defintion/fields/Arg";
 
 class User {
   Username: string;
@@ -38,7 +38,7 @@ class Z {
 
 const user = ObjectType.create("User").addFields(
   Field.create("Email", Number).setResolver(A.resolve, A.args),
-  Field.create("Username", Number).setResolver<Z>(
+  Field.create("Username", Number).setResolver<any>(
     A.resolve,
     Args.create(Z).addArg("z", String),
   ),
@@ -96,9 +96,8 @@ describe("Args", () => {
       InputField.create("meta", String),
     );
     user.addFields(
-      Field.create("Infos", String).addArgs(
-        Args.create().addArg("a", infosInput),
-        Args.create().addArg(Arg.create("b", String)),
+      Field.create("Infos", String).setArgs(
+        Args.create().addArg("a", infosInput).addArgs(Arg.create("b", String)),
       ),
     );
 

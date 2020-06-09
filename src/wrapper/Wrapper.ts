@@ -1,16 +1,14 @@
-import { ObjectType } from "../graphql/defintion/types/ObjectType";
-import { InterfaceType } from "../graphql/defintion/types/InterfaceType";
-import { Field } from "../graphql/defintion/fields/Field";
-import { ComposedType } from "../graphql/defintion/types/composed/ComposedType";
-import { InputField } from "../graphql/defintion/fields/InputField";
-import { InputType } from "../graphql/defintion/types/InputType";
-import { InstanceOf } from "../shared/InstanceOf";
-import { ClassDescriptor } from "../graphql/helpers/ClassDescriptor";
-import { GQLField } from "../graphql/defintion/fields/GQLField";
-import { GQLType } from "../graphql/defintion/types/GQLType";
-import { Middleware } from "../graphql/defintion/middlewares/Middleware";
-import { Removable, ArrayHelper } from "../graphql/helpers/ArrayHelper";
-import { GQLObjectType } from "../graphql/defintion/types/GQLObjectType";
+import { ObjectType } from "../defintion/types/ObjectType";
+import { InterfaceType } from "../defintion/types/InterfaceType";
+import { Field } from "../defintion/fields/Field";
+import { ComposedType } from "../defintion/types/composed/ComposedType";
+import { InputField } from "../defintion/fields/InputField";
+import { InputType } from "../defintion/types/InputType";
+import { GQLField } from "../defintion/fields/GQLField";
+import { GQLType } from "../defintion/types/GQLType";
+import { Middleware } from "../defintion/middlewares/Middleware";
+import { Removable, ArrayHelper } from "../helpers/ArrayHelper";
+import { GQLObjectType } from "../defintion/types/GQLObjectType";
 
 export type TranformableTypes =
   | typeof ObjectType
@@ -54,15 +52,24 @@ export class Wrapper {
     });
   }
 
-  transform<T extends TranformableTypes>(
-    toTransform: T,
-    cb: (type: InstanceOf<T>) => void,
-  ) {
+  transform(toTransform: typeof ObjectType, cb: (type: ObjectType) => void);
+  transform(toTransform: typeof InputType, cb: (field: InputType) => void);
+  transform(toTransform: typeof GQLType, cb: (type: GQLType) => void);
+  transform(
+    toTransform: typeof InterfaceType,
+    cb: (type: InterfaceType) => void,
+  );
+  transform(
+    toTransform: typeof GQLObjectType,
+    cb: (type: GQLObjectType) => void,
+  );
+  transform(toTransform: TranformableTypes, cb: (type: any) => void) {
     this._types.map((t) => {
-      if (ClassDescriptor.instanceOf(t, toTransform)) {
-        cb(t as InstanceOf<T>);
+      if (t instanceof toTransform) {
+        cb(t as GQLType);
       }
     });
+    return this;
   }
 
   transformFields(fieldType: typeof ObjectType, cb: (field: Field) => void);
@@ -71,7 +78,7 @@ export class Wrapper {
   transformFields(fieldType: typeof GQLObjectType, cb: (field: Field) => void);
   transformFields(fieldType: typeof GQLType, cb: (field: GQLField) => void);
   transformFields(fieldType: TranformableTypes, cb: (field: any) => void) {
-    this.transform(fieldType, (f: GQLType) => {
+    return this.transform(fieldType as any, (f: GQLType) => {
       f.fields.map(cb);
     });
   }

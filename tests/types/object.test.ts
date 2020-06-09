@@ -6,12 +6,12 @@ import {
   GraphQLInputObjectType,
   GraphQLInterfaceType,
 } from "graphql";
-import { NotNullable } from "../../src/graphql/defintion/modifiers/NotNullable";
-import { InterfaceType } from "../../src/graphql/defintion/types/InterfaceType";
-import { ObjectType } from "../../src/graphql/defintion/types/ObjectType";
-import { InputType } from "../../src/graphql/defintion/types/InputType";
-import { Schema } from "../../src/graphql/defintion/schema/Schema";
-import { Field } from "../../src/graphql/defintion/fields/Field";
+import { NotNullable } from "../../src/defintion/modifiers/NotNullable";
+import { InterfaceType } from "../../src/defintion/types/InterfaceType";
+import { ObjectType } from "../../src/defintion/types/ObjectType";
+import { InputType } from "../../src/defintion/types/InputType";
+import { Schema } from "../../src/defintion/schema/Schema";
+import { Field } from "../../src/defintion/fields/Field";
 
 const userInterface = InterfaceType.create("UserInterface").addFields(
   Field.create("createdAt", Number),
@@ -90,7 +90,7 @@ describe("ObjectType", () => {
     expect((bType.getFields().a.type as GraphQLObjectType).name).toBe("a");
   });
 
-  it("Should create a copy", async () => {
+  it("Should create a copy and remove field", async () => {
     const userCopy = user.copy().setName("UserCopy").removeFields("Username");
 
     const schema = Schema.create(userCopy, user);

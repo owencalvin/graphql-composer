@@ -8,13 +8,13 @@ import {
   GraphQLInputObjectType,
   GraphQLInterfaceType,
 } from "graphql";
-import { InterfaceType } from "../../src/graphql/defintion/types/InterfaceType";
-import { NotNullable } from "../../src/graphql/defintion/modifiers/NotNullable";
-import { InputField } from "../../src/graphql/defintion/fields/InputField";
-import { ObjectType } from "../../src/graphql/defintion/types/ObjectType";
-import { InputType } from "../../src/graphql/defintion/types/InputType";
-import { Schema } from "../../src/graphql/defintion/schema/Schema";
-import { Field } from "../../src/graphql/defintion/fields/Field";
+import { InterfaceType } from "../../src/defintion/types/InterfaceType";
+import { NotNullable } from "../../src/defintion/modifiers/NotNullable";
+import { InputField } from "../../src/defintion/fields/InputField";
+import { ObjectType } from "../../src/defintion/types/ObjectType";
+import { InputType } from "../../src/defintion/types/InputType";
+import { Schema } from "../../src/defintion/schema/Schema";
+import { Field } from "../../src/defintion/fields/Field";
 
 const userInterface = InterfaceType.create("UserInterface").addFields(
   Field.create("createdAt", Number),
@@ -82,7 +82,7 @@ describe("InputType", () => {
     expect((bType.getFields().a.type as GraphQLInputObjectType).name).toBe("a");
   });
 
-  it("Should create a copy", async () => {
+  it("Should create a copy and remove fields", async () => {
     const userCopy = user.copy().setName("UserCopy").removeFields("Username");
 
     const schema = Schema.create(userCopy, user);

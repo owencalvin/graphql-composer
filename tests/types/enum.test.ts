@@ -5,12 +5,12 @@ import {
   GraphQLInputObjectType,
   GraphQLField,
 } from "graphql";
-import { Schema } from "../../src/graphql/defintion/schema/Schema";
-import { EnumType } from "../../src/graphql/defintion/types/composed/enum/EnumType";
-import { EnumValue } from "../../src/graphql/defintion/types/composed/enum/EnumValue";
-import { ObjectType } from "../../src/graphql/defintion/types/ObjectType";
-import { Field } from "../../src/graphql/defintion/fields/Field";
-import { Args } from "../../src/graphql/defintion/types/Args";
+import { Schema } from "../../src/defintion/schema/Schema";
+import { EnumType } from "../../src/defintion/types/composed/enum/EnumType";
+import { EnumValue } from "../../src/defintion/types/composed/enum/EnumValue";
+import { ObjectType } from "../../src/defintion/types/ObjectType";
+import { Field } from "../../src/defintion/fields/Field";
+import { Args } from "../../src/defintion/types/Args";
 
 enum Roles {
   admin = "ADMIN",
@@ -27,7 +27,7 @@ const objectWithEnum = ObjectType.create("ObjectWithEnum")
   .addField("role", rolesEnum)
   .addFields(Field.create("animal", animalsEnum))
   .addFields(
-    Field.create("query", String).addArgs(Args.create("enumArg", rolesEnum)),
+    Field.create("query", String).setArgs(Args.create("enumArg", rolesEnum)),
   );
 
 const interfaceWithEnum = ObjectType.create("InterfaceWithEnum")
