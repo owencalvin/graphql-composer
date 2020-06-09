@@ -1,4 +1,4 @@
-import { KeyValue } from "../../shared/KeyValue";
+import { KeyValue } from "./KeyValue";
 import { GraphQLTypeResolver } from "graphql";
 
 export interface TypeResolvable {

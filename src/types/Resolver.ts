@@ -1,4 +1,4 @@
-import { KeyValue } from "../../shared/KeyValue";
+import { KeyValue } from "./KeyValue";
 import { Next } from "./Next";
 
 export abstract class Resolver<T = KeyValue> {
