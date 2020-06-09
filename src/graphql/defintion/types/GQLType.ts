@@ -1,73 +1,28 @@
 import { GQLField } from "../fields/GQLField";
-import { ObjectType } from "./ObjectType";
-import { InterfaceType } from "./InterfaceType";
-import { InputType } from "./InputType";
 import { InputField } from "../fields/InputField";
 import { Field } from "../fields/Field";
-import { ComposedType } from "./composed/ComposedType";
-import { NotNullableType, NotNullable } from "../modifiers/NotNullable";
 import { ArrayHelper, Removable } from "../../helpers/ArrayHelper";
-import { ConversionType } from "../../types/ConversionType";
 import { ClassType } from "../../../shared/ClassType";
+import { GQLBasicType } from "./GQLBasicType";
 import { InstanceOf } from "../../../shared/InstanceOf";
+import { ConversionType } from "../../types/ConversionType";
 
 export abstract class GQLType<
   BuiltType = any,
   T extends ClassType<any> = any
-> extends ComposedType<BuiltType> {
+> extends GQLBasicType<BuiltType> {
   protected _fields: GQLField[] = [];
-  protected _hidden = false;
   protected _classType?: T;
 
   get fields() {
     return this._fields;
   }
 
-  get hidden() {
-    return this._hidden;
-  }
-
-  get classType() {
-    return this._classType;
-  }
-
-  constructor(name?: string) {
-    super(name);
-  }
-
   abstract convert<Target extends ConversionType>(
     to: Target,
   ): InstanceOf<Target>;
 
-  abstract copy(): InputType | ObjectType | InterfaceType;
-
-  abstract transformFields(cb: (field: InputField | Field) => void);
-
-  abstract suffix();
-
-  static create(...args: any[]): GQLType {
-    throw new Error("Method not overridden");
-  }
-
-  protected toConfigMap<ReturnType>(
-    arr: { name: string; build(): any }[],
-  ): ReturnType {
-    return arr.reduce<any>((prev, item) => {
-      const built = item.build();
-      prev[built.name] = {
-        ...built,
-      };
-      return prev;
-    }, {});
-  }
-
-  protected applyFieldsTransformation<FieldType extends InputField | Field>(
-    cb: (field: InputField | Field) => void,
-  ) {
-    return this.fields.map((field) => {
-      cb(field as FieldType);
-    });
-  }
+  abstract transformFields(cb: (field: InputField | Field) => void): this;
 
   setFields(...fields: GQLField[]): GQLType {
     this._fields = fields;
@@ -82,28 +37,15 @@ export abstract class GQLType<
     return this.setFields(...ArrayHelper.remove(fields, this._fields));
   }
 
-  setHidden(hidden: boolean) {
-    this._hidden = hidden;
-    return this;
-  }
-
   partial() {
-    this.transformFields((field) => {
-      if (field.type instanceof NotNullableType) {
-        field.setType(field.type.type);
-      }
-      return {};
+    return this.transformFields((field) => {
+      field.nullable();
     });
-    return this;
   }
 
   required() {
-    this.transformFields((field) => {
-      if (!(field.type instanceof NotNullableType)) {
-        field.setType(NotNullable(field.type));
-      }
-      return {};
+    return this.transformFields((field) => {
+      field.required();
     });
-    return this;
   }
 }

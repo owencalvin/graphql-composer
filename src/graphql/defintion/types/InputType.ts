@@ -38,7 +38,7 @@ export class InputType<T extends ClassType = any> extends GQLType<
       return new InputType(nameOrType);
     } else if (nameOrType instanceof GQLType) {
       const obj = InputType.create(nameOrType.name)
-        .setHidden(nameOrType.hidden)
+        .setMeta(nameOrType.meta)
         .setDescription(nameOrType.description);
 
       if (nameOrType instanceof InputType) {
@@ -131,7 +131,9 @@ export class InputType<T extends ClassType = any> extends GQLType<
   }
 
   transformFields(cb: (field: InputField) => void) {
-    this.applyFieldsTransformation(cb);
+    this.fields.map((field) => {
+      cb(field);
+    });
     return this;
   }
 }

@@ -63,9 +63,10 @@ export abstract class GQLObjectType<
     );
   }
 
-  protected applyFieldsTransformation(cb: (field: Field) => void) {
-    return this.fields.map((field) => {
+  transformFields(cb: (field: Field) => void) {
+    this.fields.map((field) => {
       cb(field);
     });
+    return this;
   }
 }

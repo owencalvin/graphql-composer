@@ -5,11 +5,11 @@ import { InputFieldType } from "../../types/InputFieldType";
 import { StringKeyOf } from "../../types/StringKeyOf";
 import { InstanceOf } from "../../../shared/InstanceOf";
 import { InputType } from "./InputType";
-import { Meta } from "../../types/Meta";
+import { GQLBasicType } from "./GQLBasicType";
 
-export class Args<T extends ClassType = any> extends Meta {
+export class Args<T extends ClassType = any> extends GQLBasicType {
+  protected _classType?: T;
   private _args: Arg<StringKeyOf<InstanceOf<T>>>[] = [];
-  private _classType?: T;
 
   get classType() {
     return this._classType;
@@ -86,7 +86,19 @@ export class Args<T extends ClassType = any> extends Meta {
     return ArrayHelper.find({ name }, this._args).ref;
   }
 
+  suffix(suffix = "Args") {
+    this.setName(this.name + suffix);
+  }
+
   build() {
-    return this._args.map((a) => a.build());
+    this._built = this._args.map((a) => a.build());
+    return this.built;
+  }
+
+  copy(): Args<T> {
+    return Args.create()
+      .setArgs(...this.args)
+      .setDescription(this.description)
+      .setMeta(this.meta) as any;
   }
 }

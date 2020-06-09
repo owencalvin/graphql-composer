@@ -2,9 +2,7 @@ import { FieldType } from "../../types/FieldType";
 import { GraphQLElement } from "../../types/GraphQLElement";
 import { GraphQLField, GraphQLInputField } from "graphql";
 import { InputFieldType } from "../../types/InputFieldType";
-import { Field } from "./Field";
-import { InputField } from "./InputField";
-import { Arg } from "./Arg";
+import { NotNullableType, NotNullable } from "../modifiers/NotNullable";
 
 export abstract class GQLField<BuiltType = any> extends GraphQLElement<
   BuiltType
@@ -44,6 +42,20 @@ export abstract class GQLField<BuiltType = any> extends GraphQLElement<
 
   setDeprecationReason(deprecationReason: string) {
     this._deprecationReason = deprecationReason;
+    return this;
+  }
+
+  nullable() {
+    if (this.type instanceof NotNullableType) {
+      this._type = (this._type as NotNullableType).type;
+    }
+    return this;
+  }
+
+  required() {
+    if (!(this.type instanceof NotNullableType)) {
+      this._type = NotNullable(this._type);
+    }
     return this;
   }
 }

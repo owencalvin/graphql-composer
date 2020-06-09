@@ -7,6 +7,7 @@ export class Meta<MetaType = any> {
 
   setMeta(meta: any) {
     this._meta = meta;
+    return this;
   }
 
   getMeta<TMetaType = any>(): TMetaType {

@@ -11,7 +11,6 @@ import { EnumValue } from "../../src/graphql/defintion/types/composed/enum/EnumV
 import { ObjectType } from "../../src/graphql/defintion/types/ObjectType";
 import { Field } from "../../src/graphql/defintion/fields/Field";
 import { Args } from "../../src/graphql/defintion/types/Args";
-import { Meta } from "../../src/graphql/types/Meta";
 
 enum Roles {
   admin = "ADMIN",

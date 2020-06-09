@@ -10,11 +10,13 @@ import { GQLField } from "../graphql/defintion/fields/GQLField";
 import { GQLType } from "../graphql/defintion/types/GQLType";
 import { Middleware } from "../graphql/defintion/middlewares/Middleware";
 import { Removable, ArrayHelper } from "../graphql/helpers/ArrayHelper";
+import { GQLObjectType } from "../graphql/defintion/types/GQLObjectType";
 
 export type TranformableTypes =
   | typeof ObjectType
   | typeof InterfaceType
   | typeof InputType
+  | typeof GQLObjectType
   | typeof GQLType;
 
 export class Wrapper {
@@ -47,7 +49,7 @@ export class Wrapper {
   }
 
   addMiddlewares(...middlewares: Middleware[]) {
-    this.transformFields(Field, (f) => {
+    this.transformFields(GQLObjectType, (f) => {
       f.addMiddlewares(...middlewares);
     });
   }
@@ -63,22 +65,14 @@ export class Wrapper {
     });
   }
 
-  transformFields<T extends typeof Field | typeof InputField | typeof GQLField>(
-    fieldType: T,
-    cb: (field: InstanceOf<T>) => void,
-  ) {
-    const fieldTypeMap = new Map<any, TranformableTypes[]>([
-      [Field, [ObjectType, InterfaceType]],
-      [InputField, [InputType]],
-      [GQLField, [GQLType]],
-    ]);
-
-    fieldTypeMap.get(fieldType).map((ot) => {
-      this.transform(ot, (t) => {
-        t.fields.map((f) => {
-          cb(f as any);
-        });
-      });
+  transformFields(fieldType: typeof ObjectType, cb: (field: Field) => void);
+  transformFields(fieldType: typeof InterfaceType, cb: (field: Field) => void);
+  transformFields(fieldType: typeof InputType, cb: (field: InputField) => void);
+  transformFields(fieldType: typeof GQLObjectType, cb: (field: Field) => void);
+  transformFields(fieldType: typeof GQLType, cb: (field: GQLField) => void);
+  transformFields(fieldType: TranformableTypes, cb: (field: any) => void) {
+    this.transform(fieldType, (f: GQLType) => {
+      f.fields.map(cb);
     });
   }
 }

@@ -35,7 +35,7 @@ export class ObjectType<T extends ClassType = any> extends GQLObjectType<
       return new ObjectType(nameOrType);
     } else if (nameOrType instanceof GQLType) {
       const obj = ObjectType.create(nameOrType.name)
-        .setHidden(nameOrType.hidden)
+        .setMeta(nameOrType.meta)
         .setDescription(nameOrType.description);
 
       if (nameOrType instanceof InputType) {
@@ -102,10 +102,5 @@ export class ObjectType<T extends ClassType = any> extends GQLObjectType<
   convert(to: typeof InterfaceType): InterfaceType<T>;
   convert<Target extends typeof GQLType>(to: Target) {
     return to.create(this);
-  }
-
-  transformFields(cb: (field: Field) => void) {
-    this.applyFieldsTransformation(cb);
-    return this;
   }
 }

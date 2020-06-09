@@ -8,5 +8,5 @@ export abstract class ComposedType<BuiltType = any> extends GraphQLElement<
     super(name);
   }
 
-  abstract build(): GraphQLNamedType;
+  abstract build(): BuiltType;
 }
