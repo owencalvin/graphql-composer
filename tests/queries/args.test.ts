@@ -3,13 +3,15 @@ import {
   GraphQLScalarType,
   GraphQLInputObjectType,
 } from "graphql";
-import { InputField } from "../../src/defintion/fields/InputField";
-import { ObjectType } from "../../src/defintion/types/ObjectType";
-import { InputType } from "../../src/defintion/types/InputType";
-import { Schema } from "../../src/defintion/schema/Schema";
-import { Field } from "../../src/defintion/fields/Field";
-import { Args } from "../../src/defintion/types/Args";
-import { Arg } from "../../src/defintion/fields/Arg";
+import {
+  InputField,
+  InputType,
+  Args,
+  ObjectType,
+  Field,
+  Schema,
+  Arg,
+} from "../../src";
 
 class User {
   Username: string;

@@ -1,14 +1,17 @@
-import { ObjectType } from "../defintion/types/ObjectType";
-import { InterfaceType } from "../defintion/types/InterfaceType";
-import { Field } from "../defintion/fields/Field";
-import { ComposedType } from "../defintion/types/composed/ComposedType";
-import { InputField } from "../defintion/fields/InputField";
-import { InputType } from "../defintion/types/InputType";
-import { GQLField } from "../defintion/fields/GQLField";
-import { GQLType } from "../defintion/types/GQLType";
-import { Middleware } from "../defintion/middlewares/Middleware";
-import { Removable, ArrayHelper } from "../helpers/ArrayHelper";
-import { GQLObjectType } from "../defintion/types/GQLObjectType";
+import {
+  ObjectType,
+  InterfaceType,
+  InputType,
+  GQLObjectType,
+  GQLType,
+  GQLAnyType,
+  Removable,
+  ArrayHelper,
+  Middleware,
+  Field,
+  InputField,
+  GQLField,
+} from "..";
 
 export type TranformableTypes =
   | typeof ObjectType
@@ -18,31 +21,31 @@ export type TranformableTypes =
   | typeof GQLType;
 
 export class Wrapper {
-  protected _types: ComposedType[] = [];
+  protected _types: GQLAnyType[] = [];
 
   get types() {
     return this._types;
   }
 
-  protected constructor(...types: ComposedType[]) {
+  protected constructor(...types: GQLAnyType[]) {
     this.setTypes(...types);
   }
 
-  static create(...types: ComposedType[]) {
+  static create(...types: GQLAnyType[]) {
     const wrapper = new Wrapper(...types);
     return wrapper;
   }
 
-  setTypes(...types: ComposedType[]) {
+  setTypes(...types: GQLAnyType[]) {
     this._types = types;
     return this;
   }
 
-  addTypes(...types: ComposedType[]) {
+  addTypes(...types: GQLAnyType[]) {
     return this.setTypes(...this._types, ...types);
   }
 
-  removeTypes(...types: Removable<ComposedType>) {
+  removeTypes(...types: Removable<GQLAnyType>) {
     return this.setTypes(...ArrayHelper.remove(types, this._types));
   }
 

@@ -1,15 +1,18 @@
-import { GQLType } from "./GQLType";
+import {
+  InputField,
+  ObjectType,
+  InterfaceType,
+  GQLObjectType,
+  Removable,
+  ArrayHelper,
+  ClassType,
+  InputFieldType,
+  InstanceOf,
+  StringKeyOf,
+  Args,
+} from "../../../..";
 import { GraphQLInputObjectType, GraphQLInputFieldConfigMap } from "graphql";
-import { InputField } from "../fields/InputField";
-import { ObjectType } from "./ObjectType";
-import { InterfaceType } from "./InterfaceType";
-import { GQLObjectType } from "./GQLObjectType";
-import { Removable, ArrayHelper } from "../../helpers/ArrayHelper";
-import { ClassType } from "../../types/ClassType";
-import { InputFieldType } from "../../types/InputFieldType";
-import { InstanceOf } from "../../types/InstanceOf";
-import { StringKeyOf } from "../../types/StringKeyOf";
-import { Args } from "./Args";
+import { GQLType } from "../GQLType";
 
 export class InputType<T extends ClassType = any> extends GQLType<
   GraphQLInputObjectType,

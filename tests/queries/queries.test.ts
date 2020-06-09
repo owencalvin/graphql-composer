@@ -1,13 +1,15 @@
-import { ObjectType } from "../../src/defintion/types/ObjectType";
-import { InputType } from "../../src/defintion/types/InputType";
-import { Field } from "../../src/defintion/fields/Field";
-import { Args } from "../../src/defintion/types/Args";
-import { Selection } from "../../src/client/Selection";
-import { Request } from "../../src/client/Request";
 import { ApolloServer, gql } from "apollo-server";
-import { Schema } from "../../src/defintion/schema/Schema";
 import ApolloClient from "apollo-boost";
 import fetch from "node-fetch";
+import {
+  ObjectType,
+  InputType,
+  Args,
+  Request,
+  Selection,
+  Field,
+  Schema,
+} from "../../src";
 
 const client = new ApolloClient({
   uri: "http://localhost:4000/graphql",

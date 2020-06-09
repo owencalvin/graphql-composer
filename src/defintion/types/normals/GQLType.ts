@@ -1,11 +1,14 @@
-import { GQLField } from "../fields/GQLField";
-import { InputField } from "../fields/InputField";
-import { Field } from "../fields/Field";
-import { ArrayHelper, Removable } from "../../helpers/ArrayHelper";
-import { ClassType } from "../../types/ClassType";
+import {
+  GQLField,
+  InputField,
+  Field,
+  ArrayHelper,
+  Removable,
+  ClassType,
+  InstanceOf,
+  ConversionType,
+} from "../../..";
 import { GQLBasicType } from "./GQLBasicType";
-import { InstanceOf } from "../../types/InstanceOf";
-import { ConversionType } from "../../types/ConversionType";
 
 export abstract class GQLType<
   BuiltType = any,

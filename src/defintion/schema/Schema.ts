@@ -1,24 +1,21 @@
 import { GraphQLSchema, GraphQLObjectType, GraphQLNamedType } from "graphql";
-import { Wrapper } from "../../wrapper/Wrapper";
-import { ComposedType } from "../types/composed/ComposedType";
-import { GraphQLElement } from "../../types/GraphQLElement";
-import { Removable, ArrayHelper } from "../../helpers/ArrayHelper";
+import { Wrapper, GQLElement, Removable, ArrayHelper, GQLAnyType } from "../..";
 
-export class Schema extends GraphQLElement<GraphQLSchema> {
-  protected _types: ComposedType[] = [];
+export class Schema extends GQLElement<GraphQLSchema> {
+  protected _types: GQLAnyType[] = [];
 
   /**
    * Set the type list to build
    * @param types The type list to build
    */
-  setTypes(...types: (ComposedType | Wrapper)[]) {
+  setTypes(...types: (GQLAnyType | Wrapper)[]) {
     this._types = [
       ...types
         .flatMap((item) => {
           if (item instanceof Wrapper) {
             return item.types;
           }
-          return item as ComposedType;
+          return item as GQLAnyType;
         })
         .filter((t) => t),
     ];
@@ -29,7 +26,7 @@ export class Schema extends GraphQLElement<GraphQLSchema> {
    * Add a type to the list to build
    * @param types The type list to build
    */
-  addTypes(...types: (ComposedType | Wrapper)[]) {
+  addTypes(...types: (GQLAnyType | Wrapper)[]) {
     return this.setTypes(...this._types, ...types);
   }
 
@@ -37,7 +34,7 @@ export class Schema extends GraphQLElement<GraphQLSchema> {
    * Remove some types to the list
    * @param types The type list to remove
    */
-  removeTypes(...types: Removable<ComposedType>) {
+  removeTypes(...types: Removable<GQLAnyType>) {
     return this.setTypes(...ArrayHelper.remove(types, this._types));
   }
 
@@ -74,7 +71,7 @@ export class Schema extends GraphQLElement<GraphQLSchema> {
    * Create a new schema
    * @param types The type list to build
    */
-  static create(...types: (ComposedType | Wrapper)[]) {
+  static create(...types: (GQLAnyType | Wrapper)[]) {
     const schema = new Schema();
     schema.setTypes(...types);
     return schema;

@@ -1,12 +1,13 @@
-import { FieldType } from "../../types/FieldType";
-import { GraphQLElement } from "../../types/GraphQLElement";
 import { GraphQLField, GraphQLInputField } from "graphql";
-import { InputFieldType } from "../../types/InputFieldType";
-import { NotNullableType, NotNullable } from "../modifiers/NotNullable";
+import {
+  FieldType,
+  GQLElement,
+  InputFieldType,
+  NotNullableType,
+  NotNullable,
+} from "../..";
 
-export abstract class GQLField<BuiltType = any> extends GraphQLElement<
-  BuiltType
-> {
+export abstract class GQLField<BuiltType = any> extends GQLElement<BuiltType> {
   protected _type: FieldType | InputFieldType;
   protected _deprecationReason: string;
   protected _description: string;

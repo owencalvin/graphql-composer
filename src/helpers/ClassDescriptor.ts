@@ -1,5 +1,4 @@
-import { ClassType } from "../types/ClassType";
-import { ClassToInterface } from "../types/ClassToInterface";
+import { ClassType, ClassToInterface } from "..";
 
 export type PossibleType =
   | string

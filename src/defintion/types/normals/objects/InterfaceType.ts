@@ -1,13 +1,15 @@
-import { GQLType } from "./GQLType";
 import { GraphQLInterfaceType, GraphQLTypeResolver } from "graphql";
-import { Field } from "../fields/Field";
-import { TypeResolvable } from "../../types/TypeResolvable";
-import { KeyValue } from "../../types/KeyValue";
-import { TypeResolver } from "../../helpers/TypeResolver";
+import {
+  GQLType,
+  ObjectType,
+  ClassType,
+  TypeResolvable,
+  InputType,
+  Field,
+  KeyValue,
+  TypeResolver,
+} from "../../../..";
 import { GQLObjectType } from "./GQLObjectType";
-import { ObjectType } from "./ObjectType";
-import { InputType } from "./InputType";
-import { ClassType } from "../../types/ClassType";
 
 export class InterfaceType<T extends ClassType = any>
   extends GQLObjectType<GraphQLInterfaceType, T>

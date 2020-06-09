@@ -7,11 +7,13 @@ import {
   GraphQLBoolean,
   GraphQLInputType,
 } from "graphql";
-import { FieldType } from "../types/FieldType";
-import { NotNullableType } from "../defintion/modifiers/NotNullable";
-import { DateTime } from "../scalars/DateTime";
-import { InputFieldType } from "../types/InputFieldType";
-import { ComposedType } from "../defintion/types/composed/ComposedType";
+import {
+  FieldType,
+  NotNullableType,
+  DateTime,
+  InputFieldType,
+  GQLAnyType,
+} from "..";
 
 export class TypeParser {
   static parse<ReturnType>(type: FieldType | InputFieldType): ReturnType {
@@ -22,7 +24,7 @@ export class TypeParser {
       finalType = GraphQLList(finalType);
     }
 
-    if (type instanceof ComposedType) {
+    if (type instanceof GQLAnyType) {
       finalType = type.built;
     }
 

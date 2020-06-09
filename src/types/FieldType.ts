@@ -1,8 +1,5 @@
 import { GraphQLScalarType } from "graphql";
-import { NotNullableType } from "../defintion/modifiers/NotNullable";
-import { GQLObjectType } from "../defintion/types/GQLObjectType";
-import { EnumType } from "../defintion/types/composed/enum/EnumType";
-import { UnionType } from "../defintion/types/composed/UnionType";
+import { NotNullableType, GQLObjectType, EnumType, UnionType } from "..";
 
 export type FieldType =
   | typeof Boolean

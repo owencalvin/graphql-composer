@@ -1,13 +1,16 @@
-import { GraphQLElement } from "../../../types/GraphQLElement";
 import { GraphQLUnionType, GraphQLTypeResolver } from "graphql";
-import { ComposedType } from "./ComposedType";
-import { KeyValue } from "../../../types/KeyValue";
-import { TypeResolver } from "../../../helpers/TypeResolver";
-import { TypeResolvable } from "../../../types/TypeResolvable";
-import { ObjectType } from "../ObjectType";
-import { Removable, ArrayHelper } from "../../../helpers/ArrayHelper";
+import {
+  GQLElement,
+  TypeResolvable,
+  ObjectType,
+  Removable,
+  ArrayHelper,
+  KeyValue,
+  TypeResolver,
+} from "../../..";
+import { GQLAnyType } from "../GQLAnyType";
 
-export class UnionType extends ComposedType<GraphQLUnionType>
+export class UnionType extends GQLAnyType<GraphQLUnionType>
   implements TypeResolvable {
   private _types: ObjectType[] = [];
   private _typeResolver: GraphQLTypeResolver<any, any>;
@@ -79,7 +82,7 @@ export class UnionType extends ComposedType<GraphQLUnionType>
       resolveType: this._typeResolver,
       description: this._description,
       types: () => {
-        return GraphQLElement.built(this._types);
+        return GQLElement.built(this._types);
       },
       extensions: [],
     });

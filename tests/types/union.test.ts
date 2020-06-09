@@ -3,10 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLInterfaceType,
 } from "graphql";
-import { Schema } from "../../src/defintion/schema/Schema";
-import { ObjectType } from "../../src/defintion/types/ObjectType";
-import { UnionType } from "../../src/defintion/types/composed/UnionType";
-import { InterfaceType } from "../../src/defintion/types/InterfaceType";
+import { Schema, ObjectType, UnionType, InterfaceType } from "../../src";
 
 const animal = ObjectType.create("Animal");
 const human = ObjectType.create("Human");

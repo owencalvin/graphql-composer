@@ -5,12 +5,14 @@ import {
   GraphQLInputObjectType,
   GraphQLField,
 } from "graphql";
-import { Schema } from "../../src/defintion/schema/Schema";
-import { EnumType } from "../../src/defintion/types/composed/enum/EnumType";
-import { EnumValue } from "../../src/defintion/types/composed/enum/EnumValue";
-import { ObjectType } from "../../src/defintion/types/ObjectType";
-import { Field } from "../../src/defintion/fields/Field";
-import { Args } from "../../src/defintion/types/Args";
+import {
+  Schema,
+  EnumType,
+  EnumValue,
+  ObjectType,
+  Field,
+  Args,
+} from "../../src";
 
 enum Roles {
   admin = "ADMIN",

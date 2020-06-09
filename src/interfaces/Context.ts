@@ -1,5 +1,5 @@
 import { GraphQLResolveInfo, Source } from "graphql";
-import { Field } from "../defintion/fields/Field";
+import { Field } from "..";
 
 /**
  * The request context

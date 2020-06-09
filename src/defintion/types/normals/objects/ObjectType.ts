@@ -1,11 +1,14 @@
-import { Field } from "../fields/Field";
 import { GraphQLObjectType } from "graphql";
-import { InterfaceType } from "./InterfaceType";
+import {
+  Field,
+  InterfaceType,
+  InputType,
+  GQLType,
+  ClassType,
+  Removable,
+  ArrayHelper,
+} from "../../../..";
 import { GQLObjectType } from "./GQLObjectType";
-import { InputType } from "./InputType";
-import { GQLType } from "./GQLType";
-import { Removable, ArrayHelper } from "../../helpers/ArrayHelper";
-import { ClassType } from "../../types/ClassType";
 
 export class ObjectType<T extends ClassType = any> extends GQLObjectType<
   GraphQLObjectType,

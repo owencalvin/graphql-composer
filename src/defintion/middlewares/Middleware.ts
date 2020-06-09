@@ -1,7 +1,6 @@
-import { GraphQLElement } from "../../types/GraphQLElement";
-import { ResolveFunction } from "../../types/ResolveFunction";
+import { GQLElement, ResolveFunction } from "../..";
 
-export class Middleware extends GraphQLElement<ResolveFunction> {
+export class Middleware extends GQLElement<ResolveFunction> {
   private _function;
 
   get function() {

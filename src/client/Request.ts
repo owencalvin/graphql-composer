@@ -1,10 +1,12 @@
-import { RequestType } from "../types/RequestType";
-import { Selection } from "./Selection";
-import { Variable } from "./Variable";
-import { InputFieldType } from "../types/InputFieldType";
-import { ComposedType } from "../defintion/types/composed/ComposedType";
-import { NotNullableType } from "../defintion/modifiers/NotNullable";
-import { KeyValue } from "../types/KeyValue";
+import {
+  RequestType,
+  Selection,
+  Variable,
+  KeyValue,
+  InputFieldType,
+  GQLAnyType,
+  NotNullableType,
+} from "..";
 
 export type ArgValue<T> = {
   [P in keyof T]?: Partial<T[P]> | string;
@@ -125,7 +127,7 @@ export class Request<ArgsType = any> {
         return "Bool";
     }
 
-    if (type instanceof ComposedType) {
+    if (type instanceof GQLAnyType) {
       return type.name;
     }
 

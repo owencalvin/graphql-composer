@@ -4,21 +4,24 @@ import {
   GraphQLResolveInfo,
   GraphQLOutputType,
 } from "graphql";
+import {
+  Args,
+  ResolveFunction,
+  Middleware,
+  FieldType,
+  StringKeyOf,
+  InputField,
+  InstanceOf,
+  Removable,
+  ArrayHelper,
+  KeyValue,
+  ClassType,
+  InputType,
+  InputFieldType,
+  TypeParser,
+  Context,
+} from "../..";
 import { GQLField } from "./GQLField";
-import { ResolveFunction } from "../../types/ResolveFunction";
-import { FieldType } from "../../types/FieldType";
-import { TypeParser } from "../../helpers/TypeParser";
-import { ArrayHelper, Removable } from "../../helpers/ArrayHelper";
-import { Middleware } from "../middlewares/Middleware";
-import { Args } from "../types/Args";
-import { ClassType } from "../../types/ClassType";
-import { InputFieldType } from "../../types/InputFieldType";
-import { InputField } from "./InputField";
-import { StringKeyOf } from "../../types/StringKeyOf";
-import { InstanceOf } from "../../types/InstanceOf";
-import { KeyValue } from "../../types/KeyValue";
-import { Context } from "../../types/Context";
-import { InputType } from "../types/InputType";
 
 export class Field<NameType = string> extends GQLField<
   GraphQLField<any, any, any>

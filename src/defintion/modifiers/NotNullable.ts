@@ -1,5 +1,4 @@
-import { FieldType } from "../../types/FieldType";
-import { InputFieldType } from "../../types/InputFieldType";
+import { FieldType, InputFieldType } from "../..";
 
 /**
  * Create a nullable type from an existing one

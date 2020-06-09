@@ -1,6 +1,4 @@
-import { InputType } from "../defintion/types/InputType";
-import { ObjectType } from "../defintion/types/ObjectType";
-import { InterfaceType } from "../defintion/types/InterfaceType";
+import { InputType, ObjectType, InterfaceType } from "..";
 
 export type ConversionType =
   | typeof InputType

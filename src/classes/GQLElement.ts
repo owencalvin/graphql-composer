@@ -1,6 +1,6 @@
 import { Meta } from "./Meta";
 
-export class GraphQLElement<BuiltType> extends Meta {
+export class GQLElement<BuiltType> extends Meta {
   protected _name: string;
   protected _ref: symbol;
   protected _built: BuiltType;
@@ -28,7 +28,7 @@ export class GraphQLElement<BuiltType> extends Meta {
     this._ref = Symbol();
   }
 
-  static built<BuiltType = any>(elements: GraphQLElement<BuiltType>[]) {
+  static built<BuiltType = any>(elements: GQLElement<BuiltType>[]) {
     return elements.map((e) => e.built);
   }
 

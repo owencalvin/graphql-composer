@@ -1,11 +1,14 @@
-import { Field } from "../fields/Field";
-import { ArrayHelper, Removable } from "../../helpers/ArrayHelper";
-import { GQLType } from "./GQLType";
 import { GraphQLFieldConfigMap, GraphQLFieldConfigArgumentMap } from "graphql";
-import { ClassType } from "../../types/ClassType";
-import { FieldType } from "../../types/FieldType";
-import { StringKeyOf } from "../../types/StringKeyOf";
-import { InstanceOf } from "../../types/InstanceOf";
+import {
+  Field,
+  ClassType,
+  StringKeyOf,
+  InstanceOf,
+  FieldType,
+  Removable,
+  ArrayHelper,
+} from "../../../..";
+import { GQLType } from "../GQLType";
 
 export abstract class GQLObjectType<
   BuiltType = any,

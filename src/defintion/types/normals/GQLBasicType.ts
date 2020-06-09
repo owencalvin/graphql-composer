@@ -1,10 +1,10 @@
-import { ComposedType } from "./composed/ComposedType";
-import { ClassType } from "../../types/ClassType";
+import { ClassType } from "../../..";
+import { GQLAnyType } from "../GQLAnyType";
 
 export abstract class GQLBasicType<
   BuiltType = any,
   T extends ClassType<any> = any
-> extends ComposedType<BuiltType> {
+> extends GQLAnyType<BuiltType> {
   protected _classType?: T;
 
   get classType() {

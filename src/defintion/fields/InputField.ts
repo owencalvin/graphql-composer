@@ -1,11 +1,13 @@
-import { GQLField } from "./GQLField";
 import { GraphQLInputField } from "graphql";
-import { TypeParser } from "../../helpers/TypeParser";
-import { InputFieldType } from "../../types/InputFieldType";
-import { Field } from "./Field";
-import { StringKeyOf } from "../../types/StringKeyOf";
-import { InstanceOf } from "../../types/InstanceOf";
-import { Arg } from "./Arg";
+import {
+  InputFieldType,
+  StringKeyOf,
+  InstanceOf,
+  TypeParser,
+  Field,
+  Arg,
+} from "../..";
+import { GQLField } from "./GQLField";
 
 export class InputField<NameType = string> extends GQLField<GraphQLInputField> {
   protected _name: NameType & string;

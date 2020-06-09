@@ -1,4 +1,4 @@
-import { InputFieldType } from "../types/InputFieldType";
+import { InputFieldType } from "..";
 
 export class Variable {
   private _name: string;

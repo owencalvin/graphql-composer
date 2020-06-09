@@ -1,10 +1,13 @@
-import { Arg } from "../fields/Arg";
-import { ClassType } from "../../types/ClassType";
-import { Removable, ArrayHelper } from "../../helpers/ArrayHelper";
-import { InputFieldType } from "../../types/InputFieldType";
-import { StringKeyOf } from "../../types/StringKeyOf";
-import { InstanceOf } from "../../types/InstanceOf";
-import { InputType } from "./InputType";
+import {
+  Arg,
+  ClassType,
+  StringKeyOf,
+  InstanceOf,
+  InputType,
+  InputFieldType,
+  Removable,
+  ArrayHelper,
+} from "../../..";
 import { GQLBasicType } from "./GQLBasicType";
 
 export class Args<T extends ClassType = any> extends GQLBasicType {

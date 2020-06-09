@@ -4,12 +4,14 @@ import {
   GraphQLInterfaceType,
   GraphQLInputType,
 } from "graphql";
-import { Schema } from "../../src/defintion/schema/Schema";
-import { ObjectType } from "../../src/defintion/types/ObjectType";
-import { UnionType } from "../../src/defintion/types/composed/UnionType";
-import { InterfaceType } from "../../src/defintion/types/InterfaceType";
-import { Wrapper } from "../../src/wrapper/Wrapper";
-import { InputType } from "../../src/defintion/types/InputType";
+import {
+  Schema,
+  ObjectType,
+  UnionType,
+  InterfaceType,
+  InputType,
+  Wrapper,
+} from "../../src";
 
 const animal = ObjectType.create("Animal").addField("a", String);
 const human = ObjectType.create("Human").addField("b", String);

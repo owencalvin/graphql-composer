@@ -1,5 +1,4 @@
-import { KeyValue } from "../types/KeyValue";
-import { Next } from "./Next";
+import { KeyValue, Next } from "..";
 
 export type ResolveFunction<ReturnType = any, ArgsType = KeyValue> = (
   args: ArgsType,

@@ -1,5 +1,5 @@
-import { KeyValue } from "./KeyValue";
 import { GraphQLTypeResolver } from "graphql";
+import { KeyValue } from "..";
 
 export interface TypeResolvable {
   defaultTypeResolver(obj: KeyValue): any;

@@ -1,4 +1,4 @@
-import { StringKeyOf } from "../types/StringKeyOf";
+import { StringKeyOf } from "..";
 
 export class Selection<Type = any> {
   private _properties: StringKeyOf<Type>[];

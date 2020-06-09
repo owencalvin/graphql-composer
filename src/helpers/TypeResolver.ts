@@ -1,5 +1,4 @@
-import { KeyValue } from "../types/KeyValue";
-import { GQLType } from "../defintion/types/GQLType";
+import { KeyValue, GQLType } from "..";
 
 export class TypeResolver {
   static resolve(obj: KeyValue, types: GQLType[]) {
