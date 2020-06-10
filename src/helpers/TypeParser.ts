@@ -50,7 +50,7 @@ export class TypeParser {
       if (type instanceof NullableType) {
         finalType = this.parse(type.type);
       } else {
-        finalType = GraphQLNonNull(type as any);
+        finalType = GraphQLNonNull(finalType);
       }
     } else {
       if (type instanceof NotNullableType) {
