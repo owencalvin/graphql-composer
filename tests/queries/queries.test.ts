@@ -9,6 +9,7 @@ import {
   Selection,
   Field,
   Schema,
+  InputField,
 } from "../../src";
 
 const client = new ApolloClient({
@@ -23,6 +24,7 @@ class User {
     .suffix()
     .addField("Username", String);
 }
+const f = InputField.create<User>("Username", String).name === "ddd";
 
 class A {
   a: string;

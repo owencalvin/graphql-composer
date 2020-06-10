@@ -1,7 +1,7 @@
 import { Meta } from "./Meta";
 
 export class GQLElement<BuiltType, NameType = string> extends Meta {
-  protected _name: NameType & string;
+  protected _name: string | (NameType & string);
   protected _ref: symbol;
   protected _built: BuiltType;
   protected _description?: string;
@@ -22,7 +22,7 @@ export class GQLElement<BuiltType, NameType = string> extends Meta {
     return this._built;
   }
 
-  protected constructor(name?: NameType & string) {
+  protected constructor(name?: string) {
     super();
     this.setName(name);
     this._ref = Symbol();
@@ -37,6 +37,8 @@ export class GQLElement<BuiltType, NameType = string> extends Meta {
     throw new Error("create method not implemented");
   }
 
+  setName(name: NameType & string);
+  setName(name: string);
   setName(name: NameType & string) {
     this._name = name;
     return this;
