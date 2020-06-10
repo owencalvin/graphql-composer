@@ -24,7 +24,7 @@ class User {
     .suffix()
     .addField("Username", String);
 }
-const f = InputField.create<User>("Username", String).name === "ddd";
+const f = InputField.create<User>("Username", String);
 
 class A {
   a: string;

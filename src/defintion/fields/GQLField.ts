@@ -27,7 +27,7 @@ export abstract class GQLField<
     return this._deprecationReason;
   }
 
-  constructor(name: NameType & string, type: FieldType | InputFieldType) {
+  constructor(name: string, type: FieldType | InputFieldType) {
     super(name);
     this.setType(type);
   }
