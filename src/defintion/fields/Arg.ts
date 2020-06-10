@@ -5,9 +5,10 @@ import {
   TypeParser,
   KeyValue,
   InputField,
+  Schema,
+  Field,
 } from "../..";
 import { GQLField } from "./GQLField";
-import { Field } from "./Field";
 
 export class Arg<NameType = string, MetaType = KeyValue> extends GQLField<
   GraphQLArgument,
@@ -50,7 +51,7 @@ export class Arg<NameType = string, MetaType = KeyValue> extends GQLField<
   build(): GraphQLArgument {
     return {
       name: this._name,
-      type: TypeParser.parse(this._type),
+      type: TypeParser.parse(this._type, Schema.config.notNullableByDefault),
       description: this._description,
       defaultValue: this._defaultValue,
       astNode: undefined,

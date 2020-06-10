@@ -37,9 +37,12 @@ export class GQLElement<
     return elements.map((e) => e.built);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   static create(...args: any[]) {
-    throw new Error("create method not implemented");
+    throw new Error("Method not overridden");
+  }
+
+  build(...args: any[]) {
+    throw new Error("Method not overridden");
   }
 
   setName(name: NameType & string) {
@@ -51,6 +54,4 @@ export class GQLElement<
     this._description = description;
     return this;
   }
-
-  build() {}
 }

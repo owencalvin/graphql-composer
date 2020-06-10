@@ -6,6 +6,7 @@ export * from "./fields/InputField";
 export * from "./middlewares/Middleware";
 
 export * from "./modifiers/NotNullable";
+export * from "./modifiers/Nullable";
 
 export * from "./schema/Schema";
 

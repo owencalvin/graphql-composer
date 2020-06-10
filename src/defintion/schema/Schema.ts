@@ -6,6 +6,7 @@ import {
   ArrayHelper,
   GQLAnyType,
   KeyValue,
+  SchemaConfig,
 } from "../..";
 
 export class Schema<MetaType = KeyValue> extends GQLElement<
@@ -14,6 +15,11 @@ export class Schema<MetaType = KeyValue> extends GQLElement<
   MetaType
 > {
   protected _types: GQLAnyType[] = [];
+  private static _config: SchemaConfig = {};
+
+  static get config() {
+    return this._config;
+  }
 
   /**
    * Set the type list to build

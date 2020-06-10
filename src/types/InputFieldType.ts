@@ -1,5 +1,5 @@
 import { GraphQLScalarType } from "graphql";
-import { InputType, EnumType, NotNullableType } from "..";
+import { InputType, EnumType, NotNullableType, NullableType } from "..";
 
 export type InputFieldType =
   | typeof Boolean
@@ -10,4 +10,5 @@ export type InputFieldType =
   | InputType
   | EnumType
   | InputFieldType[]
-  | NotNullableType<InputFieldType>;
+  | NotNullableType<InputFieldType>
+  | NullableType;

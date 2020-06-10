@@ -7,6 +7,7 @@ import {
   Field,
   Arg,
   KeyValue,
+  Schema,
 } from "../..";
 import { GQLField } from "./GQLField";
 
@@ -59,7 +60,7 @@ export class InputField<
   build() {
     const input: GraphQLInputField = {
       name: this._name,
-      type: TypeParser.parse(this._type),
+      type: TypeParser.parse(this._type, Schema.config.notNullableByDefault),
       description: this._description,
       defaultValue: this._defaultValue,
       astNode: undefined,

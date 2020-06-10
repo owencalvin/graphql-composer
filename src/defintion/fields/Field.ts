@@ -19,6 +19,7 @@ import {
   InputFieldType,
   TypeParser,
   Context,
+  Schema,
 } from "../..";
 import { GQLField } from "./GQLField";
 
@@ -208,7 +209,10 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
 
     const field: GraphQLField<any, any, any> = {
       name: this._name,
-      type: TypeParser.parse<GraphQLOutputType>(this._type),
+      type: TypeParser.parse<GraphQLOutputType>(
+        this._type,
+        Schema.config.notNullableByDefault,
+      ),
       resolve:
         this._middlewares.length > 0 ? this.resolveField.bind(this) : undefined,
       deprecationReason: this._deprecationReason || null,

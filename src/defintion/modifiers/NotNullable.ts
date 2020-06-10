@@ -1,7 +1,7 @@
 import { FieldType, InputFieldType } from "../..";
 
 /**
- * Create a nullable type from an existing one
+ * Create a not nullable type from an existing one
  * @param type The type to convert
  */
 export function NotNullable<

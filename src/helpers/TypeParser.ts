@@ -13,10 +13,14 @@ import {
   DateTime,
   InputFieldType,
   GQLAnyType,
+  NullableType,
 } from "..";
 
 export class TypeParser {
-  static parse<ReturnType>(type: FieldType | InputFieldType): ReturnType {
+  static parse<ReturnType>(
+    type: FieldType | InputFieldType,
+    notNullableByDefault = false,
+  ): ReturnType {
     let finalType: GraphQLOutputType | GraphQLInputType;
 
     if (Array.isArray(type)) {
@@ -42,8 +46,16 @@ export class TypeParser {
         break;
     }
 
-    if (type instanceof NotNullableType) {
-      finalType = GraphQLNonNull(this.parse(type.type));
+    if (notNullableByDefault) {
+      if (type instanceof NullableType) {
+        finalType = this.parse(type.type);
+      } else {
+        finalType = GraphQLNonNull(type as any);
+      }
+    } else {
+      if (type instanceof NotNullableType) {
+        finalType = GraphQLNonNull(this.parse(type.type));
+      }
     }
 
     return finalType as any;
