@@ -11,16 +11,22 @@ import {
   InterfaceType,
   InputType,
   Wrapper,
+  Field,
+  InputField,
 } from "../../src";
 
-const animal = ObjectType.create("Animal").addField("a", String);
-const human = ObjectType.create("Human").addField("b", String);
+const animal = ObjectType.create("Animal").addFields(Field.create("a", String));
+const human = ObjectType.create("Human").addFields(Field.create("b", String));
 
 const union = UnionType.create("AnimalOrHuman", animal).addTypes(human);
 
-const obj = ObjectType.create("Object").addField("union", union);
-const interf = InterfaceType.create("Interface").addField("union", union);
-const input = InputType.create("Input").addField("input", String);
+const obj = ObjectType.create("Object").addFields(Field.create("union", union));
+const interf = InterfaceType.create("Interface").addFields(
+  Field.create("union", union),
+);
+const input = InputType.create("Input").addFields(
+  InputField.create("input", String),
+);
 
 describe("Wrapper", () => {
   it("Should create a Wrapper", async () => {

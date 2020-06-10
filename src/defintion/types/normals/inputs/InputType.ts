@@ -85,29 +85,6 @@ export class InputType<T extends ClassType = any> extends GQLType<
     return this;
   }
 
-  /**
-   * Add a field to the fields list
-   * @param name The field name
-   * @param type The field type
-   */
-  addField(
-    name: StringKeyOf<InstanceOf<T>>,
-    type: InputFieldType,
-  ): InputType<T>;
-  addField(
-    nameOrField: StringKeyOf<InstanceOf<T>> | InputField,
-    type?: InputFieldType,
-  ): InputType<T> {
-    let input: InputField;
-    if (typeof nameOrField === "string") {
-      input = InputField.create(nameOrField, type);
-    } else {
-      input = nameOrField as InputField;
-    }
-
-    return this.setFields(...this._fields, input);
-  }
-
   addFields(...fields: InputField<StringKeyOf<InstanceOf<T>>>[]): InputType<T> {
     return this.setFields(...this._fields, ...fields);
   }

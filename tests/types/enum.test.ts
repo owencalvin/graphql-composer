@@ -26,18 +26,18 @@ const animalsEnum = EnumType.create("Animals")
 const rolesEnum = EnumType.create("Roles", Roles);
 
 const objectWithEnum = ObjectType.create("ObjectWithEnum")
-  .addField("role", rolesEnum)
+  .addFields(Field.create("role", rolesEnum))
   .addFields(Field.create("animal", animalsEnum))
   .addFields(
     Field.create("query", String).setArgs(Args.create("enumArg", rolesEnum)),
   );
 
 const interfaceWithEnum = ObjectType.create("InterfaceWithEnum")
-  .addField("role", rolesEnum)
+  .addFields(Field.create("role", rolesEnum))
   .addFields(Field.create("animal", animalsEnum));
 
 const inputWithEnum = ObjectType.create("InputWithEnum")
-  .addField("role", rolesEnum)
+  .addFields(Field.create("role", rolesEnum))
   .addFields(Field.create("animal", animalsEnum));
 
 describe("Enum", () => {

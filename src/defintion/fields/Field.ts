@@ -11,7 +11,6 @@ import {
   FieldType,
   StringKeyOf,
   InputField,
-  InstanceOf,
   Removable,
   ArrayHelper,
   KeyValue,
@@ -60,6 +59,7 @@ export class Field<NameType = string> extends GQLField<
     name: StringKeyOf<NameType>,
     type: FieldType,
   ): Field<StringKeyOf<NameType>>;
+  static create(name: string, type: FieldType): Field<string>;
   static create<NameType = any>(
     field: InputField<any>,
   ): Field<StringKeyOf<NameType>>;

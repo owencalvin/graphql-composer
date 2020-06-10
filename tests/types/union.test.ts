@@ -3,21 +3,19 @@ import {
   GraphQLObjectType,
   GraphQLInterfaceType,
 } from "graphql";
-import { Schema, ObjectType, UnionType, InterfaceType } from "../../src";
+import { Schema, ObjectType, UnionType, InterfaceType, Field } from "../../src";
 
 const animal = ObjectType.create("Animal");
 const human = ObjectType.create("Human");
 
 const union = UnionType.create("AnimalOrHuman", animal).addTypes(human);
 
-const objectWithUnion = ObjectType.create("ObjectWithUnion").addField(
-  "union",
-  union,
+const objectWithUnion = ObjectType.create("ObjectWithUnion").addFields(
+  Field.create("union", union),
 );
 
-const interfaceWithUnion = InterfaceType.create("InterfaceWithUnion").addField(
-  "union",
-  union,
+const interfaceWithUnion = InterfaceType.create("InterfaceWithUnion").addFields(
+  Field.create("union", union),
 );
 
 describe("Enum", () => {

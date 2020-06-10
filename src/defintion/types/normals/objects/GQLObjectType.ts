@@ -26,23 +26,6 @@ export abstract class GQLObjectType<
     super(name);
   }
 
-  /**
-   * Add a single field to the fields list
-   * @param name The field name
-   * @param type The field type
-   */
-  addField<ReturnType = any, ArgType = KeyValue>(
-    name: StringKeyOf<InstanceOf<T>>,
-    type: FieldType,
-    resolver?: ResolveFunction<ReturnType, ArgType>,
-    args?: Args<ClassType<ArgType>>,
-  ) {
-    return this.setFields(
-      ...this._fields,
-      Field.create(name, type).setResolver(resolver, args),
-    );
-  }
-
   setFields(...fields: Field<StringKeyOf<InstanceOf<T>>>[]) {
     this._fields = fields;
     return this;

@@ -10,6 +10,7 @@ import {
   Field,
   Schema,
   InputField,
+  Arg,
 } from "../../src";
 
 const client = new ApolloClient({
@@ -22,9 +23,9 @@ class User {
 
   static readonly inputType = InputType.create(User)
     .suffix()
-    .addField("Username", String);
+    .addFields(InputField.create("Username", String));
 }
-const f = InputField.create<User>("Username", String);
+const f = InputField.create<User>("Username", String).name === "ddd";
 
 class A {
   a: string;
@@ -35,18 +36,18 @@ class A {
     return true;
   }
 
-  static readonly args = Args.create(A)
-    .addArg("a", String)
-    .addArg("b", Number)
-    .addArg("user", User.inputType);
+  static readonly args = Args.create(A).addArgs(
+    Arg.create("a", String),
+    Arg.create("b", String),
+    Arg.create("user", String),
+  );
 }
 
 class Response {
   code: number;
 
-  static readonly objectType = ObjectType.create(Response).addField(
-    "code",
-    Number,
+  static readonly objectType = ObjectType.create(Response).addFields(
+    Field.create("code", Number),
   );
 }
 

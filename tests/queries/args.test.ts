@@ -18,7 +18,7 @@ class User {
 
   static inputType = InputType.create(User)
     .suffix()
-    .addField("Username", String);
+    .addFields(InputField.create("Username", String));
 }
 
 class A extends User {
@@ -28,10 +28,11 @@ class A extends User {
 
   static resolve() {}
 
-  static args = Args.create(A)
-    .addArg("a", String)
-    .addArg("b", Number)
-    .addArg("user", User.inputType);
+  static args = Args.create(A).addArgs(
+    Arg.create("a", String),
+    Arg.create("b", Number),
+    Arg.create("user", User.inputType),
+  );
 }
 
 class Z {
@@ -42,10 +43,10 @@ const user = ObjectType.create("User").addFields(
   Field.create("Email", Number).setResolver(A.resolve, A.args),
   Field.create("Username", Number).setResolver<any>(
     A.resolve,
-    Args.create(Z).addArg("z", String),
+    Args.create(Z).addArgs(Arg.create("z", String)),
   ),
   Field.create("Role", Number).setResolver(() => {},
-  Args.create().addArg("x", Date)),
+  Args.create().addArgs(Arg.create("x", Date))),
 );
 
 describe("Args", () => {
@@ -99,7 +100,10 @@ describe("Args", () => {
     );
     user.addFields(
       Field.create("Infos", String).setArgs(
-        Args.create().addArg("a", infosInput).addArgs(Arg.create("b", String)),
+        Args.create().addArgs(
+          Arg.create("a", infosInput),
+          Arg.create("b", String),
+        ),
       ),
     );
 

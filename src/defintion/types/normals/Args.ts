@@ -78,16 +78,6 @@ export class Args<T extends ClassType = any> extends GQLBasicType {
   }
 
   /**
-   * Add a single argument in the type
-   * @param name The argument name
-   * @param type The argument type
-   */
-  addArg(name: StringKeyOf<InstanceOf<T>>, type: InputFieldType) {
-    this.args.push(Arg.create(name, type));
-    return this;
-  }
-
-  /**
    * Remove some arguments in the type
    * @param args The argument IDs
    */
