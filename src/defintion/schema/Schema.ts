@@ -14,12 +14,13 @@ export class Schema<MetaType = KeyValue> extends GQLElement<
   any,
   MetaType
 > {
-  protected _types: GQLAnyType[] = [];
-  private static _config: SchemaConfig = {};
+  protected static _config: SchemaConfig = {};
 
   static get config() {
     return this._config;
   }
+
+  protected _types: GQLAnyType[] = [];
 
   static setConfig(config: SchemaConfig) {
     this._config = config || {};
