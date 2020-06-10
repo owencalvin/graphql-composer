@@ -50,6 +50,7 @@ export class InputField<
         nameOrField.type as InputFieldType,
       )
         .setDescription(nameOrField.description)
+        .setMeta(nameOrField.meta)
         .setDeprecationReason(nameOrField.deprecationReason);
       return field;
     }

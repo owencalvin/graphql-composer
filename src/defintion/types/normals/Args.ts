@@ -34,7 +34,7 @@ export class Args<
         ...classTypeOrInputType.fields.map((f) => {
           return Arg.create(f.name, f.type);
         }),
-      );
+      ).setMeta(classTypeOrInputType.meta as any);
     } else {
       this._classType = classTypeOrInputType;
     }

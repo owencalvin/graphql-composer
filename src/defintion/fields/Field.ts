@@ -79,6 +79,7 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
         nameOrField.type as FieldType,
       )
         .setDescription(nameOrField.description)
+        .setMeta(nameOrField.meta)
         .setDeprecationReason(nameOrField.deprecationReason);
       if (nameOrField instanceof Field) {
         field
