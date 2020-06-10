@@ -149,11 +149,13 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
    */
   setResolver<ReturnType = any, ArgType = KeyValue>(
     resolver: ResolveFunction<ReturnType, ArgType>,
-    args: Args<ClassType<ArgType>>,
+    args?: Args<ClassType<ArgType>>,
   ) {
-    if (resolver && args) {
-      this.setArgs(args);
+    if (resolver) {
       this._resolve = resolver;
+      if (args) {
+        this.setArgs(args);
+      }
     }
     return this;
   }
