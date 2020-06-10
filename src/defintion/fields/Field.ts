@@ -57,7 +57,7 @@ export class Field<NameType = string> extends GQLField<
    * Create a new Field for ObjectType and InterfaceType
    */
   static create<NameType = any>(
-    name: StringKeyOf<InstanceOf<NameType>>,
+    name: StringKeyOf<NameType>,
     type: FieldType,
   ): Field<StringKeyOf<NameType>>;
   static create<NameType = any>(
@@ -67,7 +67,7 @@ export class Field<NameType = string> extends GQLField<
     field: Field<any>,
   ): Field<StringKeyOf<NameType>>;
   static create<NameType = any>(
-    nameOrField: StringKeyOf<InstanceOf<NameType>> | GQLField,
+    nameOrField: StringKeyOf<NameType> | GQLField,
     type?: FieldType,
   ) {
     if (typeof nameOrField === "string") {
@@ -147,11 +147,13 @@ export class Field<NameType = string> extends GQLField<
    * @param args The aguments
    */
   setResolver<ReturnType = any, ArgType = KeyValue>(
-    resolve: ResolveFunction<ReturnType, ArgType>,
+    resolver: ResolveFunction<ReturnType, ArgType>,
     args: Args<ClassType<ArgType>>,
   ) {
-    this.setArgs(args);
-    this._resolve = resolve;
+    if (resolver && args) {
+      this.setArgs(args);
+      this._resolve = resolver;
+    }
     return this;
   }
 

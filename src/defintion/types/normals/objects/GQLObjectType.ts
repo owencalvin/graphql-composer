@@ -7,8 +7,10 @@ import {
   FieldType,
   Removable,
   ArrayHelper,
+  Args,
 } from "../../../..";
 import { GQLType } from "../GQLType";
+import { ResolveFunction, KeyValue } from "../../../../types";
 
 export abstract class GQLObjectType<
   BuiltType = any,
@@ -29,8 +31,16 @@ export abstract class GQLObjectType<
    * @param name The field name
    * @param type The field type
    */
-  addField(name: StringKeyOf<InstanceOf<T>>, type: FieldType) {
-    return this.setFields(...this._fields, Field.create(name, type));
+  addField<ReturnType = any, ArgType = KeyValue>(
+    name: StringKeyOf<InstanceOf<T>>,
+    type: FieldType,
+    resolver?: ResolveFunction<ReturnType, ArgType>,
+    args?: Args<ClassType<ArgType>>,
+  ) {
+    return this.setFields(
+      ...this._fields,
+      Field.create(name, type).setResolver(resolver, args),
+    );
   }
 
   setFields(...fields: Field<StringKeyOf<InstanceOf<T>>>[]) {
