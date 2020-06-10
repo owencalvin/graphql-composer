@@ -78,6 +78,10 @@ export class InputField<
   convert(to: typeof Arg): Arg<NameType>;
   convert(to: typeof Field): Field<NameType>;
   convert(to: typeof Field | typeof Arg) {
-    return (to.create as any)(this.name, this.type as any) as any;
+    if (to === Arg) {
+      return to.create(this) as any;
+    } else if (to === Field) {
+      return to.create(this) as any;
+    }
   }
 }

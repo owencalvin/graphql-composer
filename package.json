@@ -1,6 +1,6 @@
 {
   "name": "graphql-composer",
-  "version": "1.0.10",
+  "version": "1.0.12",
   "description": "",
   "main": "build/Main.js",
   "author": "Owen Calvin",

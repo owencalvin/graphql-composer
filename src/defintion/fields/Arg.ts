@@ -1,6 +1,13 @@
 import { GraphQLArgument } from "graphql";
-import { InputFieldType, StringKeyOf, TypeParser, KeyValue } from "../..";
+import {
+  InputFieldType,
+  StringKeyOf,
+  TypeParser,
+  KeyValue,
+  InputField,
+} from "../..";
 import { GQLField } from "./GQLField";
+import { Field } from "./Field";
 
 export class Arg<NameType = string, MetaType = KeyValue> extends GQLField<
   GraphQLArgument,
@@ -21,8 +28,23 @@ export class Arg<NameType = string, MetaType = KeyValue> extends GQLField<
   static create<NameType = any>(
     name: StringKeyOf<NameType>,
     type: InputFieldType,
+  ): Arg<StringKeyOf<NameType>>;
+  static create<NameType = any>(
+    field: InputField<any>,
+  ): Arg<StringKeyOf<NameType>>;
+  static create<NameType = any>(field: Field<any>): Arg<StringKeyOf<NameType>>;
+  static create<NameType = any>(
+    nameOrField: StringKeyOf<NameType> | InputField<any> | Field<any>,
+    type?: InputFieldType,
   ): Arg<StringKeyOf<NameType>> {
-    return new Arg<StringKeyOf<NameType>>(name, type);
+    if (typeof nameOrField === "string") {
+      return new Arg<StringKeyOf<NameType>>(nameOrField, type);
+    } else if (nameOrField instanceof GQLField) {
+      return Arg.create<NameType>(nameOrField.name, nameOrField.type as any)
+        .setDescription(nameOrField.description)
+        .setMeta(nameOrField.meta)
+        .setDeprecationReason(nameOrField.deprecationReason);
+    }
   }
 
   build(): GraphQLArgument {
