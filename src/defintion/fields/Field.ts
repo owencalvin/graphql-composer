@@ -47,7 +47,7 @@ export class Field<NameType = string> extends GQLField<
     return this._resolve;
   }
 
-  protected constructor(name: string, type: FieldType) {
+  protected constructor(name: NameType & string, type: FieldType) {
     super(name, type);
     this._args = Args.create();
   }

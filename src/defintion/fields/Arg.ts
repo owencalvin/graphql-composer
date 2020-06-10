@@ -13,16 +13,12 @@ export class Arg<NameType = string> extends GQLField<
     return this._type;
   }
 
-  protected constructor(name: string, type: InputFieldType) {
+  protected constructor(name: NameType & string, type: InputFieldType) {
     super(name, type);
   }
 
   static create<NameType = any>(
     name: StringKeyOf<NameType>,
-    type: InputFieldType,
-  ): Arg<StringKeyOf<NameType>>;
-  static create<NameType = any>(
-    name: string,
     type: InputFieldType,
   ): Arg<StringKeyOf<NameType>> {
     return new Arg<StringKeyOf<NameType>>(name, type);
