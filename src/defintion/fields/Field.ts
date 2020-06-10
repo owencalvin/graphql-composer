@@ -22,9 +22,10 @@ import {
 } from "../..";
 import { GQLField } from "./GQLField";
 
-export class Field<NameType = string> extends GQLField<
+export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
   GraphQLField<any, any, any>,
-  NameType
+  NameType,
+  MetaType
 > {
   private _args: Args;
   private _doParseArgs = true;

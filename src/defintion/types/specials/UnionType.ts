@@ -10,7 +10,8 @@ import {
 } from "../../..";
 import { GQLAnyType } from "../GQLAnyType";
 
-export class UnionType extends GQLAnyType<GraphQLUnionType>
+export class UnionType<MetaType = KeyValue>
+  extends GQLAnyType<GraphQLUnionType, MetaType>
   implements TypeResolvable {
   private _types: ObjectType[] = [];
   private _typeResolver: GraphQLTypeResolver<any, any>;

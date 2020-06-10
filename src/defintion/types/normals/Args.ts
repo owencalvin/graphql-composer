@@ -7,10 +7,14 @@ import {
   InputFieldType,
   Removable,
   ArrayHelper,
+  KeyValue,
 } from "../../..";
 import { GQLBasicType } from "./GQLBasicType";
 
-export class Args<T extends ClassType = any> extends GQLBasicType {
+export class Args<
+  T extends ClassType = any,
+  MetaType = KeyValue
+> extends GQLBasicType<any, any, MetaType> {
   protected _classType?: T;
   private _args: Arg<StringKeyOf<InstanceOf<T>>>[] = [];
 

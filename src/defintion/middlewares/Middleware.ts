@@ -1,6 +1,10 @@
-import { GQLElement, ResolveFunction } from "../..";
+import { GQLElement, ResolveFunction, KeyValue } from "../..";
 
-export class Middleware extends GQLElement<ResolveFunction> {
+export class Middleware<MetaType = KeyValue> extends GQLElement<
+  ResolveFunction,
+  any,
+  MetaType
+> {
   private _function;
 
   get function() {

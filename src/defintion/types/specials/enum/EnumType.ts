@@ -1,10 +1,17 @@
 import { GraphQLEnumType, GraphQLEnumValueConfigMap } from "graphql";
-import { StringKeyOf, EnumValue, Removable, ArrayHelper } from "../../../..";
+import {
+  StringKeyOf,
+  EnumValue,
+  Removable,
+  ArrayHelper,
+  KeyValue,
+} from "../../../..";
 import { GQLAnyType } from "../../GQLAnyType";
 
-export class EnumType<TEnumType extends Object = any> extends GQLAnyType<
-  GraphQLEnumType
-> {
+export class EnumType<
+  TEnumType extends Object = any,
+  MetaType = KeyValue
+> extends GQLAnyType<GraphQLEnumType, MetaType> {
   private _values: EnumValue<StringKeyOf<TEnumType>>[] = [];
   private _enumType?: TEnumType;
 

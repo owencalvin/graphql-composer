@@ -10,14 +10,15 @@ import {
   InstanceOf,
   StringKeyOf,
   Args,
+  KeyValue,
 } from "../../../..";
 import { GraphQLInputObjectType, GraphQLInputFieldConfigMap } from "graphql";
 import { GQLType } from "../GQLType";
 
-export class InputType<T extends ClassType = any> extends GQLType<
-  GraphQLInputObjectType,
-  T
-> {
+export class InputType<
+  T extends ClassType = any,
+  MetaType = KeyValue
+> extends GQLType<GraphQLInputObjectType, T, MetaType> {
   protected _fields: InputField<StringKeyOf<InstanceOf<T>>>[];
 
   get fields() {

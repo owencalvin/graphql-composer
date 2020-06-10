@@ -1,10 +1,11 @@
-import { ClassType } from "../../..";
+import { ClassType, KeyValue } from "../../..";
 import { GQLAnyType } from "../GQLAnyType";
 
 export abstract class GQLBasicType<
   BuiltType = any,
-  T extends ClassType<any> = any
-> extends GQLAnyType<BuiltType> {
+  T extends ClassType<any> = any,
+  MetaType = KeyValue
+> extends GQLAnyType<BuiltType, MetaType> {
   protected _classType?: T;
 
   get classType() {

@@ -1,6 +1,11 @@
 import { Meta } from "./Meta";
+import { KeyValue } from "../types";
 
-export class GQLElement<BuiltType, NameType = string> extends Meta {
+export class GQLElement<
+  BuiltType,
+  NameType = string,
+  MetaType = KeyValue
+> extends Meta<MetaType> {
   protected _name: NameType & string;
   protected _ref: symbol;
   protected _built: BuiltType;

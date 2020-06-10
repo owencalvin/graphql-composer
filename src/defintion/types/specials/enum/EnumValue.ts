@@ -1,8 +1,11 @@
 import { GraphQLEnumValue } from "graphql";
-import { StringKeyOf } from "../../../..";
+import { StringKeyOf, KeyValue } from "../../../..";
 import { GQLElement } from "../../../../classes/GQLElement";
 
-export class EnumValue<NameType = string> extends GQLElement<any> {
+export class EnumValue<
+  NameType = string,
+  MetaType = KeyValue
+> extends GQLElement<any, any, MetaType> {
   protected _name: NameType & string;
   private _value: any;
   private _deprecationReason: string;

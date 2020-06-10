@@ -1,10 +1,11 @@
 import { GraphQLArgument } from "graphql";
-import { InputFieldType, StringKeyOf, TypeParser } from "../..";
+import { InputFieldType, StringKeyOf, TypeParser, KeyValue } from "../..";
 import { GQLField } from "./GQLField";
 
-export class Arg<NameType = string> extends GQLField<
+export class Arg<NameType = string, MetaType = KeyValue> extends GQLField<
   GraphQLArgument,
-  NameType
+  NameType,
+  MetaType
 > {
   protected _defaultValue: string | number | boolean;
   protected _type: InputFieldType;

@@ -7,13 +7,15 @@ import {
   ClassType,
   InstanceOf,
   ConversionType,
+  KeyValue,
 } from "../../..";
 import { GQLBasicType } from "./GQLBasicType";
 
 export abstract class GQLType<
   BuiltType = any,
-  T extends ClassType<any> = any
-> extends GQLBasicType<BuiltType> {
+  T extends ClassType<any> = any,
+  MetaType = KeyValue
+> extends GQLBasicType<BuiltType, any, MetaType> {
   protected _fields: GQLField[] = [];
   protected _classType?: T;
 

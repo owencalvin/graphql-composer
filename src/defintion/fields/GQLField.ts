@@ -5,12 +5,14 @@ import {
   InputFieldType,
   NotNullableType,
   NotNullable,
+  KeyValue,
 } from "../..";
 
 export abstract class GQLField<
   BuiltType = any,
-  NameType = string
-> extends GQLElement<BuiltType, NameType> {
+  NameType = string,
+  MetaType = KeyValue
+> extends GQLElement<BuiltType, NameType, MetaType> {
   protected _type: FieldType | InputFieldType;
   protected _deprecationReason: string;
   protected _description: string;

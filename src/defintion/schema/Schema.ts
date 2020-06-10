@@ -1,7 +1,18 @@
 import { GraphQLSchema, GraphQLObjectType, GraphQLNamedType } from "graphql";
-import { Wrapper, GQLElement, Removable, ArrayHelper, GQLAnyType } from "../..";
+import {
+  Wrapper,
+  GQLElement,
+  Removable,
+  ArrayHelper,
+  GQLAnyType,
+  KeyValue,
+} from "../..";
 
-export class Schema extends GQLElement<GraphQLSchema> {
+export class Schema<MetaType = KeyValue> extends GQLElement<
+  GraphQLSchema,
+  any,
+  MetaType
+> {
   protected _types: GQLAnyType[] = [];
 
   /**

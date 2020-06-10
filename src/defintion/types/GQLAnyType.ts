@@ -1,8 +1,9 @@
-import { GQLElement } from "../..";
+import { GQLElement, KeyValue } from "../..";
 
-export abstract class GQLAnyType<BuiltType = any> extends GQLElement<
-  BuiltType
-> {
+export abstract class GQLAnyType<
+  BuiltType = any,
+  MetaType = KeyValue
+> extends GQLElement<BuiltType, any, MetaType> {
   constructor(name?: string) {
     super(name);
   }
