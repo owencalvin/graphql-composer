@@ -174,7 +174,7 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
    */
   convert(to: typeof InputField): InputField<NameType>;
   convert(to: typeof InputField) {
-    return to.create(this.name, this.type as any) as any;
+    return to.create(this) as any;
   }
 
   protected parseArgs(args: Args | InputType, values: KeyValue) {
