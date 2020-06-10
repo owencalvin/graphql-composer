@@ -21,6 +21,11 @@ export class Schema<MetaType = KeyValue> extends GQLElement<
     return this._config;
   }
 
+  static setConfig(config: SchemaConfig) {
+    this._config = config || {};
+    return this;
+  }
+
   /**
    * Set the type list to build
    * @param types The type list to build
