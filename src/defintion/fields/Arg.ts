@@ -2,20 +2,18 @@ import { GraphQLArgument } from "graphql";
 import { InputFieldType, StringKeyOf, TypeParser } from "../..";
 import { GQLField } from "./GQLField";
 
-export class Arg<NameType = string> extends GQLField<GraphQLArgument> {
-  protected _name: NameType & string;
+export class Arg<NameType = string> extends GQLField<
+  GraphQLArgument,
+  NameType
+> {
   protected _defaultValue: string | number | boolean;
   protected _type: InputFieldType;
-
-  get name() {
-    return this._name;
-  }
 
   get type() {
     return this._type;
   }
 
-  protected constructor(name: string, type: InputFieldType) {
+  protected constructor(name: NameType & string, type: InputFieldType) {
     super(name, type);
   }
 
@@ -23,7 +21,7 @@ export class Arg<NameType = string> extends GQLField<GraphQLArgument> {
     name: StringKeyOf<NameType>,
     type: InputFieldType,
   ): Arg<StringKeyOf<NameType>> {
-    return new Arg(name, type);
+    return new Arg<StringKeyOf<NameType>>(name, type);
   }
 
   build(): GraphQLArgument {

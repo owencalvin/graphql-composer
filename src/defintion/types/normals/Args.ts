@@ -39,17 +39,15 @@ export class Args<T extends ClassType = any> extends GQLBasicType {
   /**
    * Create a new Args type
    */
-  static create<T = any>(inputType: InputType): Args<ClassType<T>>;
-  static create<T extends ClassType = any>(
-    classType: T,
-  ): Args<ClassType<InstanceOf<T>>>;
+  static create<T extends ClassType = any>(classType: T): Args<T>;
   static create<T = any>(
     name: StringKeyOf<T>,
     type: InputFieldType,
   ): Args<ClassType<T>>;
+  static create<T = any>(inputType: InputType): Args<ClassType<T>>;
   static create<T = any>(): Args<ClassType<T>>;
   static create<T = any>(
-    classTypeOrInputTypeOrName?: T | InputType | StringKeyOf<InstanceOf<T>>,
+    classTypeOrInputTypeOrName?: T | InputType | StringKeyOf<T>,
     type?: InputFieldType,
   ) {
     if (type) {
@@ -84,8 +82,8 @@ export class Args<T extends ClassType = any> extends GQLBasicType {
    * @param name The argument name
    * @param type The argument type
    */
-  addArg(name: StringKeyOf<InstanceOf<T>>, type: InputFieldType): Args<T> {
-    this.args.push(Arg.create(name, type as InputFieldType));
+  addArg(name: StringKeyOf<InstanceOf<T>>, type: InputFieldType) {
+    this.args.push(Arg.create(name, type));
     return this;
   }
 
@@ -93,7 +91,7 @@ export class Args<T extends ClassType = any> extends GQLBasicType {
    * Remove some arguments in the type
    * @param args The argument IDs
    */
-  removeArgs(...args: Removable<Arg>) {
+  removeArgs(...args: Removable<Arg<StringKeyOf<InstanceOf<T>>>>) {
     return this.setArgs(...ArrayHelper.remove(args, this._args));
   }
 

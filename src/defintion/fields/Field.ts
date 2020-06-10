@@ -24,17 +24,13 @@ import {
 import { GQLField } from "./GQLField";
 
 export class Field<NameType = string> extends GQLField<
-  GraphQLField<any, any, any>
+  GraphQLField<any, any, any>,
+  NameType
 > {
-  protected _name: NameType & string;
   private _args: Args;
   private _doParseArgs = true;
   private _resolve: ResolveFunction;
   private _middlewares: Middleware[] = [];
-
-  get name() {
-    return this._name;
-  }
 
   get args() {
     return this._args;
@@ -52,7 +48,7 @@ export class Field<NameType = string> extends GQLField<
     return this._resolve;
   }
 
-  protected constructor(name: string, type: FieldType) {
+  protected constructor(name: NameType & string, type: FieldType) {
     super(name, type);
     this._args = Args.create();
   }
@@ -61,14 +57,14 @@ export class Field<NameType = string> extends GQLField<
    * Create a new Field for ObjectType and InterfaceType
    */
   static create<NameType = any>(
-    field: Field<any>,
+    name: StringKeyOf<InstanceOf<NameType>>,
+    type: FieldType,
   ): Field<StringKeyOf<NameType>>;
   static create<NameType = any>(
     field: InputField<any>,
   ): Field<StringKeyOf<NameType>>;
   static create<NameType = any>(
-    name: StringKeyOf<InstanceOf<NameType>>,
-    type: FieldType,
+    field: Field<any>,
   ): Field<StringKeyOf<NameType>>;
   static create<NameType = any>(
     nameOrField: StringKeyOf<InstanceOf<NameType>> | GQLField,

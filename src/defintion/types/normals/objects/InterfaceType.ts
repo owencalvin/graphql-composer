@@ -22,12 +22,12 @@ export class InterfaceType<T extends ClassType = any>
   }
 
   static create<T = any>(name: string): InterfaceType<ClassType<T>>;
+  static create<T extends ClassType = any>(classType: T): InterfaceType<T>;
   static create<T = any>(inputType: InputType): InterfaceType<ClassType<T>>;
   static create<T = any>(objectType: ObjectType): InterfaceType<ClassType<T>>;
   static create<T = any>(
     interfaceType: InterfaceType,
   ): InterfaceType<ClassType<T>>;
-  static create<T = any>(classType: ClassType<T>): InterfaceType<ClassType<T>>;
   static create<T = any>(
     nameOrType: string | GQLType | ClassType<T>,
   ): InterfaceType<ClassType<T>> {

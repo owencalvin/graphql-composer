@@ -30,10 +30,7 @@ export abstract class GQLObjectType<
    * @param type The field type
    */
   addField(name: StringKeyOf<InstanceOf<T>>, type: FieldType) {
-    return this.setFields(
-      ...this._fields,
-      Field.create<StringKeyOf<InstanceOf<T>>>(name, type),
-    );
+    return this.setFields(...this._fields, Field.create(name, type));
   }
 
   setFields(...fields: Field<StringKeyOf<InstanceOf<T>>>[]) {

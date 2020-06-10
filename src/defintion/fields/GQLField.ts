@@ -7,7 +7,10 @@ import {
   NotNullable,
 } from "../..";
 
-export abstract class GQLField<BuiltType = any> extends GQLElement<BuiltType> {
+export abstract class GQLField<
+  BuiltType = any,
+  NameType = string
+> extends GQLElement<BuiltType, NameType> {
   protected _type: FieldType | InputFieldType;
   protected _deprecationReason: string;
   protected _description: string;
@@ -24,7 +27,7 @@ export abstract class GQLField<BuiltType = any> extends GQLElement<BuiltType> {
     return this._deprecationReason;
   }
 
-  constructor(name: string, type: FieldType | InputFieldType) {
+  constructor(name: NameType & string, type: FieldType | InputFieldType) {
     super(name);
     this.setType(type);
   }

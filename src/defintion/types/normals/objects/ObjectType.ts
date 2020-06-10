@@ -28,12 +28,12 @@ export class ObjectType<T extends ClassType = any> extends GQLObjectType<
    * Create a new ObjectType
    */
   static create<T = any>(name: string): ObjectType<ClassType<T>>;
+  static create<T extends ClassType = any>(classType: T): ObjectType<T>;
   static create<T = any>(inputType: InputType): ObjectType<ClassType<T>>;
   static create<T = any>(objectType: ObjectType): ObjectType<ClassType<T>>;
   static create<T = any>(
     interfaceType: InterfaceType,
   ): ObjectType<ClassType<T>>;
-  static create<T = any>(classType: ClassType<T>): ObjectType<ClassType<T>>;
   static create<T = any>(
     nameOrType: string | GQLType | ClassType<T>,
   ): ObjectType<ClassType<T>> {

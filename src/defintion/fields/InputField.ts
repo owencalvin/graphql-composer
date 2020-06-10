@@ -9,8 +9,10 @@ import {
 } from "../..";
 import { GQLField } from "./GQLField";
 
-export class InputField<NameType = string> extends GQLField<GraphQLInputField> {
-  protected _name: NameType & string;
+export class InputField<NameType = string> extends GQLField<
+  GraphQLInputField,
+  NameType
+> {
   protected _defaultValue: string | number | boolean;
   protected _type: InputFieldType;
 
@@ -18,26 +20,22 @@ export class InputField<NameType = string> extends GQLField<GraphQLInputField> {
     return this._type;
   }
 
-  get name() {
-    return this._name;
-  }
-
-  protected constructor(name: string, type: InputFieldType) {
-    super(name as string, type);
+  protected constructor(name: NameType & string, type: InputFieldType) {
+    super(name, type);
   }
 
   /**
    * Create a field for an InputType
    */
   static create<NameType = any>(
+    name: StringKeyOf<NameType>,
+    type: InputFieldType,
+  ): InputField<StringKeyOf<NameType>>;
+  static create<NameType = any>(
     field: Field<any>,
   ): InputField<StringKeyOf<NameType>>;
   static create<NameType = any>(
     field: InputField<any>,
-  ): InputField<StringKeyOf<NameType>>;
-  static create<NameType = any>(
-    name: StringKeyOf<NameType>,
-    type: InputFieldType,
   ): InputField<StringKeyOf<NameType>>;
   static create<NameType = any>(
     nameOrField: StringKeyOf<InstanceOf<NameType>> | GQLField,
