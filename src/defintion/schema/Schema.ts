@@ -22,8 +22,8 @@ export class Schema<MetaType = KeyValue> extends GQLElement<
 
   protected _types: GQLAnyType[] = [];
 
-  static setConfig(config: SchemaConfig) {
-    this._config = config || {};
+  setConfig(config: SchemaConfig) {
+    Schema._config = config || {};
     return this;
   }
 
