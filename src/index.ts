@@ -1,6 +1,6 @@
 export * from "./client";
 export * from "./classes";
-export * from "./defintion";
+export * from "./definition";
 export * from "./helpers";
 export * from "./interfaces";
 export * from "./scalars";

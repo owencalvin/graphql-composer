@@ -5,8 +5,8 @@ import {
   KeyValue,
   InputFieldType,
   GQLAnyType,
-  NotNullableType,
 } from "..";
+import { RequiredType } from "../definition";
 
 export type ArgValue<T> = {
   [P in keyof T]?: Partial<T[P]> | string | any;
@@ -131,7 +131,7 @@ export class Request<ArgsType = any> {
       return type.name;
     }
 
-    if (type instanceof NotNullableType) {
+    if (type instanceof RequiredType) {
       return this.parseType(type.type as InputFieldType) + "!";
     }
   }

@@ -14,7 +14,7 @@ import {
   GQLAnyType,
   NullableType,
 } from "..";
-import { RequiredType } from "../defintion";
+import { RequiredType } from "../definition";
 
 export class TypeParser {
   static parse<ReturnType>(
