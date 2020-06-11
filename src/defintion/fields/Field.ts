@@ -198,18 +198,26 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
         const value = values[description[0]];
         let parsedValue = value;
         if (description[1] instanceof InputType) {
-          parsedValue = this.parseArgs([description[1]], value)[0];
+          parsedValue = this.parseArgs([description[1]], value);
         }
         instance[description[0]] = parsedValue;
       });
 
-      if (arg.classType) {
-        prev[(arg.classType as ClassType).name] = instance;
+      if (arg instanceof Args) {
+        if (arg.classType) {
+          if (args.length > 1) {
+            prev[(arg.classType as ClassType).name] = instance;
+          } else {
+            return instance;
+          }
+        } else {
+          prev = {
+            ...prev,
+            ...instance,
+          };
+        }
       } else {
-        prev = {
-          ...prev,
-          ...instance,
-        };
+        return instance;
       }
 
       return prev;
@@ -265,10 +273,6 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
     let parsedArgs = args;
     if (this.doParseArgs) {
       parsedArgs = this.parseArgs(this._args, args);
-      const keys = Object.keys(parsedArgs);
-      if (keys.length === 1) {
-        parsedArgs = parsedArgs[keys[0]];
-      }
     }
 
     return await next(
@@ -278,6 +282,7 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
         source,
         context,
         infos,
+        rawArgs: args,
         field: this,
       },
       0,
