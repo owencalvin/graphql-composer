@@ -6,6 +6,7 @@ import {
   UnionType,
   NullableType,
 } from "..";
+import { ClassType } from "../interfaces";
 
 export type FieldType =
   | typeof Boolean
@@ -18,4 +19,5 @@ export type FieldType =
   | UnionType
   | FieldType[]
   | NotNullableType
+  | ClassType
   | NullableType;
