@@ -28,7 +28,7 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
   NameType,
   MetaType
 > {
-  private _args: Args;
+  private _args: Args[] = [];
   private _doParseArgs = true;
   private _resolve: ResolveFunction;
   private _middlewares: Middleware[] = [];
@@ -38,7 +38,7 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
   }
 
   get flatArgs() {
-    return this._args.args;
+    return this._args.flatMap((a) => a.args);
   }
 
   get doParseArgs() {
@@ -51,7 +51,6 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
 
   protected constructor(name: NameType & string, type: FieldType) {
     super(name, type);
-    this._args = Args.create();
   }
 
   /**
@@ -85,7 +84,7 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
       if (nameOrField instanceof Field) {
         field
           .setMiddlewares(...nameOrField._middlewares)
-          .setResolver(nameOrField._resolve, nameOrField.args);
+          .setResolver(nameOrField._resolve, ...nameOrField.args);
       }
       return field;
     }
@@ -140,7 +139,7 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
    * Add arguments to your field
    * @param args The aguments
    */
-  setArgs(args: Args) {
+  setArgs(...args: Args[]) {
     this._args = args;
     return this;
   }
@@ -151,12 +150,12 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
    */
   setResolver<ReturnType = any, ArgType = KeyValue>(
     resolver: ResolveFunction<ReturnType, ArgType>,
-    args?: Args<ClassType<ArgType>>,
+    ...args: Args<ClassType<ArgType>>[]
   ) {
     if (resolver) {
       this._resolve = resolver;
       if (args) {
-        this.setArgs(args);
+        this.setArgs(...args);
       }
     }
     return this;
@@ -178,26 +177,37 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
     return to.create(this) as any;
   }
 
-  protected parseArgs(args: Args | InputType, values: KeyValue) {
-    const instance = args.classType ? new args.classType() : {};
+  protected parseArgs(args: (Args | InputType)[], values: KeyValue) {
+    return args.reduce((prev, arg) => {
+      const instance = arg.classType ? new arg.classType() : {};
 
-    let descriptions: [string, InputFieldType][] = [];
-    if (args instanceof Args) {
-      descriptions = args.args.map((a) => [a.name, a.type]);
-    } else if (args instanceof InputType) {
-      descriptions = args.fields.map((a) => [a.name, a.type]);
-    }
-
-    descriptions.map((description) => {
-      const value = values[description[0]];
-      let parsedValue = value;
-      if (description[1] instanceof InputType) {
-        parsedValue = this.parseArgs(description[1], value);
+      let descriptions: [string, InputFieldType][] = [];
+      if (arg instanceof Args) {
+        descriptions = arg.args.map((a) => [a.name, a.type]);
+      } else if (arg instanceof InputType) {
+        descriptions = arg.fields.map((a) => [a.name, a.type]);
       }
-      instance[description[0]] = parsedValue;
-    });
 
-    return instance;
+      descriptions.map((description) => {
+        const value = values[description[0]];
+        let parsedValue = value;
+        if (description[1] instanceof InputType) {
+          parsedValue = this.parseArgs([description[1]], value)[0];
+        }
+        instance[description[0]] = parsedValue;
+      });
+
+      if (arg.classType) {
+        prev[(arg.classType as ClassType).name] = instance;
+      } else {
+        prev = {
+          ...prev,
+          ...instance,
+        };
+      }
+
+      return prev;
+    }, {});
   }
 
   build(): GraphQLField<any, any, any> {
@@ -243,12 +253,16 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
       const guardToExecute = this._middlewares[index].function;
       const res = await guardToExecute(args, ctx, nextFn, paramsToNext);
 
-      return res;
+      return ctx.body || res;
     };
 
     let parsedArgs = args;
     if (this.doParseArgs) {
       parsedArgs = this.parseArgs(this._args, args);
+      const keys = Object.keys(parsedArgs);
+      if (keys.length === 1) {
+        parsedArgs = parsedArgs[keys[0]];
+      }
     }
 
     return await next(

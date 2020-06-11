@@ -9,7 +9,7 @@ import {
 } from "..";
 
 export type ArgValue<T> = {
-  [P in keyof T]?: Partial<T[P]> | string;
+  [P in keyof T]?: Partial<T[P]> | string | any;
 };
 
 export class Request<ArgsType = any> {

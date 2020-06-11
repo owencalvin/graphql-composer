@@ -14,7 +14,7 @@ import {
 } from "../../src";
 
 const client = new ApolloClient({
-  uri: "http://localhost:4000/graphql",
+  uri: "http://localhost:4001/graphql",
   fetch,
 });
 
@@ -31,15 +31,17 @@ class A {
   b: number;
   user: User;
 
-  static resolve() {
+  static resolve(args: any) {
     return true;
   }
 
   static readonly args = Args.create(A).addArgs(
     Arg.create("a", String),
-    Arg.create("b", String),
-    Arg.create("user", String),
+    Arg.create("b", Number),
+    Arg.create("user", User.inputType),
   );
+
+  static readonly args2 = Args.create().addArgs(Arg.create("Username", String));
 }
 
 class Response {
@@ -50,21 +52,26 @@ class Response {
   );
 }
 
-const request = Request.create<A>("query", "A", {
+const request = Request.create<any>("query", "A", {
   a: "a",
   b: 0,
   user: { Username: "ven" },
+  Username: "hello",
 }).select(Selection.create<Response>("code"));
 
 const query = ObjectType.create("Query").addFields(
-  Field.create("A", Response.objectType).setResolver(A.resolve, A.args),
+  Field.create("A", Response.objectType).setResolver<any>(
+    A.resolve,
+    A.args,
+    A.args2,
+  ),
 );
 
 beforeAll(async () => {
   // const server = new ApolloServer({
   //   schema: Schema.create(query, User.inputType, Response.objectType).build(),
   // });
-  // const url = await server.listen();
+  // const url = await server.listen(4001);
   // console.log(url);
 });
 
