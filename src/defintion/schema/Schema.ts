@@ -22,6 +22,20 @@ export class Schema<MetaType = KeyValue> extends GQLElement<
 
   protected _types: GQLAnyType[] = [];
 
+  protected constructor() {
+    super();
+  }
+
+  /**
+   * Create a new schema
+   * @param types The type list to build
+   */
+  static create(...types: (GQLAnyType | Wrapper)[]) {
+    const schema = new Schema();
+    schema.setTypes(...types);
+    return schema;
+  }
+
   setConfig(config: SchemaConfig) {
     Schema._config = config || {};
     return this;
@@ -84,19 +98,5 @@ export class Schema<MetaType = KeyValue> extends GQLElement<
     });
 
     return this._built;
-  }
-
-  protected constructor() {
-    super();
-  }
-
-  /**
-   * Create a new schema
-   * @param types The type list to build
-   */
-  static create(...types: (GQLAnyType | Wrapper)[]) {
-    const schema = new Schema();
-    schema.setTypes(...types);
-    return schema;
   }
 }

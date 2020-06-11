@@ -42,6 +42,10 @@ class A {
   );
 
   static readonly args2 = Args.create().addArgs(Arg.create("Username", String));
+
+  static readonly args3 = Args.create().addArgs(
+    Arg.create("Username2", String),
+  );
 }
 
 class Response {
@@ -57,6 +61,7 @@ const request = Request.create<any>("query", "A", {
   b: 0,
   user: { Username: "ven" },
   Username: "hello",
+  Username2: "hello3",
 }).select(Selection.create<Response>("code"));
 
 const query = ObjectType.create("Query").addFields(
@@ -64,6 +69,7 @@ const query = ObjectType.create("Query").addFields(
     A.resolve,
     A.args,
     A.args2,
+    A.args3,
   ),
 );
 

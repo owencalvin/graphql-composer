@@ -162,9 +162,7 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
   ) {
     if (resolver) {
       this._resolve = resolver;
-      if (args) {
-        this.setArgs(...args);
-      }
+      this.addArgs(...args);
     }
     return this;
   }
