@@ -48,17 +48,17 @@ export class TypeParser {
 
     if (requiredByDefault) {
       if (type instanceof NullableType) {
-        finalType = this.parse(type.type, requiredByDefault);
+        finalType = this.parse(type.type);
       } else if (type instanceof RequiredType) {
-        finalType = GraphQLNonNull(this.parse(type.type, requiredByDefault));
+        finalType = GraphQLNonNull(this.parse(type.type));
       } else if (finalType) {
         finalType = GraphQLNonNull(finalType);
       }
     } else {
       if (type instanceof RequiredType) {
-        finalType = GraphQLNonNull(this.parse(type.type, requiredByDefault));
+        finalType = GraphQLNonNull(this.parse(type.type));
       } else if (type instanceof NullableType) {
-        finalType = this.parse(type.type, requiredByDefault);
+        finalType = this.parse(type.type);
       }
     }
 
