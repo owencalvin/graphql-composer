@@ -7,6 +7,7 @@ import {
   KeyValue,
 } from "../..";
 import { GQLElement } from "../../classes/GQLElement";
+import { Nullable, NullableType } from "../modifiers/Nullable";
 
 export abstract class GQLField<
   BuiltType = any,
@@ -70,6 +71,9 @@ export abstract class GQLField<
     if (this.type instanceof RequiredType) {
       this._type = (this._type as RequiredType).type;
     }
+    if (!(this.type instanceof NullableType)) {
+      this.setType(Nullable<any>(this._type));
+    }
     return this;
   }
 
@@ -77,8 +81,11 @@ export abstract class GQLField<
    * Convert your field type into a not nullable type
    */
   required() {
+    if (this.type instanceof NullableType) {
+      this._type = (this._type as NullableType).type;
+    }
     if (!(this.type instanceof RequiredType)) {
-      this._type = Required<any>(this._type);
+      this.setType(Required<any>(this._type));
     }
     return this;
   }

@@ -60,7 +60,7 @@ export class InputField<
   build() {
     const input: GraphQLInputField = {
       name: this._name,
-      type: TypeParser.parse(this._type, Schema.config.notNullableByDefault),
+      type: TypeParser.parse(this._type, Schema.config.requiredByDefault),
       description: this._description,
       defaultValue: this._defaultValue,
       astNode: undefined,

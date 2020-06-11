@@ -235,7 +235,7 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
       name: this._name,
       type: TypeParser.parse<GraphQLOutputType>(
         this._type,
-        Schema.config.notNullableByDefault,
+        Schema.config.requiredByDefault,
       ),
       resolve:
         this._middlewares.length > 0 ? this.resolveField.bind(this) : undefined,

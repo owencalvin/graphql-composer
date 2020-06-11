@@ -1,3 +1,3 @@
 export class SchemaConfig {
-  notNullableByDefault?: boolean;
+  requiredByDefault?: boolean;
 }

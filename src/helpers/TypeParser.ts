@@ -19,7 +19,7 @@ import { RequiredType } from "../definition";
 export class TypeParser {
   static parse<ReturnType>(
     type: FieldType | InputFieldType,
-    notNullableByDefault = false,
+    requiredByDefault = false,
   ): ReturnType {
     let finalType: GraphQLOutputType | GraphQLInputType;
 
@@ -46,15 +46,19 @@ export class TypeParser {
         break;
     }
 
-    if (notNullableByDefault) {
+    if (requiredByDefault) {
       if (type instanceof NullableType) {
         finalType = this.parse(type.type);
+      } else if (type instanceof RequiredType) {
+        finalType = GraphQLNonNull(this.parse(type.type));
       } else {
         finalType = GraphQLNonNull(finalType);
       }
     } else {
       if (type instanceof RequiredType) {
         finalType = GraphQLNonNull(this.parse(type.type));
+      } else if (type instanceof NullableType) {
+        finalType = this.parse(type.type);
       }
     }
 
