@@ -51,7 +51,7 @@ export class TypeParser {
         finalType = this.parse(type.type, requiredByDefault);
       } else if (type instanceof RequiredType) {
         finalType = GraphQLNonNull(this.parse(type.type, requiredByDefault));
-      } else {
+      } else if (finalType) {
         finalType = GraphQLNonNull(finalType);
       }
     } else {
