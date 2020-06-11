@@ -136,12 +136,20 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
   }
 
   /**
-   * Add arguments to your field
+   * Set the arguments of your field
    * @param args The aguments
    */
   setArgs(...args: Args[]) {
     this._args = args;
     return this;
+  }
+
+  /**
+   * Add arguments to your field
+   * @param args The aguments
+   */
+  addArgs(...args: Args[]) {
+    return this.setArgs(...this.args, ...args);
   }
 
   /**
