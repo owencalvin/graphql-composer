@@ -34,6 +34,11 @@ export abstract class GQLBasicType<
     throw new Error("Method not overridden");
   }
 
+  setClassType(classType: T) {
+    this._classType = classType;
+    return this;
+  }
+
   protected toConfigMap<ReturnType>(
     arr: { name: string; build(): any }[],
   ): ReturnType {
