@@ -257,15 +257,10 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
     context: any,
     infos: GraphQLResolveInfo,
   ) {
-    const next = async (
-      args: any,
-      ctx: Context,
-      index: number,
-      paramsToNext: KeyValue,
-    ) => {
-      const nextFn = () => next(args, ctx, index + 1, paramsToNext);
+    const next = async (args: any, ctx: Context, index: number) => {
+      const nextFn = () => next(args, ctx, index + 1);
       const guardToExecute = this._middlewares[index].function;
-      const res = await guardToExecute(args, ctx, nextFn, paramsToNext);
+      const res = await guardToExecute(args, ctx, nextFn);
 
       return ctx.body || res;
     };
@@ -286,7 +281,6 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
         field: this,
       },
       0,
-      {},
     );
   }
 }

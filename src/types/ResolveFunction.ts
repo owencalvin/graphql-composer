@@ -1,8 +1,7 @@
-import { KeyValue, Next } from "..";
+import { KeyValue, Next, Context } from "..";
 
 export type ResolveFunction<ReturnType = any, ArgsType = KeyValue> = (
   args: ArgsType,
-  gql: any,
+  gql: Context<ReturnType>,
   next: Next,
-  paramsToNext: KeyValue,
 ) => Promise<ReturnType> | ReturnType;
