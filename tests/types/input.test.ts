@@ -13,7 +13,7 @@ import {
   Field,
   InputType,
   InputField,
-  NotNullable,
+  Required,
   Schema,
   ObjectType,
 } from "../../src";
@@ -23,7 +23,7 @@ const userInterface = InterfaceType.create("UserInterface").addFields(
 );
 
 const user = InputType.create("User").addFields(
-  InputField.create("Username", NotNullable([String])),
+  InputField.create("Username", Required([String])),
   InputField.create("Email", Number),
 );
 

@@ -4,15 +4,13 @@ import { FieldType, InputFieldType } from "../..";
  * Create a not nullable type from an existing one
  * @param type The type to convert
  */
-export function NotNullable<
-  Type extends FieldType | InputFieldType = FieldType
->(type: Type) {
-  return new NotNullableType<Type>(type);
+export function Required<Type extends FieldType | InputFieldType = FieldType>(
+  type: Type,
+) {
+  return new RequiredType<Type>(type);
 }
 
-export class NotNullableType<
-  Type extends FieldType | InputFieldType = FieldType
-> {
+export class RequiredType<Type extends FieldType | InputFieldType = FieldType> {
   private _type: Type;
 
   get type() {

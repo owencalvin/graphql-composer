@@ -3,8 +3,8 @@ import {
   FieldType,
   GQLElement,
   InputFieldType,
-  NotNullableType,
-  NotNullable,
+  RequiredType,
+  Required,
   KeyValue,
 } from "../..";
 
@@ -67,8 +67,8 @@ export abstract class GQLField<
    * Convert your field type into a nullable type
    */
   nullable() {
-    if (this.type instanceof NotNullableType) {
-      this._type = (this._type as NotNullableType).type;
+    if (this.type instanceof RequiredType) {
+      this._type = (this._type as RequiredType).type;
     }
     return this;
   }
@@ -77,8 +77,8 @@ export abstract class GQLField<
    * Convert your field type into a not nullable type
    */
   required() {
-    if (!(this.type instanceof NotNullableType)) {
-      this._type = NotNullable<any>(this._type);
+    if (!(this.type instanceof RequiredType)) {
+      this._type = Required<any>(this._type);
     }
     return this;
   }

@@ -7,7 +7,7 @@ import {
   GraphQLInterfaceType,
 } from "graphql";
 import {
-  NotNullable,
+  Required,
   InterfaceType,
   Field,
   ObjectType,
@@ -20,7 +20,7 @@ const userInterface = InterfaceType.create("UserInterface").addFields(
 );
 
 const user = ObjectType.create("User").addFields(
-  Field.create("Username", NotNullable([String])),
+  Field.create("Username", Required([String])),
   Field.create("Email", Number),
 );
 

@@ -1,6 +1,6 @@
 import { GraphQLScalarType } from "graphql";
 import {
-  NotNullableType,
+  RequiredType,
   GQLObjectType,
   EnumType,
   UnionType,
@@ -18,6 +18,6 @@ export type FieldType =
   | EnumType
   | UnionType
   | FieldType[]
-  | NotNullableType
+  | RequiredType
   | ClassType
   | NullableType;

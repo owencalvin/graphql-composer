@@ -9,12 +9,12 @@ import {
 } from "graphql";
 import {
   FieldType,
-  NotNullableType,
   DateTime,
   InputFieldType,
   GQLAnyType,
   NullableType,
 } from "..";
+import { RequiredType } from "../defintion";
 
 export class TypeParser {
   static parse<ReturnType>(
@@ -53,7 +53,7 @@ export class TypeParser {
         finalType = GraphQLNonNull(finalType);
       }
     } else {
-      if (type instanceof NotNullableType) {
+      if (type instanceof RequiredType) {
         finalType = GraphQLNonNull(this.parse(type.type));
       }
     }
