@@ -257,7 +257,7 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
     infos: GraphQLResolveInfo,
   ) {
     const next = async (args: any, ctx: Context, index: number) => {
-      const nextFn = () => next(args, ctx, index + 1);
+      const nextFn = async () => await next(args, ctx, index + 1);
       const guardToExecute = this._middlewares[index].function;
       const res = await guardToExecute(args, ctx, nextFn);
 

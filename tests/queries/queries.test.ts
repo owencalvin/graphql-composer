@@ -90,23 +90,25 @@ const query = ObjectType.create("Query").addFields(
   Field.create("user", res)
     .setResolver(
       async (args, gql) => {
-        gql.body = args;
+        const res: any = args;
 
         if (args.name2 === "cat") {
           const animal = new Cat();
           animal.meow = "meow";
           animal.name = "cat";
-          gql.body.User.animal = animal;
-          gql.body.User.animalUnion = animal;
+          res.User.animal = animal;
+          res.User.animalUnion = animal;
         }
 
         if (args.name2 === "cow") {
           const animal = new Cow();
           animal.moh = "moh";
           animal.name = "cow";
-          gql.body.User.animal = animal;
-          gql.body.User.animalUnion = animal;
+          res.User.animal = animal;
+          res.User.animalUnion = animal;
         }
+
+        return res;
       },
       Args.create().addArgs(
         Arg.create("name2", String),
