@@ -261,7 +261,11 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
       const guardToExecute = this._middlewares[index].function;
       const res = await guardToExecute(args, ctx, nextFn);
 
-      return res || ctx.body;
+      if (res !== undefined) {
+        ctx.body = res;
+      }
+
+      return ctx.body;
     };
 
     let parsedArgs = args;
