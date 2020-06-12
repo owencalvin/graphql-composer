@@ -30,7 +30,7 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
 > {
   private _args: Args[] = [];
   private _doParseArgs = true;
-  private _resolve: ResolveFunction;
+  private _resolver: ResolveFunction;
   private _middlewares: Middleware[] = [];
 
   get args() {
@@ -45,8 +45,8 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
     return this._doParseArgs;
   }
 
-  get resolve() {
-    return this._resolve;
+  get resolver() {
+    return this._resolver;
   }
 
   protected constructor(name: NameType & string, type: FieldType) {
@@ -84,7 +84,7 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
       if (nameOrField instanceof Field) {
         field
           .setMiddlewares(...nameOrField._middlewares)
-          .setResolver(nameOrField._resolve, ...nameOrField.args);
+          .setResolver(nameOrField._resolver, ...nameOrField.args);
       }
       return field;
     }
@@ -161,7 +161,7 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
     ...args: Args<ClassType<ArgType>>[]
   ) {
     if (resolver) {
-      this._resolve = resolver;
+      this._resolver = resolver;
       this.addArgs(...args);
     }
     return this;
@@ -225,8 +225,8 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
   }
 
   build(): GraphQLField<any, any, any> {
-    if (this.resolve) {
-      this.addMiddlewares(Middleware.create(this.resolve, "__main"));
+    if (this.resolver) {
+      this.addMiddlewares(Middleware.create(this.resolver, "__main"));
     }
 
     const args = this.flatArgs.map((arg) => arg.build());
