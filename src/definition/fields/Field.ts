@@ -237,8 +237,7 @@ export class Field<NameType = string, MetaType = KeyValue> extends GQLField<
         this._type,
         Schema.config.requiredByDefault,
       ),
-      resolve:
-        this._middlewares.length > 0 ? this.resolveField.bind(this) : undefined,
+      resolve: this._resolver ? this.resolveField.bind(this) : undefined,
       deprecationReason: this._deprecationReason || null,
       isDeprecated: !!this._deprecationReason,
       args,
