@@ -25,13 +25,13 @@ export class UnionType<MetaType = KeyValue>
     return this._typeResolver;
   }
 
-  protected constructor(name: string, ...types: ObjectType[]) {
+  protected constructor(name: string, ...types: (ObjectType | ClassType)[]) {
     super(name);
     this._typeResolver = this.defaultTypeResolver.bind(this);
     this.setTypes(...types);
   }
 
-  static create(name: string, ...types: ObjectType[]) {
+  static create(name: string, ...types: (ObjectType | ClassType)[]) {
     return new UnionType(name, ...types);
   }
 
