@@ -7,13 +7,14 @@ import {
   ArrayHelper,
   KeyValue,
   TypeResolver,
+  ClassType,
 } from "../../..";
 import { GQLAnyType } from "../GQLAnyType";
 
 export class UnionType<MetaType = KeyValue>
   extends GQLAnyType<GraphQLUnionType, MetaType>
   implements TypeResolvable {
-  protected _types: ObjectType[] = [];
+  protected _types: (ObjectType | ClassType)[] = [];
   protected _typeResolver: GraphQLTypeResolver<any, any>;
 
   get types() {
@@ -49,7 +50,7 @@ export class UnionType<MetaType = KeyValue>
    * Set the types of the union
    * @param types The types of the union
    */
-  setTypes(...types: ObjectType[]) {
+  setTypes(...types: (ObjectType | ClassType)[]) {
     this._types = types;
     return this;
   }
@@ -58,7 +59,7 @@ export class UnionType<MetaType = KeyValue>
    * Add some types to the union
    * @param types The types to add
    */
-  addTypes(...types: ObjectType[]) {
+  addTypes(...types: (ObjectType | ClassType)[]) {
     return this.setTypes(...this._types, ...types);
   }
 
@@ -66,7 +67,7 @@ export class UnionType<MetaType = KeyValue>
    * Remove some types to the union
    * @param types The types to remove
    */
-  removeTypes(...types: Removable<ObjectType>) {
+  removeTypes(...types: Removable<ObjectType | ClassType>) {
     return this.setTypes(...ArrayHelper.remove(types, this._types));
   }
 
@@ -83,7 +84,7 @@ export class UnionType<MetaType = KeyValue>
       resolveType: this._typeResolver,
       description: this._description,
       types: () => {
-        return GQLElement.built(this._types);
+        return GQLElement.built(this._types as ObjectType[]);
       },
       extensions: [],
     });
@@ -92,6 +93,6 @@ export class UnionType<MetaType = KeyValue>
   }
 
   defaultTypeResolver(obj: KeyValue) {
-    return TypeResolver.resolve(obj, this._types);
+    return TypeResolver.resolve(obj, this._types as ObjectType[]);
   }
 }
