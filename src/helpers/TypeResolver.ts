@@ -14,6 +14,8 @@ export class TypeResolver {
       }
     });
 
-    return types[points.indexOf(Math.max(...points))].built;
+    const found = types[points.indexOf(Math.max(...points))];
+
+    return found?.built;
   }
 }

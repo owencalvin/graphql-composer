@@ -26,7 +26,7 @@ export class UnionType<MetaType = KeyValue>
 
   protected constructor(name: string, ...types: ObjectType[]) {
     super(name);
-    this._typeResolver = this.defaultTypeResolver;
+    this._typeResolver = this.defaultTypeResolver.bind(this);
     this.setTypes(...types);
   }
 

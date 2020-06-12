@@ -10,12 +10,42 @@ import {
   InputType,
   InputField,
   Middleware,
+  InterfaceType,
+  UnionType,
 } from "../../src";
 
 const client = new ApolloClient({
   uri: "http://localhost:4001/graphql",
   fetch,
 });
+
+class Animal {
+  name: string;
+
+  static inter = InterfaceType.create(Animal).addFields(
+    Field.create("name", String),
+  );
+}
+
+class Cow extends Animal {
+  name: string;
+  moh: string;
+
+  static obj = ObjectType.create("Cow")
+    .addFields(Field.create("moh", String))
+    .addInterfaces(Animal.inter);
+}
+
+class Cat extends Animal {
+  name: string;
+  meow: string;
+
+  static obj = ObjectType.create("Cat")
+    .addInterfaces(Animal.inter)
+    .addFields(Field.create("meow", String));
+}
+
+const catOrCow = UnionType.create("CatOrCow", Cat.obj, Cow.obj);
 
 class Role {
   name: string;
@@ -33,11 +63,15 @@ class User {
   name: string;
   email: string;
   role: Role;
+  animal: Animal;
+  animalUnion: Cat | Cow;
 
   static obj = ObjectType.create("User").addFields(
     Field.create("name", String),
     Field.create("email", String),
     Field.create("role", Role.obj),
+    Field.create("animal", Animal.inter),
+    Field.create("animalUnion", catOrCow),
   );
 }
 
@@ -57,6 +91,22 @@ const query = ObjectType.create("Query").addFields(
     .setResolver(
       async (args, gql) => {
         gql.body = args;
+
+        if (args.name2 === "cat") {
+          const animal = new Cat();
+          animal.meow = "meow";
+          animal.name = "cat";
+          gql.body.User.animal = animal;
+          gql.body.User.animalUnion = animal;
+        }
+
+        if (args.name2 === "cow") {
+          const animal = new Cow();
+          animal.moh = "moh";
+          animal.name = "cow";
+          gql.body.User.animal = animal;
+          gql.body.User.animalUnion = animal;
+        }
       },
       Args.create().addArgs(
         Arg.create("name2", String),
@@ -70,7 +120,7 @@ const query = ObjectType.create("Query").addFields(
     )
     .addMiddlewares(
       Middleware.create(async (args, gql, next) => {
-        if (args.name2 === "pass") {
+        if (["pass", "cat", "cow"].includes(args.name2)) {
           await next();
         } else {
           throw new ApolloError("middleware:1");
@@ -103,6 +153,12 @@ const req: QueryOptions = {
           role {
             name
           }
+          animal {
+            name
+          }
+          animalUnion {
+            __typename
+          }
         }
         name2
         email2
@@ -121,6 +177,10 @@ beforeAll(async () => {
     res,
     Role.input,
     Role.obj,
+    Animal.inter,
+    Cow.obj,
+    Cat.obj,
+    catOrCow,
   ).build();
 
   server = new ApolloServer({
@@ -154,6 +214,8 @@ describe("Queries", () => {
       email2: "pass",
       User: {
         __typename: "User",
+        animal: null,
+        animalUnion: null,
         name: "name",
         email: "email",
         role: {
@@ -194,5 +256,53 @@ describe("Queries", () => {
     }
 
     expect(error.message).toEqual("GraphQL error: middleware:2");
+  });
+
+  it("Resolve the correct interface __typename with default type resolver", async () => {
+    const res = (
+      await client.query({
+        ...req,
+        variables: {
+          name2: "cat",
+          email2: "pass",
+        },
+      })
+    ).data.user;
+    expect(res.User.animal.__typename).toEqual("Cat");
+
+    const res2 = (
+      await client.query({
+        ...req,
+        variables: {
+          name2: "cow",
+          email2: "pass",
+        },
+      })
+    ).data.user;
+    expect(res2.User.animal.__typename).toEqual("Cow");
+  });
+
+  it("Resolve the correct union __typename with default type resolver", async () => {
+    const res = (
+      await client.query({
+        ...req,
+        variables: {
+          name2: "cat",
+          email2: "pass",
+        },
+      })
+    ).data.user;
+    expect(res.User.animalUnion.__typename).toEqual("Cat");
+
+    const res2 = (
+      await client.query({
+        ...req,
+        variables: {
+          name2: "cow",
+          email2: "pass",
+        },
+      })
+    ).data.user;
+    expect(res2.User.animalUnion.__typename).toEqual("Cow");
   });
 });

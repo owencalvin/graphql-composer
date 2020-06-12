@@ -1,4 +1,2 @@
 - Interface type resolver
 - Union type resolver
-- Transformations
-- Interfaces implementation

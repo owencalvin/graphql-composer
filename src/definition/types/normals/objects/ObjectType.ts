@@ -87,6 +87,9 @@ export class ObjectType<
    */
   setInterfaces(...interfaces: InterfaceType[]) {
     this._interfaces = interfaces;
+    this._interfaces.map((i) => {
+      i.addPossibleTypes(this);
+    });
     return this;
   }
 

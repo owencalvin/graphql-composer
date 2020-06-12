@@ -15,10 +15,11 @@ export class InterfaceType<T extends ClassType = any, MetaType = KeyValue>
   extends GQLObjectType<GraphQLInterfaceType, T, MetaType>
   implements TypeResolvable {
   protected _typeResolver: GraphQLTypeResolver<any, any>;
+  private _possibleTypes: ObjectType[] = [];
 
   protected constructor(name: string) {
     super(name);
-    this.setTypeResolver(this.defaultTypeResolver);
+    this.setTypeResolver(this.defaultTypeResolver.bind(this));
   }
 
   static create<T = any>(name: string): InterfaceType<ClassType<T>>;
@@ -78,6 +79,27 @@ export class InterfaceType<T extends ClassType = any, MetaType = KeyValue>
   }
 
   /**
+   * Set the possible types of the interface to resolve the __typename
+   * @param possibleTypes The possible types
+   */
+  setPossibleTypes(...possibleTypes: ObjectType[]) {
+    possibleTypes.map((pt) => {
+      if (this._possibleTypes.indexOf(pt) === -1) {
+        this._possibleTypes.push(pt);
+      }
+    });
+    return this;
+  }
+
+  /**
+   * Set the possible types of the interface to resolve the __typename
+   * @param possibleTypes The possible types
+   */
+  addPossibleTypes(...possibleTypes: ObjectType[]) {
+    return this.setPossibleTypes(...this._possibleTypes, ...possibleTypes);
+  }
+
+  /**
    * Add a suffix to the name of your type ("Interface" by default)
    * @param suffix The suffix to add to the name
    */
@@ -96,6 +118,6 @@ export class InterfaceType<T extends ClassType = any, MetaType = KeyValue>
   }
 
   defaultTypeResolver(obj: KeyValue) {
-    return TypeResolver.resolve(obj, []);
+    return TypeResolver.resolve(obj, this._possibleTypes);
   }
 }
