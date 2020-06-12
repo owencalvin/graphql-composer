@@ -1,6 +1,4 @@
 - Interface type resolver
 - Union type resolver
 - Transformations
-- Args parsing using queries
 - Interfaces implementation
-- Queries
