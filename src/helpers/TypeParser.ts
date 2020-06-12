@@ -25,7 +25,9 @@ export class TypeParser {
 
     if (Array.isArray(type)) {
       finalType = this.parse(type[0]);
-      finalType = GraphQLList(finalType);
+      if (finalType) {
+        finalType = GraphQLList(finalType);
+      }
     }
 
     if (type instanceof GQLAnyType) {
