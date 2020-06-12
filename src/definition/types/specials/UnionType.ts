@@ -13,8 +13,8 @@ import { GQLAnyType } from "../GQLAnyType";
 export class UnionType<MetaType = KeyValue>
   extends GQLAnyType<GraphQLUnionType, MetaType>
   implements TypeResolvable {
-  private _types: ObjectType[] = [];
-  private _typeResolver: GraphQLTypeResolver<any, any>;
+  protected _types: ObjectType[] = [];
+  protected _typeResolver: GraphQLTypeResolver<any, any>;
 
   get types() {
     return this._types;
