@@ -22,6 +22,7 @@ const userInterface = InterfaceType.create("UserInterface").addFields(
 const user = ObjectType.create("User").addFields(
   Field.create("Username", Required([String])),
   Field.create("Email", Number),
+  Field.create("Links", Required([Required(String)])),
 );
 
 const role = ObjectType.create("Role").addFields(Field.create("User", user));
@@ -40,9 +41,19 @@ describe("ObjectType", () => {
       GraphQLList<GraphQLScalarType>
     >;
 
+    const linksType = userFields.Links.type as GraphQLNonNull<
+      GraphQLList<GraphQLNonNull<GraphQLScalarType>>
+    >;
+
     expect(usernameType).toBeInstanceOf(GraphQLNonNull);
     expect(usernameType.ofType).toBeInstanceOf(GraphQLList);
     expect(usernameType.ofType.ofType.name).toBe("String");
+
+    expect(linksType).toBeInstanceOf(GraphQLNonNull);
+    expect(linksType.ofType).toBeInstanceOf(GraphQLList);
+    expect(linksType.ofType.ofType).toBeInstanceOf(GraphQLNonNull);
+    expect(linksType.ofType.ofType.ofType.name).toBe("String");
+
     expect((userFields.Email.type as GraphQLScalarType).name).toBe("Float");
   });
 
@@ -93,7 +104,10 @@ describe("ObjectType", () => {
   });
 
   it("Should create a copy and remove field", async () => {
-    const userCopy = user.copy().setName("UserCopy").removeFields("Username");
+    const userCopy = user
+      .copy()
+      .setName("UserCopy")
+      .removeFields("Username", "Links");
 
     const schema = Schema.create(userCopy, user);
 
@@ -107,7 +121,7 @@ describe("ObjectType", () => {
     const userFields = userType.getFields();
 
     expect(Object.keys(userCopyFields)).toHaveLength(1);
-    expect(Object.keys(userFields)).toHaveLength(2);
+    expect(Object.keys(userFields)).toHaveLength(3);
 
     expect(userCopyFields.Email.name).toBe("Email");
 
@@ -119,12 +133,12 @@ describe("ObjectType", () => {
     const userInput = user
       .convert(InputType)
       .setName("UserInput")
-      .removeFields("Username");
+      .removeFields("Username", "Links");
 
     const userInterface = user
       .convert(InterfaceType)
       .setName("UserInterface")
-      .removeFields("Email");
+      .removeFields("Email", "Links");
 
     const schema = Schema.create(userInterface, userInput, user);
 
@@ -146,7 +160,7 @@ describe("ObjectType", () => {
 
     expect(Object.keys(userInterfaceFields)).toHaveLength(1);
     expect(Object.keys(userInputFields)).toHaveLength(1);
-    expect(Object.keys(userFields)).toHaveLength(2);
+    expect(Object.keys(userFields)).toHaveLength(3);
 
     expect(userInterfaceFields.Username.name).toBe("Username");
 
@@ -154,5 +168,6 @@ describe("ObjectType", () => {
 
     expect(userFields.Username.name).toBe("Username");
     expect(userFields.Email.name).toBe("Email");
+    expect(userFields.Links.name).toBe("Links");
   });
 });

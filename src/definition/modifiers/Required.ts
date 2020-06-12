@@ -4,6 +4,16 @@ import { FieldType, InputFieldType } from "../..";
  * Create a not nullable type from an existing one
  * @param type The type to convert
  */
+export function R<Type extends FieldType | InputFieldType = FieldType>(
+  type: Type,
+) {
+  return new RequiredType<Type>(type);
+}
+
+/**
+ * Create a not nullable type from an existing one
+ * @param type The type to convert
+ */
 export function Required<Type extends FieldType | InputFieldType = FieldType>(
   type: Type,
 ) {
