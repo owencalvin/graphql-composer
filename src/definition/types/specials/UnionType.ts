@@ -11,8 +11,8 @@ import {
 } from "../../..";
 import { GQLAnyType } from "../GQLAnyType";
 
-export class UnionType<MetaType = any>
-  extends GQLAnyType<GraphQLUnionType, MetaType>
+export class UnionType<ExtensionsType = any>
+  extends GQLAnyType<GraphQLUnionType, ExtensionsType>
   implements TypeResolvable {
   protected _types: (ObjectType | ClassType)[] = [];
   protected _typeResolver: GraphQLTypeResolver<any, any>;
@@ -75,7 +75,10 @@ export class UnionType<MetaType = any>
    * Copy the UnionType
    */
   copy() {
-    return UnionType.create(this.name).addTypes(...this._types);
+    return UnionType.create(this.name)
+      .addTypes(...this._types)
+      .setExtensions(this.extensions)
+      .setDirectives(...this.directives);
   }
 
   build(): GraphQLUnionType {
@@ -84,9 +87,9 @@ export class UnionType<MetaType = any>
       resolveType: this._typeResolver,
       description: this._description,
       types: () => {
-        return GQLElement.built(this._types as ObjectType[]);
+        return this._types.map((t: ObjectType) => t.built);
       },
-      extensions: [],
+      extensions: this.extensions,
     });
 
     return this.built;

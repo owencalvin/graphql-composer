@@ -1,19 +1,14 @@
-import { GraphQLField, GraphQLInputField } from "graphql";
-import {
-  FieldType,
-  InputFieldType,
-  RequiredType,
-  Required,
-  KeyValue,
-} from "../..";
+import { GraphQLField, GraphQLInputField, FieldDefinitionNode } from "graphql";
+import { FieldType, InputFieldType, RequiredType, Required } from "../..";
 import { GQLElement } from "../../classes/GQLElement";
 import { Nullable, NullableType } from "../modifiers/Nullable";
+import { TypeParser } from "../../helpers";
 
 export abstract class GQLField<
   BuiltType = any,
   NameType = string,
-  MetaType = any
-> extends GQLElement<BuiltType, NameType, MetaType> {
+  ExtensionsType = any
+> extends GQLElement<BuiltType, NameType, ExtensionsType> {
   protected _type: FieldType | InputFieldType;
   protected _deprecationReason: string;
   protected _description: string;
@@ -36,6 +31,8 @@ export abstract class GQLField<
   }
 
   abstract build(): GraphQLField<any, any, any> | GraphQLInputField;
+
+  abstract copy(): GQLField<any, any, any>;
 
   /**
    * Set the field type

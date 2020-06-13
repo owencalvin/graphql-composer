@@ -1,4 +1,9 @@
-import { GraphQLInterfaceType, GraphQLTypeResolver } from "graphql";
+import {
+  GraphQLInterfaceType,
+  GraphQLTypeResolver,
+  ObjectTypeDefinitionNode,
+  InterfaceTypeDefinitionNode,
+} from "graphql";
 import {
   GQLType,
   ObjectType,
@@ -11,11 +16,27 @@ import {
 } from "../../../..";
 import { GQLObjectType } from "./GQLObjectType";
 
-export class InterfaceType<T extends ClassType = any, MetaType = any>
-  extends GQLObjectType<GraphQLInterfaceType, T, MetaType>
+export class InterfaceType<T extends ClassType = any, ExtensionsType = any>
+  extends GQLObjectType<GraphQLInterfaceType, T, ExtensionsType>
   implements TypeResolvable {
   protected _typeResolver: GraphQLTypeResolver<any, any>;
   private _possibleTypes: ObjectType[] = [];
+
+  get definitionNode(): InterfaceTypeDefinitionNode {
+    return {
+      kind: "InterfaceTypeDefinition",
+      name: {
+        kind: "Name",
+        value: this.name,
+      },
+      description: {
+        kind: "StringValue",
+        value: this.description,
+      },
+      fields: this._fields.map((f) => f.definitionNode),
+      directives: this.directives.map((d) => d.definitionNode),
+    };
+  }
 
   protected constructor(name: string) {
     super(name);
@@ -36,7 +57,8 @@ export class InterfaceType<T extends ClassType = any, MetaType = any>
       return new InterfaceType(nameOrType);
     } else if (nameOrType instanceof GQLType) {
       const obj = InterfaceType.create(nameOrType.name)
-        .setMeta(nameOrType.meta)
+        .setExtensions(nameOrType.extensions)
+        .setDirectives(...nameOrType.directives)
         .setDescription(nameOrType.description);
 
       if (nameOrType instanceof InputType) {
@@ -59,7 +81,7 @@ export class InterfaceType<T extends ClassType = any, MetaType = any>
       description: this.description,
       resolveType: this._typeResolver,
       fields: () => this.getFields(),
-      extensions: [],
+      extensions: this.extensions,
     });
 
     this._built = built;

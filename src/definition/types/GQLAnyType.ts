@@ -3,8 +3,8 @@ import { GQLElement } from "../../classes/GQLElement";
 
 export abstract class GQLAnyType<
   BuiltType = any,
-  MetaType = any
-> extends GQLElement<BuiltType, any, MetaType> {
+  ExtensionsType = any
+> extends GQLElement<BuiltType, any, ExtensionsType> {
   constructor(name?: string) {
     super(name);
   }

@@ -3,6 +3,7 @@ import {
   Source,
   GraphQLResolveInfo,
   GraphQLOutputType,
+  FieldDefinitionNode,
 } from "graphql";
 import {
   Args,
@@ -23,10 +24,10 @@ import {
 } from "../..";
 import { GQLField } from "./GQLField";
 
-export class Field<NameType = string, MetaType = any> extends GQLField<
+export class Field<NameType = string, ExtensionsType = any> extends GQLField<
   GraphQLField<any, any, any>,
   NameType,
-  MetaType
+  ExtensionsType
 > {
   private _args: Args[] = [];
   private _doParseArgs = true;
@@ -43,6 +44,24 @@ export class Field<NameType = string, MetaType = any> extends GQLField<
 
   get doParseArgs() {
     return this._doParseArgs;
+  }
+
+  get definitionNode(): FieldDefinitionNode {
+    return {
+      kind: "FieldDefinition",
+      type: {
+        kind: "NamedType",
+        name: {
+          kind: "Name",
+          value: TypeParser.parse(this.type).toString(),
+        },
+      },
+      name: {
+        kind: "Name",
+        value: this.name,
+      },
+      directives: this.directives.map((d) => d.definitionNode),
+    };
   }
 
   get resolver() {
@@ -79,7 +98,8 @@ export class Field<NameType = string, MetaType = any> extends GQLField<
         nameOrField.type as FieldType,
       )
         .setDescription(nameOrField.description)
-        .setMeta(nameOrField.meta)
+        .setExtensions(nameOrField.extensions)
+        .setDirectives(...nameOrField.directives)
         .setDeprecationReason(nameOrField.deprecationReason);
       if (nameOrField instanceof Field) {
         field
@@ -243,7 +263,8 @@ export class Field<NameType = string, MetaType = any> extends GQLField<
       isDeprecated: !!this._deprecationReason,
       args,
       description: this._description,
-      extensions: [],
+      extensions: this.extensions,
+      astNode: this.definitionNode,
     };
 
     this._built = field;

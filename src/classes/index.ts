@@ -1,4 +1,5 @@
 export * from "./GQLElement";
-export * from "./Meta";
+export * from "./Extension";
 export * from "./Resolver";
 export * from "./Wrapper";
+export * from "./Buildable";

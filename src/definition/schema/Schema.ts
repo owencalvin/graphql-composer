@@ -1,20 +1,27 @@
-import { GraphQLSchema, GraphQLObjectType, GraphQLNamedType } from "graphql";
+import {
+  GraphQLSchema,
+  GraphQLObjectType,
+  GraphQLNamedType,
+  GraphQLSkipDirective,
+  GraphQLIncludeDirective,
+  GraphQLDirective,
+} from "graphql";
 import {
   Wrapper,
   Removable,
   ArrayHelper,
   GQLAnyType,
-  KeyValue,
   SchemaConfig,
 } from "../..";
-import { GQLElement } from "../../classes/GQLElement";
+import { Buildable } from "../../classes/Buildable";
 
-export class Schema<MetaType = any> extends GQLElement<
+export class Schema<ExtensionsType = any> extends Buildable<
   GraphQLSchema,
   any,
-  MetaType
+  ExtensionsType
 > {
   protected static _config: SchemaConfig = {};
+  protected _directives: GraphQLDirective[];
 
   static get config() {
     return this._config;
@@ -79,6 +86,19 @@ export class Schema<MetaType = any> extends GQLElement<
     return this.setTypes(...ArrayHelper.remove(types, this._types));
   }
 
+  setDirectives(...directives: GraphQLDirective[]) {
+    this._directives = directives;
+    return this;
+  }
+
+  addDirectives(...directives: GraphQLDirective[]) {
+    this.setDirectives(...this._directives, ...directives);
+  }
+
+  removeDirectives(...directives: GraphQLDirective[]) {
+    this.setDirectives(...ArrayHelper.remove(directives, this._directives));
+  }
+
   /**
    * Build the schema and all the types contained in it
    */
@@ -99,6 +119,7 @@ export class Schema<MetaType = any> extends GQLElement<
       subscription,
       types: types.map((t) => t[1]),
       description: this._description,
+      directives: this._directives,
     });
 
     return this._built;

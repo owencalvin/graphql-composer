@@ -2,11 +2,10 @@ import { GraphQLEnumValue } from "graphql";
 import { StringKeyOf, KeyValue } from "../../../..";
 import { GQLElement } from "../../../../classes/GQLElement";
 
-export class EnumValue<NameType = string, MetaType = any> extends GQLElement<
-  any,
-  any,
-  MetaType
-> {
+export class EnumValue<
+  NameType = string,
+  ExtensionsType = any
+> extends GQLElement<any, any, ExtensionsType> {
   protected _name: NameType & string;
   private _value: any;
   private _deprecationReason: string;
@@ -59,7 +58,7 @@ export class EnumValue<NameType = string, MetaType = any> extends GQLElement<
       deprecationReason: this._deprecationReason,
       description: this._description,
       isDeprecated: !!this._deprecationReason,
-      extensions: [],
+      extensions: this.extensions,
     };
 
     return { ...this._built };

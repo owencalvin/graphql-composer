@@ -1,48 +1,34 @@
-import { Meta } from "./Meta";
-import { KeyValue } from "../types";
+import { ArrayHelper } from "../helpers";
+import { Directive } from "../definition";
+import { Buildable } from "./Buildable";
 
 export class GQLElement<
   BuiltType,
   NameType = string,
-  MetaType = any
-> extends Meta<MetaType> {
+  ExtensionsType = any
+> extends Buildable<BuiltType, NameType, ExtensionsType> {
   protected _name: NameType & string;
-  protected _ref: symbol;
-  protected _built: BuiltType;
-  protected _description?: string;
+  protected _directives: Directive[] = [];
+
+  get definitionNode(): any {
+    return undefined;
+  }
 
   get description() {
     return this._description;
-  }
-
-  get ref() {
-    return this._ref;
   }
 
   get name() {
     return this._name;
   }
 
-  get built() {
-    return this._built;
+  get directives() {
+    return this._directives;
   }
 
   protected constructor(name?: NameType & string) {
     super();
     this.setName(name);
-    this._ref = Symbol();
-  }
-
-  static built<BuiltType = any>(elements: GQLElement<BuiltType>[]) {
-    return elements.map((e) => e.built);
-  }
-
-  static create(...args: any[]) {
-    throw new Error("Method not overridden");
-  }
-
-  build(...args: any[]) {
-    throw new Error("Method not overridden");
   }
 
   setName(name: NameType & string) {
@@ -50,8 +36,18 @@ export class GQLElement<
     return this;
   }
 
-  setDescription(description: string) {
-    this._description = description;
+  setDirectives(...directives: Directive[]) {
+    this._directives = directives;
     return this;
+  }
+
+  addDirectives(...directives: Directive[]) {
+    return this.setDirectives(...this.directives, ...directives);
+  }
+
+  removeDirectives(...directives: Directive[]) {
+    return this.setDirectives(
+      ...ArrayHelper.remove(directives, this._directives),
+    );
   }
 }

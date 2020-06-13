@@ -1,4 +1,4 @@
-import { GraphQLObjectType } from "graphql";
+import { GraphQLObjectType, ObjectTypeDefinitionNode } from "graphql";
 import {
   Field,
   InterfaceType,
@@ -13,12 +13,28 @@ import { GQLObjectType } from "./GQLObjectType";
 
 export class ObjectType<
   T extends ClassType = any,
-  MetaType = any
-> extends GQLObjectType<GraphQLObjectType, T, MetaType> {
+  ExtensionsType = any
+> extends GQLObjectType<GraphQLObjectType, T, ExtensionsType> {
   private _interfaces: InterfaceType[] = [];
 
   get interfaces() {
     return this._interfaces;
+  }
+
+  get definitionNode(): ObjectTypeDefinitionNode {
+    return {
+      kind: "ObjectTypeDefinition",
+      name: {
+        kind: "Name",
+        value: this.name,
+      },
+      description: {
+        kind: "StringValue",
+        value: this.description,
+      },
+      fields: this._fields.map((f) => f.definitionNode),
+      directives: this.directives.map((d) => d.definitionNode),
+    };
   }
 
   protected constructor(name: string) {
@@ -42,7 +58,8 @@ export class ObjectType<
       return new ObjectType(nameOrType);
     } else if (nameOrType instanceof GQLType) {
       const obj = ObjectType.create(nameOrType.name)
-        .setMeta(nameOrType.meta)
+        .setExtensions(nameOrType.extensions)
+        .setDirectives(...nameOrType.directives)
         .setDescription(nameOrType.description);
 
       if (nameOrType instanceof InputType) {

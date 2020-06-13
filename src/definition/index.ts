@@ -3,6 +3,8 @@ export * from "./fields/Field";
 export * from "./fields/GQLField";
 export * from "./fields/InputField";
 
+export * from "./directives/Directive";
+
 export * from "./middlewares/Middleware";
 
 export * from "./modifiers/Required";

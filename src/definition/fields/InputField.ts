@@ -1,4 +1,8 @@
-import { GraphQLInputField } from "graphql";
+import {
+  GraphQLInputField,
+  InputValueDefinitionNode,
+  parseValue,
+} from "graphql";
 import {
   InputFieldType,
   StringKeyOf,
@@ -6,21 +10,41 @@ import {
   TypeParser,
   Field,
   Arg,
-  KeyValue,
   Schema,
 } from "../..";
 import { GQLField } from "./GQLField";
 
-export class InputField<NameType = string, MetaType = any> extends GQLField<
-  GraphQLInputField,
-  NameType,
-  MetaType
-> {
+export class InputField<
+  NameType = string,
+  ExtensionsType = any
+> extends GQLField<GraphQLInputField, NameType, ExtensionsType> {
   protected _defaultValue: string | number | boolean;
   protected _type: InputFieldType;
 
   get type() {
     return this._type;
+  }
+
+  get definitionNode(): InputValueDefinitionNode {
+    return {
+      name: {
+        kind: "Name",
+        value: this.name,
+      },
+      kind: "InputValueDefinition",
+      description: {
+        kind: "StringValue",
+        value: this.description,
+      },
+      type: {
+        kind: "NamedType",
+        name: {
+          kind: "Name",
+          value: TypeParser.parse(this.type).toString(),
+        },
+      },
+      directives: this.directives.map((d) => d.definitionNode),
+    };
   }
 
   protected constructor(name: NameType & string, type: InputFieldType) {
@@ -52,7 +76,8 @@ export class InputField<NameType = string, MetaType = any> extends GQLField<
         nameOrField.type as InputFieldType,
       )
         .setDescription(nameOrField.description)
-        .setMeta(nameOrField.meta)
+        .setExtensions(nameOrField.extensions)
+        .setDirectives(...nameOrField.directives)
         .setDeprecationReason(nameOrField.deprecationReason);
       return field;
     }
@@ -69,7 +94,7 @@ export class InputField<NameType = string, MetaType = any> extends GQLField<
       description: this._description,
       defaultValue: this._defaultValue,
       astNode: undefined,
-      extensions: [],
+      extensions: this.extensions,
     };
 
     this._built = input;

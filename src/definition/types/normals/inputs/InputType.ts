@@ -11,13 +11,17 @@ import {
   Args,
   KeyValue,
 } from "../../../..";
-import { GraphQLInputObjectType, GraphQLInputFieldConfigMap } from "graphql";
+import {
+  GraphQLInputObjectType,
+  GraphQLInputFieldConfigMap,
+  InputObjectTypeDefinitionNode,
+} from "graphql";
 import { GQLType } from "../GQLType";
 
 export class InputType<
   T extends ClassType = any,
-  MetaType = any
-> extends GQLType<GraphQLInputObjectType, T, MetaType> {
+  ExtensionsType = any
+> extends GQLType<GraphQLInputObjectType, T, ExtensionsType> {
   protected _fields: InputField<StringKeyOf<InstanceOf<T>>>[];
 
   get fields() {
@@ -26,6 +30,22 @@ export class InputType<
 
   protected constructor(name: string) {
     super(name);
+  }
+
+  get definitionNode(): InputObjectTypeDefinitionNode {
+    return {
+      kind: "InputObjectTypeDefinition",
+      name: {
+        kind: "Name",
+        value: this.name,
+      },
+      description: {
+        kind: "StringValue",
+        value: this.description,
+      },
+      fields: this._fields.map((f) => f.definitionNode),
+      directives: this.directives.map((d) => d.definitionNode),
+    };
   }
 
   /**
@@ -43,7 +63,8 @@ export class InputType<
       return new InputType(nameOrType);
     } else if (nameOrType instanceof GQLType) {
       const obj = InputType.create(nameOrType.name)
-        .setMeta(nameOrType.meta)
+        .setExtensions(nameOrType.extensions)
+        .setDirectives(...nameOrType.directives)
         .setDescription(nameOrType.description);
 
       if (nameOrType instanceof InputType) {
@@ -72,7 +93,7 @@ export class InputType<
           return prev;
         }, {});
       },
-      extensions: [],
+      extensions: this.extensions,
     });
 
     this._built = input;

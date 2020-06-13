@@ -10,8 +10,8 @@ import { GQLAnyType } from "../../GQLAnyType";
 
 export class EnumType<
   TEnumType extends Object = any,
-  MetaType = any
-> extends GQLAnyType<GraphQLEnumType, MetaType> {
+  ExtensionsType = any
+> extends GQLAnyType<GraphQLEnumType, ExtensionsType> {
   private _values: EnumValue<StringKeyOf<TEnumType>>[] = [];
   private _enumType?: TEnumType;
 
@@ -78,7 +78,10 @@ export class EnumType<
   }
 
   copy() {
-    return EnumType.create(this.name).addValues(...this._values);
+    return EnumType.create(this.name)
+      .addValues(...this._values)
+      .setExtensions(this.extensions)
+      .setDirectives(...this.directives);
   }
 
   build(): GraphQLEnumType {

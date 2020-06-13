@@ -18,6 +18,6 @@ export type FieldType =
   | EnumType
   | UnionType
   | FieldType[]
-  | RequiredType
   | ClassType
+  | RequiredType
   | NullableType;

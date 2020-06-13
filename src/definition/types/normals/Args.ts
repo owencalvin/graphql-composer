@@ -13,8 +13,8 @@ import { GQLBasicType } from "./GQLBasicType";
 
 export class Args<
   T extends ClassType = any,
-  MetaType = any
-> extends GQLBasicType<any, any, MetaType> {
+  ExtensionsType = any
+> extends GQLBasicType<any, any, ExtensionsType> {
   protected _classType?: T;
   private _args: Arg<StringKeyOf<InstanceOf<T>>>[] = [];
 
@@ -34,7 +34,9 @@ export class Args<
         ...classTypeOrInputType.fields.map((f) => {
           return Arg.create(f.name, f.type);
         }),
-      ).setMeta(classTypeOrInputType.meta as any);
+      )
+        .setExtensions(classTypeOrInputType.extensions as any)
+        .setDirectives(...classTypeOrInputType.directives);
     } else {
       this._classType = classTypeOrInputType;
     }
@@ -109,6 +111,6 @@ export class Args<
     return Args.create()
       .setArgs(...this.args)
       .setDescription(this.description)
-      .setMeta(this.meta) as any;
+      .setExtensions(this.extensions) as any;
   }
 }
