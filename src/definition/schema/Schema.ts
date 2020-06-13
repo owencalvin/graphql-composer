@@ -22,6 +22,10 @@ export class Schema<MetaType = KeyValue> extends GQLElement<
 
   protected _types: GQLAnyType[] = [];
 
+  get types() {
+    return this._types;
+  }
+
   protected constructor() {
     super();
   }
