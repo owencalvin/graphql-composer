@@ -14,13 +14,14 @@ import {
   GQLAnyType,
   NullableType,
 } from "..";
-import { RequiredType } from "../definition";
+import { RequiredType, N } from "../definition";
 
 export class TypeParser {
   static parse<ReturnType>(
     type: FieldType | InputFieldType,
     requiredByDefault = false,
     arrayRequired = false,
+    forceNullable = false,
   ): ReturnType {
     let finalType: GraphQLOutputType | GraphQLInputType;
 
@@ -28,6 +29,7 @@ export class TypeParser {
       finalType = this.parse(
         type[0],
         arrayRequired === undefined ? requiredByDefault : arrayRequired,
+        arrayRequired,
       );
       if (finalType) {
         finalType = GraphQLList(finalType);
@@ -52,11 +54,16 @@ export class TypeParser {
         break;
     }
 
-    if (requiredByDefault) {
+    if (requiredByDefault && !forceNullable) {
       if (type instanceof NullableType) {
-        finalType = this.parse(type.type, requiredByDefault);
+        finalType = this.parse(
+          type.type,
+          requiredByDefault,
+          arrayRequired,
+          true,
+        );
       } else if (type instanceof RequiredType) {
-        const t = this.parse(type.type, requiredByDefault);
+        const t = this.parse(type.type, requiredByDefault, arrayRequired);
         if (t) {
           finalType = GraphQLNonNull(t as any);
         }
@@ -65,12 +72,12 @@ export class TypeParser {
       }
     } else {
       if (type instanceof RequiredType) {
-        const t = this.parse(type.type, requiredByDefault);
+        const t = this.parse(type.type, requiredByDefault, arrayRequired);
         if (t) {
           finalType = GraphQLNonNull(t as any);
         }
       } else if (type instanceof NullableType) {
-        finalType = this.parse(type.type, requiredByDefault);
+        finalType = this.parse(type.type, requiredByDefault, arrayRequired);
       }
     }
 
