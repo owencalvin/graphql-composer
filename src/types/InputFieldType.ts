@@ -7,7 +7,7 @@ export type InputFieldType =
   | typeof String
   | typeof Date
   | GraphQLScalarType
-  | InputType
+  | InputType<any, any>
   | EnumType
   | InputFieldType[]
   | ClassType

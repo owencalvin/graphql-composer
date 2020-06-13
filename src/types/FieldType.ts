@@ -14,7 +14,7 @@ export type FieldType =
   | typeof String
   | typeof Date
   | GraphQLScalarType
-  | GQLObjectType
+  | GQLObjectType<any, any, any>
   | EnumType
   | UnionType
   | FieldType[]
