@@ -20,11 +20,15 @@ export class TypeParser {
   static parse<ReturnType>(
     type: FieldType | InputFieldType,
     requiredByDefault = false,
+    arrayRequired = false,
   ): ReturnType {
     let finalType: GraphQLOutputType | GraphQLInputType;
 
     if (Array.isArray(type)) {
-      finalType = this.parse(type[0], requiredByDefault);
+      finalType = this.parse(
+        type[0],
+        arrayRequired === undefined ? requiredByDefault : arrayRequired,
+      );
       if (finalType) {
         finalType = GraphQLList(finalType);
       }

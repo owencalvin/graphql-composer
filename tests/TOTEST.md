@@ -1,2 +1,2 @@
-- Interface type resolver
-- Union type resolver
+- Array required
+- Required by default

@@ -51,7 +51,11 @@ export class Arg<NameType = string, MetaType = KeyValue> extends GQLField<
   build(): GraphQLArgument {
     return {
       name: this._name,
-      type: TypeParser.parse(this._type, Schema.config.requiredByDefault),
+      type: TypeParser.parse(
+        this._type,
+        Schema.config.requiredByDefault,
+        Schema.config.arrayRequired,
+      ),
       description: this._description,
       defaultValue: this._defaultValue,
       astNode: undefined,
