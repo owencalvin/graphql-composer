@@ -16,7 +16,7 @@ import { GQLType } from "../GQLType";
 
 export class InputType<
   T extends ClassType = any,
-  MetaType = KeyValue
+  MetaType = any
 > extends GQLType<GraphQLInputObjectType, T, MetaType> {
   protected _fields: InputField<StringKeyOf<InstanceOf<T>>>[];
 

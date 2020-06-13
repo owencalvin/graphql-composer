@@ -11,10 +11,11 @@ import {
 } from "../..";
 import { GQLField } from "./GQLField";
 
-export class InputField<
-  NameType = string,
-  MetaType = KeyValue
-> extends GQLField<GraphQLInputField, NameType, MetaType> {
+export class InputField<NameType = string, MetaType = any> extends GQLField<
+  GraphQLInputField,
+  NameType,
+  MetaType
+> {
   protected _defaultValue: string | number | boolean;
   protected _type: InputFieldType;
 

@@ -10,7 +10,7 @@ import {
 } from "../..";
 import { GQLField } from "./GQLField";
 
-export class Arg<NameType = string, MetaType = KeyValue> extends GQLField<
+export class Arg<NameType = string, MetaType = any> extends GQLField<
   GraphQLArgument,
   NameType,
   MetaType

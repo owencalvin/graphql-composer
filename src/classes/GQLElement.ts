@@ -4,7 +4,7 @@ import { KeyValue } from "../types";
 export class GQLElement<
   BuiltType,
   NameType = string,
-  MetaType = KeyValue
+  MetaType = any
 > extends Meta<MetaType> {
   protected _name: NameType & string;
   protected _ref: symbol;

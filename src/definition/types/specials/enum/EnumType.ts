@@ -10,7 +10,7 @@ import { GQLAnyType } from "../../GQLAnyType";
 
 export class EnumType<
   TEnumType extends Object = any,
-  MetaType = KeyValue
+  MetaType = any
 > extends GQLAnyType<GraphQLEnumType, MetaType> {
   private _values: EnumValue<StringKeyOf<TEnumType>>[] = [];
   private _enumType?: TEnumType;

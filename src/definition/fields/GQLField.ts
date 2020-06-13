@@ -12,7 +12,7 @@ import { Nullable, NullableType } from "../modifiers/Nullable";
 export abstract class GQLField<
   BuiltType = any,
   NameType = string,
-  MetaType = KeyValue
+  MetaType = any
 > extends GQLElement<BuiltType, NameType, MetaType> {
   protected _type: FieldType | InputFieldType;
   protected _deprecationReason: string;

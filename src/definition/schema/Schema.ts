@@ -9,7 +9,7 @@ import {
 } from "../..";
 import { GQLElement } from "../../classes/GQLElement";
 
-export class Schema<MetaType = KeyValue> extends GQLElement<
+export class Schema<MetaType = any> extends GQLElement<
   GraphQLSchema,
   any,
   MetaType

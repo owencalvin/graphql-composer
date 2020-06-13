@@ -13,7 +13,7 @@ import { GQLObjectType } from "./GQLObjectType";
 
 export class ObjectType<
   T extends ClassType = any,
-  MetaType = KeyValue
+  MetaType = any
 > extends GQLObjectType<GraphQLObjectType, T, MetaType> {
   private _interfaces: InterfaceType[] = [];
 

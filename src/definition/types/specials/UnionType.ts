@@ -11,7 +11,7 @@ import {
 } from "../../..";
 import { GQLAnyType } from "../GQLAnyType";
 
-export class UnionType<MetaType = KeyValue>
+export class UnionType<MetaType = any>
   extends GQLAnyType<GraphQLUnionType, MetaType>
   implements TypeResolvable {
   protected _types: (ObjectType | ClassType)[] = [];

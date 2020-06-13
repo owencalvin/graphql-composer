@@ -11,7 +11,7 @@ import {
 } from "../../../..";
 import { GQLObjectType } from "./GQLObjectType";
 
-export class InterfaceType<T extends ClassType = any, MetaType = KeyValue>
+export class InterfaceType<T extends ClassType = any, MetaType = any>
   extends GQLObjectType<GraphQLInterfaceType, T, MetaType>
   implements TypeResolvable {
   protected _typeResolver: GraphQLTypeResolver<any, any>;

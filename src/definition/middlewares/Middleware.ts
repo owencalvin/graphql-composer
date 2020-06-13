@@ -1,7 +1,7 @@
 import { ResolveFunction, KeyValue } from "../..";
 import { GQLElement } from "../../classes/GQLElement";
 
-export class Middleware<MetaType = KeyValue> extends GQLElement<
+export class Middleware<MetaType = any> extends GQLElement<
   ResolveFunction,
   any,
   MetaType

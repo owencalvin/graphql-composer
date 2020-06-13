@@ -15,7 +15,7 @@ import { ResolveFunction, KeyValue } from "../../../../types";
 export abstract class GQLObjectType<
   BuiltType = any,
   T extends ClassType<any> = any,
-  MetaType = KeyValue
+  MetaType = any
 > extends GQLType<BuiltType, T, MetaType> {
   protected _fields: Field<StringKeyOf<InstanceOf<T>>>[] = [];
 

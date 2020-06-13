@@ -4,7 +4,7 @@ import { GQLAnyType } from "../GQLAnyType";
 export abstract class GQLBasicType<
   BuiltType = any,
   T extends ClassType<any> = any,
-  MetaType = KeyValue
+  MetaType = any
 > extends GQLAnyType<BuiltType, MetaType> {
   protected _classType?: T;
 
