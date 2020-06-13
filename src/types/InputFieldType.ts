@@ -12,4 +12,4 @@ export type InputFieldType =
   | InputFieldType[]
   | ClassType
   | RequiredType<InputFieldType>
-  | NullableType;
+  | NullableType<InputFieldType>;
