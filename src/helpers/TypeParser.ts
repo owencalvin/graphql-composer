@@ -20,16 +20,19 @@ export class TypeParser {
   static parse<ReturnType>(
     type: FieldType | InputFieldType,
     requiredByDefault = false,
-    arrayRequired = false,
+    arrayRequired = undefined,
     forceNullable = false,
+    forceRequired = false,
   ): ReturnType {
     let finalType: GraphQLOutputType | GraphQLInputType;
 
     if (Array.isArray(type)) {
       finalType = this.parse(
         type[0],
-        arrayRequired === undefined ? requiredByDefault : arrayRequired,
+        requiredByDefault,
         arrayRequired,
+        forceNullable,
+        arrayRequired === undefined ? requiredByDefault : arrayRequired,
       );
       if (finalType) {
         finalType = GraphQLList(finalType);
@@ -54,7 +57,7 @@ export class TypeParser {
         break;
     }
 
-    if (requiredByDefault && !forceNullable) {
+    if ((requiredByDefault && !forceNullable) || forceRequired) {
       if (type instanceof NullableType) {
         finalType = this.parse(
           type.type,
