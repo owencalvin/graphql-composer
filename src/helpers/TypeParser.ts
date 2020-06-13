@@ -24,7 +24,7 @@ export class TypeParser {
     let finalType: GraphQLOutputType | GraphQLInputType;
 
     if (Array.isArray(type)) {
-      finalType = this.parse(type[0]);
+      finalType = this.parse(type[0], requiredByDefault);
       if (finalType) {
         finalType = GraphQLList(finalType);
       }
