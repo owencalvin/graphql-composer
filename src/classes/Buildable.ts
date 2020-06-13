@@ -1,11 +1,9 @@
 import { Extension } from "./Extension";
 import { Directive } from "../definition";
 
-export class Buildable<
-  BuiltType,
-  NameType = string,
-  ExtensionsType = any
-> extends Extension<ExtensionsType> {
+export class Buildable<BuiltType, ExtensionsType = any> extends Extension<
+  ExtensionsType
+> {
   protected _built: BuiltType;
   protected _description?: string;
 

@@ -3,6 +3,7 @@ export * from "./fields/Field";
 export * from "./fields/GQLField";
 export * from "./fields/InputField";
 
+export * from "./directives/DirectiveDefinition";
 export * from "./directives/Directive";
 
 export * from "./middlewares/Middleware";

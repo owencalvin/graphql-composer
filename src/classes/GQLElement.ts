@@ -6,7 +6,7 @@ export class GQLElement<
   BuiltType,
   NameType = string,
   ExtensionsType = any
-> extends Buildable<BuiltType, NameType, ExtensionsType> {
+> extends Buildable<BuiltType, ExtensionsType> {
   protected _name: NameType & string;
   protected _directives: Directive[] = [];
 

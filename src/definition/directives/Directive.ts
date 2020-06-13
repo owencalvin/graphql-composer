@@ -11,7 +11,7 @@ export class Directive<ExtensionType = any> extends GQLElement<
   any,
   ExtensionType
 > {
-  protected _args: [string, string][] = [];
+  protected _args: [string, string | number | boolean | object][] = [];
 
   get args() {
     return this._args;
@@ -25,13 +25,20 @@ export class Directive<ExtensionType = any> extends GQLElement<
         value: this.name,
       },
       arguments: this._args.map<ArgumentNode>((a) => {
+        let value: any = a[1];
+        if (typeof value === "object") {
+          value = JSON.stringify(value);
+        } else {
+          value = value.toString();
+        }
+
         return {
           kind: "Argument",
           name: {
             kind: "Name",
             value: a[0],
           },
-          value: parseValue(a[1]),
+          value: parseValue(value),
         };
       }),
     };
@@ -45,7 +52,7 @@ export class Directive<ExtensionType = any> extends GQLElement<
     return new Directive(name);
   }
 
-  addArg(name: string, value: string) {
+  addArg(name: string, value: string | number | boolean | object) {
     this._args = [...this._args, [name, value]];
     return this;
   }

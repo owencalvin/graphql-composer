@@ -17,11 +17,10 @@ import { Buildable } from "../../classes/Buildable";
 
 export class Schema<ExtensionsType = any> extends Buildable<
   GraphQLSchema,
-  any,
   ExtensionsType
 > {
   protected static _config: SchemaConfig = {};
-  protected _directives: GraphQLDirective[];
+  protected _directives: GraphQLDirective[] = [];
 
   static get config() {
     return this._config;
@@ -92,11 +91,13 @@ export class Schema<ExtensionsType = any> extends Buildable<
   }
 
   addDirectives(...directives: GraphQLDirective[]) {
-    this.setDirectives(...this._directives, ...directives);
+    return this.setDirectives(...this._directives, ...directives);
   }
 
   removeDirectives(...directives: GraphQLDirective[]) {
-    this.setDirectives(...ArrayHelper.remove(directives, this._directives));
+    return this.setDirectives(
+      ...ArrayHelper.remove(directives, this._directives),
+    );
   }
 
   /**

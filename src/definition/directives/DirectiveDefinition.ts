@@ -9,12 +9,12 @@ import {
 import { Arg } from "..";
 import { Removable, ArrayHelper } from "../..";
 
-export class Directive<ExtensionType = any> extends GQLElement<
+export class DirectiveDefinition<ExtensionType = any> extends GQLElement<
   GraphQLDirective,
   any,
   ExtensionType
 > {
-  private _locations: DirectiveLocationEnum[];
+  private _locations: DirectiveLocationEnum[] = [];
   private _args: Arg<string>[] = [];
   private _isRepeatable: boolean;
 
@@ -56,8 +56,8 @@ export class Directive<ExtensionType = any> extends GQLElement<
     super(name);
   }
 
-  static create(name: string): Directive {
-    return new Directive(name);
+  static create(name: string): DirectiveDefinition {
+    return new DirectiveDefinition(name);
   }
 
   build() {
@@ -70,7 +70,7 @@ export class Directive<ExtensionType = any> extends GQLElement<
       {},
     );
 
-    return new GraphQLDirective({
+    this._built = new GraphQLDirective({
       name: this.name,
       locations: this.locations,
       description: this.description,
@@ -79,6 +79,8 @@ export class Directive<ExtensionType = any> extends GQLElement<
       extensions: this.extensions,
       astNode: this.definitionNode,
     });
+
+    return this._built;
   }
 
   setLocations(...locations: DirectiveLocationEnum[]) {
