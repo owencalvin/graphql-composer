@@ -22,9 +22,6 @@ const httpLink = new HttpLink({
 const wsLink = new WebSocketLink({
   uri: `ws://localhost:4003/graphql`,
   webSocketImpl: ws,
-  options: {
-    reconnect: true,
-  },
 });
 
 const terminatingLink = split(
@@ -93,14 +90,25 @@ const server = new ApolloServer({
   playground: false,
 });
 
+server.applyMiddleware({ app, path: "/graphql" });
+
+const httpServer = createServer(app);
+server.installSubscriptionHandlers(httpServer);
+
+afterAll(async () => {
+  await client.stop();
+  await server.stop();
+  await new Promise((resolve) => {
+    httpServer.close(() => {
+      resolve();
+    });
+  });
+});
+
 describe("Subscription", () => {
   it("Should create a subscription", async (done) => {
     // eslint-disable-next-line prefer-const
     let loop: any;
-    server.applyMiddleware({ app, path: "/graphql" });
-
-    const httpServer = createServer(app);
-    server.installSubscriptionHandlers(httpServer);
 
     await new Promise((resolve) => {
       httpServer.listen({ port: 4003 }, () => {
@@ -108,7 +116,7 @@ describe("Subscription", () => {
       });
     });
 
-    let res = await client.subscribe({
+    const res = await client.subscribe({
       query: gql`
         subscription {
           notification(notif: "notif") {
@@ -124,16 +132,8 @@ describe("Subscription", () => {
           notification: { __typename: "Response", res: "mypayload" },
         },
       });
-      await server.stop();
-      await new Promise((resolve) => {
-        httpServer.close(() => {
-          resolve();
-        });
-      });
       clearInterval(loop);
-      res = undefined;
       done();
-      process.exit();
     });
 
     loop = setInterval(async () => {
