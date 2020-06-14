@@ -7,10 +7,10 @@ import {
   GQLAnyType,
   Removable,
   ArrayHelper,
-  Middleware,
   Field,
   InputField,
   GQLField,
+  ResolveFunction,
 } from "..";
 
 export type TranformableTypes =
@@ -49,7 +49,7 @@ export class Wrapper {
     return this.setTypes(...ArrayHelper.remove(types, this._types));
   }
 
-  addMiddlewares(...middlewares: Middleware[]) {
+  addMiddlewares(...middlewares: ResolveFunction[]) {
     this.transformFields(GQLObjectType, (f) => {
       f.addMiddlewares(...middlewares);
     });

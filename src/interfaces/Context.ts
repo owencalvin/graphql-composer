@@ -1,15 +1,15 @@
-import { GraphQLResolveInfo, Source } from "graphql";
+import { GraphQLResolveInfo } from "graphql";
 import { Field } from "..";
 import { KeyValue } from "../types";
 
 /**
  * The request context
  */
-export interface Context<BodyType = any> {
+export interface Context<BodyType = any, SourceType = any> {
   body: BodyType;
   context: any;
   infos: GraphQLResolveInfo;
-  source: Source;
+  source: SourceType;
   field: Field;
   rawArgs: KeyValue;
 }

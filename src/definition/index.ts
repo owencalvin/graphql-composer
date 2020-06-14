@@ -6,8 +6,6 @@ export * from "./fields/InputField";
 export * from "./directives/DirectiveDefinition";
 export * from "./directives/Directive";
 
-export * from "./middlewares/Middleware";
-
 export * from "./modifiers/Required";
 export * from "./modifiers/Nullable";
 

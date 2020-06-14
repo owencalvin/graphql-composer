@@ -8,7 +8,6 @@ import {
 import {
   Args,
   ResolveFunction,
-  Middleware,
   FieldType,
   StringKeyOf,
   InputField,
@@ -24,6 +23,15 @@ import {
 } from "../..";
 import { GQLField } from "./GQLField";
 
+export type SubscriptionFunction<
+  ReturnType = any,
+  ArgsType = KeyValue,
+  SourceType = any
+> = (
+  args: ArgsType,
+  context: Context<ReturnType, SourceType>,
+) => Promise<ReturnType> | ReturnType;
+
 export class Field<NameType = string, ExtensionsType = any> extends GQLField<
   GraphQLField<any, any, any>,
   NameType,
@@ -32,7 +40,8 @@ export class Field<NameType = string, ExtensionsType = any> extends GQLField<
   private _args: Args[] = [];
   private _doParseArgs = true;
   private _resolver: ResolveFunction;
-  private _middlewares: Middleware[] = [];
+  private _subscription: SubscriptionFunction;
+  private _middlewares: ResolveFunction[] = [];
 
   get args() {
     return this._args;
@@ -46,14 +55,23 @@ export class Field<NameType = string, ExtensionsType = any> extends GQLField<
     return this._doParseArgs;
   }
 
+  get resolver() {
+    return this._resolver;
+  }
+
+  get subscription() {
+    return this._subscription;
+  }
+
   get definitionNode(): FieldDefinitionNode {
+    const t = TypeParser.parse(this.type);
     return {
       kind: "FieldDefinition",
       type: {
         kind: "NamedType",
         name: {
           kind: "Name",
-          value: TypeParser.parse(this.type).toString(),
+          value: t?.toString(),
         },
       },
       name: {
@@ -62,10 +80,6 @@ export class Field<NameType = string, ExtensionsType = any> extends GQLField<
       },
       directives: this.directives.map((d) => d.definitionNode),
     };
-  }
-
-  get resolver() {
-    return this._resolver;
   }
 
   protected constructor(name: NameType & string, type: FieldType) {
@@ -110,12 +124,41 @@ export class Field<NameType = string, ExtensionsType = any> extends GQLField<
     }
   }
 
+  build(): GraphQLField<any, any, any> {
+    if (this.resolver) {
+      this.addMiddlewares(this.resolver);
+    }
+
+    const args = this.flatArgs.map((arg) => arg.build());
+
+    const field: GraphQLField<any, any, any> = {
+      name: this._name,
+      type: TypeParser.parse<GraphQLOutputType>(
+        this._type,
+        Schema.config.requiredByDefault,
+        Schema.config.arrayRequired,
+      ),
+      resolve: this.resolver ? this.resolveField.bind(this) : undefined,
+      subscribe: this.subscription ? this.subscribe.bind(this) : undefined,
+      deprecationReason: this._deprecationReason || null,
+      isDeprecated: !!this._deprecationReason,
+      args,
+      description: this._description,
+      extensions: this.extensions,
+      astNode: this.definitionNode,
+    };
+
+    this._built = field;
+
+    return { ...this._built };
+  }
+
   /**
    * Set the middlewares to your field
    * A middleware is executed before your main function
    * @param middlewares The middlewares list
    */
-  setMiddlewares(...middlewares: Middleware[]) {
+  setMiddlewares(...middlewares: ResolveFunction[]) {
     this._middlewares = middlewares;
     return this;
   }
@@ -125,7 +168,7 @@ export class Field<NameType = string, ExtensionsType = any> extends GQLField<
    * A middleware is executed before your main function
    * @param middlewares The middlewares list
    */
-  addMiddlewares(...middlewares: Middleware[]) {
+  addMiddlewares(...middlewares: ResolveFunction[]) {
     return this.setMiddlewares(...this._middlewares, ...middlewares);
   }
 
@@ -133,10 +176,11 @@ export class Field<NameType = string, ExtensionsType = any> extends GQLField<
    * Remove some middlewares from your field
    * @param middlewares The middlewares list
    */
-  removeMiddlewares(...middlewares: Removable<Middleware>) {
-    return this.setMiddlewares(
-      ...ArrayHelper.remove(middlewares, this._middlewares),
-    );
+  removeMiddlewares(...middlewares: ResolveFunction[]) {
+    middlewares.map((mw) => {
+      this._middlewares.splice(this._middlewares.indexOf(mw), 1);
+    });
+    return this;
   }
 
   /**
@@ -188,6 +232,17 @@ export class Field<NameType = string, ExtensionsType = any> extends GQLField<
   }
 
   /**
+   * Set the resolver function to your field
+   * @param args The aguments
+   */
+  setSubscription<ReturnType = any, ArgType = KeyValue>(
+    subscription: SubscriptionFunction<ReturnType, ArgType>,
+  ) {
+    this._subscription = subscription;
+    return this;
+  }
+
+  /**
    * Copy the field and return a new one
    */
   copy(): Field<NameType> {
@@ -204,6 +259,10 @@ export class Field<NameType = string, ExtensionsType = any> extends GQLField<
   }
 
   protected parseArgs(args: (Args | InputType)[], values: KeyValue) {
+    if (!this.doParseArgs) {
+      return args;
+    }
+
     return args.reduce((prev, arg) => {
       const instance = arg.classType ? new arg.classType() : {};
 
@@ -244,58 +303,15 @@ export class Field<NameType = string, ExtensionsType = any> extends GQLField<
     }, {});
   }
 
-  build(): GraphQLField<any, any, any> {
-    if (this.resolver) {
-      this.addMiddlewares(Middleware.create(this.resolver, "__main"));
-    }
-
-    const args = this.flatArgs.map((arg) => arg.build());
-
-    const field: GraphQLField<any, any, any> = {
-      name: this._name,
-      type: TypeParser.parse<GraphQLOutputType>(
-        this._type,
-        Schema.config.requiredByDefault,
-        Schema.config.arrayRequired,
-      ),
-      resolve: this._resolver ? this.resolveField.bind(this) : undefined,
-      deprecationReason: this._deprecationReason || null,
-      isDeprecated: !!this._deprecationReason,
-      args,
-      description: this._description,
-      extensions: this.extensions,
-      astNode: this.definitionNode,
-    };
-
-    this._built = field;
-
-    return { ...this._built };
-  }
-
   private async resolveField(
     source: Source,
     args: any,
     context: any,
     infos: GraphQLResolveInfo,
   ) {
-    const next = async (args: any, ctx: Context, index: number) => {
-      const nextFn = async () => await next(args, ctx, index + 1);
-      const guardToExecute = this._middlewares[index].function;
-      const res = await guardToExecute(args, ctx, nextFn);
+    const parsedArgs = this.parseArgs(this._args, args);
 
-      if (res !== undefined) {
-        ctx.body = res;
-      }
-
-      return ctx.body;
-    };
-
-    let parsedArgs = args;
-    if (this.doParseArgs) {
-      parsedArgs = this.parseArgs(this._args, args);
-    }
-
-    return await next(
+    return await this.next(
       parsedArgs,
       {
         body: undefined,
@@ -307,5 +323,35 @@ export class Field<NameType = string, ExtensionsType = any> extends GQLField<
       },
       0,
     );
+  }
+
+  private async subscribe(
+    source: Source,
+    args: any,
+    context: any,
+    infos: GraphQLResolveInfo,
+  ) {
+    const parsedArgs = this.parseArgs(this.args, args);
+
+    return await this.subscription(parsedArgs, {
+      body: undefined,
+      source,
+      context,
+      infos,
+      rawArgs: args,
+      field: this,
+    });
+  }
+
+  private async next(args: any, ctx: Context, index: number) {
+    const nextFn = async () => await this.next(args, ctx, index + 1);
+    const guardToExecute = this._middlewares[index];
+    const res = await guardToExecute(args, ctx, nextFn);
+
+    if (res !== undefined) {
+      ctx.body = res;
+    }
+
+    return ctx.body;
   }
 }

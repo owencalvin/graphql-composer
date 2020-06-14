@@ -9,7 +9,6 @@ import {
   Arg,
   InputType,
   InputField,
-  Middleware,
   InterfaceType,
   UnionType,
 } from "../../src";
@@ -121,20 +120,20 @@ const query = ObjectType.create("Query").addFields(
       ),
     )
     .addMiddlewares(
-      Middleware.create(async (args, gql, next) => {
+      async (args, gql, next) => {
         if (["pass", "cat", "cow"].includes(args.name2)) {
           await next();
         } else {
           throw new ApolloError("middleware:1");
         }
-      }),
-      Middleware.create(async (args, gql, next) => {
+      },
+      async (args, gql, next) => {
         if (args.email2 === "pass") {
           await next();
         } else {
           throw new ApolloError("middleware:2");
         }
-      }),
+      },
     ),
   Field.create("chapters", chapter),
 );
