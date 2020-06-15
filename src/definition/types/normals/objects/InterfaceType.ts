@@ -1,7 +1,6 @@
 import {
   GraphQLInterfaceType,
   GraphQLTypeResolver,
-  ObjectTypeDefinitionNode,
   InterfaceTypeDefinitionNode,
 } from "graphql";
 import {

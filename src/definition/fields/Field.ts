@@ -63,6 +63,10 @@ export class Field<NameType = string, ExtensionsType = any> extends GQLField<
     return this._subscription;
   }
 
+  get middlewares() {
+    return this._middlewares;
+  }
+
   get definitionNode(): FieldDefinitionNode {
     const t = TypeParser.parse(this.type);
     return {
