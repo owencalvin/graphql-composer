@@ -2,10 +2,10 @@
   <img src="https://raw.githubusercontent.com/OwenCalvin/graphql-composer-decorators/master/docs/.vuepress/public/logo.png" width="150px">
   <h1 align="center">
     <p align="center">
-      graphql-composer-decorators
+      graphql-composer
     </p>
     <h3 align="center">
-      Create your GraphQL API with decorators!
+      Create your GraphQL API using composition!
     </h3>
   </h1>
   <br/>
