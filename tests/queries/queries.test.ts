@@ -11,12 +11,21 @@ import {
   InputField,
   InterfaceType,
   UnionType,
+  EnumType,
+  N,
 } from "../../src";
 
 const client = new ApolloClient({
   uri: "http://localhost:4001/graphql",
   fetch,
 });
+
+enum Roles {
+  admin = "ADMIN",
+  default = "DEFAULT",
+}
+
+const rolesEnum = EnumType.create("Roles", Roles);
 
 class Animal {
   name: string;
@@ -112,6 +121,7 @@ const query = ObjectType.create("Query").addFields(
       Args.create().addArgs(
         Arg.create("name2", String),
         Arg.create("email2", String),
+        Arg.create("roleEnum", N(rolesEnum)),
       ),
       Args.create(User).addArgs(
         Arg.create("name", String),
@@ -147,6 +157,7 @@ const req: QueryOptions = {
         name2: $name2
         email2: $email2
         role: { name: "role" }
+        roleEnum: admin
       ) {
         User {
           name
@@ -181,6 +192,7 @@ beforeAll(async () => {
     Animal.inter,
     Cow.obj,
     Cat.obj,
+    rolesEnum,
     catOrCow,
   ).build();
 
