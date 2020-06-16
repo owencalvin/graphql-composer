@@ -1,6 +1,6 @@
 {
   "name": "graphql-composer",
-  "version": "1.0.58",
+  "version": "1.0.59",
   "description": "Create your GraphQL API using composition!",
   "main": "build/Main.js",
   "author": "Owen Calvin",
