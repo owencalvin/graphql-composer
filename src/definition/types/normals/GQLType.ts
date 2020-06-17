@@ -66,17 +66,19 @@ export abstract class GQLType<
    * Make all the fields nullable
    */
   partial() {
-    return this.transformFields((field) => {
+    this.transformFields((field) => {
       field.nullable();
     });
+    return this;
   }
 
   /**
    * Make all the fields not nullable
    */
   required() {
-    return this.transformFields((field) => {
+    this.transformFields((field) => {
       field.required();
     });
+    return this;
   }
 }
