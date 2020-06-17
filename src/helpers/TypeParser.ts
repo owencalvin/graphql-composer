@@ -52,6 +52,7 @@ export class TypeParser {
         break;
       case Boolean:
         finalType = GraphQLBoolean;
+        break;
       case Date:
         finalType = DateTime;
         break;
