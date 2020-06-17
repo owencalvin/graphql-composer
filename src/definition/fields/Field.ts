@@ -263,6 +263,10 @@ export class Field<NameType = string, ExtensionsType = any> extends GQLField<
   }
 
   protected parseArgs(args: (Args | InputType)[], values: KeyValue) {
+    if (!values) {
+      return;
+    }
+
     if (!this.doParseArgs) {
       return args;
     }
