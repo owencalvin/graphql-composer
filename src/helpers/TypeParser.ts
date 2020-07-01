@@ -86,7 +86,12 @@ export class TypeParser {
           finalType = GraphQLNonNull(t as any);
         }
       } else if (type instanceof NullableType) {
-        finalType = this.parse(type.type, requiredByDefault, arrayRequired);
+        finalType = this.parse(
+          type.type,
+          requiredByDefault,
+          arrayRequired,
+          true,
+        );
       }
     }
 
