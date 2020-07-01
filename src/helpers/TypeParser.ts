@@ -6,6 +6,7 @@ import {
   GraphQLFloat,
   GraphQLBoolean,
   GraphQLInputType,
+  GraphQLScalarType,
 } from "graphql";
 import {
   FieldType,
@@ -14,7 +15,7 @@ import {
   GQLAnyType,
   NullableType,
 } from "..";
-import { RequiredType, N } from "../definition";
+import { RequiredType } from "../definition";
 
 export class TypeParser {
   static parse<ReturnType>(
@@ -41,6 +42,10 @@ export class TypeParser {
 
     if (type instanceof GQLAnyType) {
       finalType = type.built;
+    }
+
+    if (type instanceof GraphQLScalarType) {
+      finalType = type;
     }
 
     switch (type) {
